@@ -1,0 +1,7 @@
+{
+    "ID_LENGTH": 36,
+    "MIN_USER_LENGHT": 2,
+    "MAN_USER_LENGHT": 20,
+    "MAX_MESSAGE_LENGTH": 1000,
+    "MIN_MESSAGE_LENGTH": 1
+}
