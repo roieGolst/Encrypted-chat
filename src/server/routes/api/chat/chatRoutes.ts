@@ -2,11 +2,10 @@ import { IResponse } from "../../../../IResponse";
 import { Message } from "../../../utils/server/parser";
 import { messageValidator } from "../../../../validation";
 import { userUtils } from "../../../utils/db";
-import { socketMap } from "../../../utils/server/SocketMeneger";
-import { Socket } from "net";
 import { UserSocket } from "../../../utils/server/UserSocket";
+import { SocketMap } from "../../../utils/server/SocketMap";
 
-export async function chat(data: Message): Promise<IResponse<boolean>> {
+export async function chat(data: Message, socketMap: SocketMap): Promise<IResponse<boolean>> {
 
     const validationResult = messageValidator.validate(data);
 

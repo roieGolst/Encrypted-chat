@@ -24,7 +24,7 @@ export function parser(date: Buffer): IResponse<RequestObject> {
 
         if(!parseDate.type) {
             return {
-                isError: new Error("'Type' is required")
+                isError: setError("'Type' is required")
             }
         }
 
@@ -32,7 +32,7 @@ export function parser(date: Buffer): IResponse<RequestObject> {
             case "register": 
                 if(!parseDate.userAtributs) {
                     return {
-                        isError: new Error("Invalid Packet")
+                        isError: setError("Invalid Packet")
                     }
                 }
 
@@ -46,13 +46,13 @@ export function parser(date: Buffer): IResponse<RequestObject> {
             case "login":
                 if(!parseDate.userAtributs) {
                     return {
-                        isError: new Error("Invalid Packet")
+                        isError: setError("Invalid Packet")
                     }
                 }
                 
                 if(!parseDate.userAtributs.publicKey) {
                     return {
-                        isError: new Error("Invalid Packet,to login public key is required!")
+                        isError: setError("Invalid Packet,to login public key is required!")
                     }
                 }
 
@@ -66,7 +66,7 @@ export function parser(date: Buffer): IResponse<RequestObject> {
             case "chat": 
                 if(!parseDate.message) {
                     return {
-                        isError: new Error("Invalid Packet, can't sent message without 'Message'!")
+                        isError: setError("Invalid Packet, can't sent message without 'Message'!")
                     } 
                 }
 
@@ -79,7 +79,7 @@ export function parser(date: Buffer): IResponse<RequestObject> {
 
             default:
                 return {
-                    isError: new Error("Invalid 'Type' of requset")
+                    isError: setError("Invalid 'Type' of requset")
                 }
         }
     }
@@ -88,4 +88,8 @@ export function parser(date: Buffer): IResponse<RequestObject> {
             isError: `${err}`
         }
     }    
+}
+
+function setError(message: string): Error {
+    return new Error(message);
 }

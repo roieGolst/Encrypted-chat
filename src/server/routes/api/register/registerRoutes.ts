@@ -13,7 +13,7 @@ export async function register(data: UserAtributs): Promise<IResponse<boolean>> 
         }
     }
     
-    const user = await userUtils.insersUser(validationResult.result);
+    const user = await userUtils.insertUser(validationResult.result);
 
     if(!user.result) {
         return {

@@ -12,7 +12,7 @@ export type UserAtributs = {
     publicKey?: string;
 }
 
-export async function insersUser(obj: UserAtributs): Promise<IResponse<User>> {
+export async function insertUser(obj: UserAtributs): Promise<IResponse<User>> {
     try {
         const user = await User.create(
             {

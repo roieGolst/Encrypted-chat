@@ -2,15 +2,16 @@ import { Socket } from "net";
 import { parser, RequestObject } from "./parser";
 import Router from "../../routes/api/";
 import { UserSocket } from "./UserSocket";
-
-export const socketMap: Map<string, UserSocket> = new Map();
+import { SocketMap } from "./SocketMap";
 
 export class SocketMeneger {
 
     private socket: Socket;
+    private socketMap: SocketMap
 
-    constructor(sockt: Socket) {
+    constructor(sockt: Socket, socketMap: SocketMap) {
         this.socket = sockt;
+        this.socketMap = socketMap;
     }
 
     init() {
@@ -32,67 +33,84 @@ export class SocketMeneger {
         })
     }
 
-    private async handelByType(data: RequestObject) {
+    private async handelByType(data: RequestObject): Promise<void> {
         
         switch(data.type) {
             case "register":
-                if(! data.userAtributs) {
-                    const err =  new Error("Error message: something worng invalif packet 'register'");
-
-                    this.sendError(err);
-                    return;
-                }
-
-                const registerResult = await Router.register(data.userAtributs);
-
-                if(registerResult.isError) {
-                    this.sendError(registerResult.isError);
-                    return;
-                }
-
-                this.send("User create");
+                this.registerLogic(data);    
                 break;
 
-
             case "login":
-                if(!data.userAtributs) {
-                    const err =  new Error("Error message: something worng invalif packet 'login'");
-
-                    this.sendError(err);
-                    return;
-                }
-
-                const loginResult = await Router.login(data.userAtributs, this.socket);
-
-                if(!loginResult.result) {
-                    this.sendError(loginResult.isError!);
-                    return;
-                }
-
-                this.send(`Welcome ${loginResult.result.userName}`);
-                this.send(`Your id: ${loginResult.result.id}`);
-
+                this.loginLogic(data);
                 break;
             
             case "chat":
-                if(!data.message) {
-                    const err =  new Error("Error message: something worng invalif packet 'message'");
-
-                    this.sendError(err);
-                    return;
-                }
-
-                const chatResult = await Router.chat(data.message);
-
-                if(chatResult.isError) {
-                    this.sendError(chatResult.isError);
-                    return;
-                }
-
+                this.chatLogic(data);
                 break;
+
+            default : 
+                this.sendError("Invalid 'Type'");
+            break;
         }
 
     }
+
+    private async registerLogic(data: RequestObject): Promise<void> {
+        if(!data.userAtributs) {
+            const err =  new Error("Error message: something worng invalif packet 'register'");
+
+            this.sendError(err);
+            return;
+        }
+
+        const registerResult = await Router.register(data.userAtributs);
+
+        if(registerResult.isError) {
+            this.sendError(registerResult.isError);
+            return;
+        }
+
+        this.send("User create");
+    }
+
+    private async loginLogic(data: RequestObject): Promise<void> {
+        if(!data.userAtributs) {
+            const err =  new Error("Error message: something worng invalif packet 'login'");
+
+            this.sendError(err);
+            return;
+        }
+
+        const loginResult = await Router.login(data.userAtributs, this.socket);
+
+        if(!loginResult.result) {
+            this.sendError(loginResult.isError!);
+            return;
+        }
+
+        const userSocket = new UserSocket(loginResult.result, this.socket);
+        this.socketMap.set(loginResult.result.id, userSocket);
+
+        this.send(`Welcome ${loginResult.result.userName}`);
+        this.send(`Your id: ${loginResult.result.id}`);
+    }
+
+    private async chatLogic(data: RequestObject): Promise<void> {
+        if(!data.message) {
+            const err =  new Error("Error message: something worng invalif packet 'message'");
+
+            this.sendError(err);
+            return;
+        }
+
+        const chatResult = await Router.chat(data.message, this.socketMap);
+
+        if(chatResult.isError) {
+            this.sendError(chatResult.isError);
+            return;
+        }
+    }
+
 
     private sendError(exception: Error | string) {
         if(exception instanceof Error) {
