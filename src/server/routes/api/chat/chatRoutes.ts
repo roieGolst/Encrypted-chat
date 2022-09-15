@@ -4,8 +4,16 @@ import { messageValidator } from "../../../../validation";
 import { userUtils } from "../../../utils/db";
 import { UserSocket } from "../../../utils/server/UserSocket";
 import { SocketMap } from "../../../utils/server/SocketMap";
+import User from "../../../DB/models/User";
 
-export async function chat(data: Message, socketMap: SocketMap): Promise<IResponse<boolean>> {
+type ChatResponse = {
+    from: User,
+    to: User,
+    message: string
+}
+
+
+export async function chat(data: Message): Promise<IResponse<ChatResponse>> {
 
     const validationResult = messageValidator.validate(data);
 
@@ -31,24 +39,28 @@ export async function chat(data: Message, socketMap: SocketMap): Promise<IRespon
         }
     }
 
-    const receiverSocket = socketMap.get(receiverInstance.id);
+    // const receiverSocket = socketMap.socketMap.get(receiverInstance.id);
     
-    if(!receiverSocket) {
-        return {
-            isError: new Error("User are not connected to chat")
-        }
-    }
+    // if(!receiverSocket) {
+    //     return {
+    //         isError: new Error("User are not connected to chat")
+    //     }
+    // }
 
-    sendMessage(senderInstance.userName, data.message, receiverSocket);
+    // sendMessage(senderInstance.userName, data.message, receiverSocket);
 
     return {
-        result: true
+        result: {
+            from: senderInstance,
+            to: receiverInstance,
+            message: data.message
+        }
     }
 };
 
-function sendMessage(from: string ,message: string ,userSocket: UserSocket): void {
-    const socket = userSocket.getSocket();
+// function sendMessage(from: string ,message: string ,userSocket: UserSocket): void {
+//     const socket = userSocket.getSocket();
 
-    socket.write(`${from}: ${message}`);
-    return;
-}
+//     socket.write(`${from}: ${message}`);
+//     return;
+// }

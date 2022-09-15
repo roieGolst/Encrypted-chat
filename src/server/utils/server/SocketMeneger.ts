@@ -3,11 +3,13 @@ import { parser, RequestObject } from "./parser";
 import Router from "../../routes/api/";
 import { UserSocket } from "./UserSocket";
 import { SocketMap } from "./SocketMap";
+import User from "../../DB/models/User";
 
+// const socketMap = new Map<String, UserSocket>();
 export class SocketMeneger {
 
     private socket: Socket;
-    private socketMap: SocketMap
+    private socketMap: SocketMap;
 
     constructor(sockt: Socket, socketMap: SocketMap) {
         this.socket = sockt;
@@ -88,8 +90,11 @@ export class SocketMeneger {
             return;
         }
 
-        const userSocket = new UserSocket(loginResult.result, this.socket);
-        this.socketMap.set(loginResult.result.id, userSocket);
+        const user = loginResult.result
+
+        const userSocket = new UserSocket(user, this.socket);
+
+        this.socketMap.set(user.id, userSocket);
 
         this.send(`Welcome ${loginResult.result.userName}`);
         this.send(`Your id: ${loginResult.result.id}`);
@@ -103,12 +108,18 @@ export class SocketMeneger {
             return;
         }
 
-        const chatResult = await Router.chat(data.message, this.socketMap);
+        const chatResult = await Router.chat(data.message);
 
-        if(chatResult.isError) {
-            this.sendError(chatResult.isError);
+        if(!chatResult.result) {
+            this.sendError(chatResult.isError!);
             return;
         }
+
+        const senderName = chatResult.result.from.userName;
+        const receiverInstance = chatResult.result.to.id;
+        const message = chatResult.result.message;
+
+        this.sendMessage(senderName, receiverInstance, message);
     }
 
 
@@ -121,6 +132,19 @@ export class SocketMeneger {
         }
 
         this.destroy();
+    }
+
+    private sendMessage(from: string , to: string, message: string): void {
+        const socket = this.socketMap.get(to)?.getSocket();
+
+        if(!socket) {
+            this.sendError("User not connected");
+            return;
+        }
+
+    
+        socket.write(`${from}: ${message}`);
+        return;
     }
 
     private send(message: string) {
