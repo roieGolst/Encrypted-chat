@@ -5,16 +5,6 @@ import { Message } from "../server/utils/server/parser";
 
 const messageSchema = Joi.object(
     {
-        from: Joi.string()
-            .min(messageConfigs.ID_LENGTH)
-            .max(messageConfigs.ID_LENGTH)
-            .required(),
-
-        to: Joi.string()
-            .min(messageConfigs.MIN_USER_LENGHT)
-            .max(messageConfigs.MAN_USER_LENGHT)
-            .required(),
-
         message: Joi.string()
             .min(messageConfigs.MIN_MESSAGE_LENGTH)
             .max(messageConfigs.MAX_MESSAGE_LENGTH)
