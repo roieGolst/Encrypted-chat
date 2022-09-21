@@ -3,9 +3,9 @@ import { parser, RequestObject } from "./parser";
 import Router from "../../routes/api/";
 import { UserSocket } from "./UserSocket";
 import { SocketMap } from "./SocketMap";
-import User from "../../DB/models/User";
+import { Room } from "./Room";
 
-// const socketMap = new Map<String, UserSocket>();
+const rooms = new Map<String, Room>();
 export class SocketMeneger {
 
     private socket: Socket;
@@ -46,10 +46,22 @@ export class SocketMeneger {
                 this.loginLogic(data);
                 break;
             
-            case "chat":
+            case "createChat":
+                this.buildRoom(data);
+                break;
+                
+            case "joinChat":
+                this.joinChat(data);
+                break;
+                    
+            case "chatMessage":
                 this.chatLogic(data);
                 break;
 
+            case "newToken": {
+                this.sendNewToken(data);
+            }
+                        
             default : 
                 this.sendError("Invalid 'Type'");
             break;
@@ -59,7 +71,7 @@ export class SocketMeneger {
 
     private async registerLogic(data: RequestObject): Promise<void> {
         if(!data.userAtributs) {
-            const err =  new Error("Error message: something worng invalif packet 'register'");
+            const err =  new Error("Error message: something worng invalid packet 'register'");
 
             this.sendError(err);
             return;
@@ -77,7 +89,7 @@ export class SocketMeneger {
 
     private async loginLogic(data: RequestObject): Promise<void> {
         if(!data.userAtributs) {
-            const err =  new Error("Error message: something worng invalif packet 'login'");
+            const err =  new Error("Error message: something worng invalid packet 'login'");
 
             this.sendError(err);
             return;
@@ -93,33 +105,151 @@ export class SocketMeneger {
         const user = loginResult.result
 
         const userSocket = new UserSocket(user, this.socket);
+        const tokens = Router.authentication.getTokens(user);
 
         this.socketMap.set(user.id, userSocket);
 
-        this.send(`Welcome ${loginResult.result.userName}`);
-        this.send(`Your id: ${loginResult.result.id}`);
+        this.send(`
+            Welcome ${loginResult.result.userName}\r\n
+            Your id: ${loginResult.result.id}\r\n
+            token: ${tokens.token}\r\n
+            refreshToken: ${tokens.refreshToken}`
+        );
     }
 
-    private async chatLogic(data: RequestObject): Promise<void> {
-        if(!data.message) {
-            const err =  new Error("Error message: something worng invalif packet 'message'");
+    private buildRoom(date: RequestObject): void {
+        if(!date.token) {
+            this.sendError("can't bulid room without user token")
+            return;
+        }
+
+        const { result, isError } = Router.authentication.authValidate(date.token);
+
+        if(!result) {
+            this.sendError(isError!);
+            return;
+        }
+
+        const room = Router.createRoomChat();
+        const roomId = room.getRoomId(); 
+
+        const userSocketInstance = this.socketMap.get(result.id);
+
+        if(!userSocketInstance) {
+            this.sendError("You must to loged in before create room");
+            return;
+        }
+
+        room.addUser(result.id, userSocketInstance);
+        rooms.set(roomId, room);
+
+        this.send(`Room id: ${roomId}`);
+    }
+
+    private joinChat(data: RequestObject): void {
+        const roomId = data.roomId;
+        const token = data.token;
+        
+        if(!roomId || !token){
+            const err =  new Error("something worng invalid packet 'joinChat'");
 
             this.sendError(err);
             return;
         }
 
-        const chatResult = await Router.chat(data.message);
+        const { result, isError } = Router.authentication.authValidate(token);
 
-        if(!chatResult.result) {
-            this.sendError(chatResult.isError!);
+        if(!result) {
+            this.sendError(isError!);
             return;
         }
 
-        const senderName = chatResult.result.from.userName;
-        const receiverInstance = chatResult.result.to.id;
-        const message = chatResult.result.message;
+        const userSocken = this.socketMap.get(result.id);
 
-        this.sendMessage(senderName, receiverInstance, message);
+        if(!userSocken) {
+            this.sendError("You must to loged in before create room");
+            return;
+        }
+
+        const room = rooms.get(roomId);
+
+        if(!room) {
+            this.sendError("room not exists!")
+            return;
+        }
+
+        room.addUser(result.id, userSocken);
+    }
+
+    private async chatLogic(data: RequestObject): Promise<void> {
+        const token = data.token;
+        const roomId = data.roomId;
+        const message = data.message;
+
+        if(!message || !token || !roomId) {
+            const err =  new Error("something worng invalid packet 'message'");
+
+            this.sendError(err);
+            return;
+        }
+
+        const { result, isError } = Router.authentication.authValidate(token);
+
+        if(!result) {
+            this.sendError(isError!);
+            return
+        }
+        
+        const user = this.socketMap.get(result.id);
+
+        if(!user) {
+            this.sendError("You must to loged in before create room");
+            return;
+        };
+
+        const room = rooms.get(roomId);
+
+        if(!room) {
+            this.sendError("room not exists!")
+            return;
+        }
+
+        const observers = room.getUsers();
+
+        if(!observers.includes(user)) {
+            this.sendError("You must to joined to the chat before send's message");
+            return;
+        }
+
+        observers.forEach((observer: UserSocket) => {
+            const sender = user.getUser();
+            const observerInstance = observer.getUser();
+            const observerSocket = observer.getSocket();
+
+            if(observerInstance.id == sender.id) {
+                return;
+            }
+
+            observerSocket.write(`${sender.userName}: ${message.message}`);
+        })
+    }
+
+    private sendNewToken(data: RequestObject) {
+        const refreshToken = data.refreshToken;
+
+        if(!refreshToken) {
+            this.sendError("refreshToken is required");
+            return;
+        }
+
+        const { result, isError} = Router.authentication.refreshToken(refreshToken);
+
+        if(!result) {
+            this.sendError("Invalid token");
+            return;
+        }
+
+        this.send(`token: ${result}`);
     }
 
 

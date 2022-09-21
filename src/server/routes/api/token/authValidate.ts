@@ -1,52 +1,106 @@
-import express from "express";
-import { NextFunction, Request, Response, Router } from "express";
 import jwt from "jsonwebtoken";
-import User from "../../../DB/models/User";
 import env from "../../../../config/env.json";
+import { IResponse } from "../../../../IResponse";
 
-const router: Router = express.Router();
+type UserSign = {
+    userName: string
+    id: string
+}
 
-router.use(express.json());
+type Tokens = {
+    token: string,
+    refreshToken: string
+}
 
-router.post("/", (req, res) => {
-    const token = req.header("auth-token") ;
-    if(!token) {
-        res.sendStatus(401);
-        return;
-    }
+const refreshTokens: string[] = [];
 
-    jwt.verify(token, env.REFRESH_TOKEN, { algorithms: ["RS256"] }, (err, value) => {
-        if(err) {
-            res.sendStatus(401);
-            return;
+function refreshToken(refreshToken: string): IResponse<string> {
+        const isExist = refreshTokens.includes(refreshToken);
+
+        if(!isExist) {
+            return {
+                isError: "Refresh token not exist"
+            };
         }
 
-        const newToken = genereteToken(value as User);
-        res.json({ "access-token": newToken })
-        return;
-    });
-})
-
-export function authValidate(req: Request, res: Response, next: NextFunction): void {
-    const token = req.header("auth-token");
-
-    if(!token) {
-        res.status(401).send("Access denied");
-        return;
-    }
-    jwt.verify(token, env.SECRETE_TOKEN, { algorithms: ["RS256"]}, (err, value) => {
-        if(err) {
-            res.sendStatus(403);
-            return;
+        let user: Object | string;
+        try {
+            user = jwt.verify(refreshToken, env.REFRESH_TOKEN);
         }
-        
-        next();
-    });
+        catch(err) {
+            return {
+                isError: `${err}`
+            }
+        }
+
+        const newToken = genereteToken(user as UserSign);
+
+        return {
+            result: newToken
+        }
+}
+
+function authValidate(token: string): IResponse<UserSign> {
+    let result: Object | string;
+
+    try {
+        result =  jwt.verify(token, env.SECRETE_TOKEN);
+    }
+    catch(err) {
+        return {
+            isError: `${err}`
+        }
+    }
+
+    if(!result) {
+        return {
+            isError: "Access denied"
+        }
+    }
+
+    return {
+        result: result as UserSign
+    }
     
 }
 
-export function genereteToken(user: User): string {
+function deleteRefreshToken(refreshToken: string): boolean {
+    const index = refreshTokens.indexOf(refreshToken);
 
-    return jwt.sign({userName: user.userName, password: user.password}, env.SECRETE_TOKEN, { expiresIn: "1m" });
+    if(index < 0) {
+        return false;
+    }
+
+    refreshTokens.splice(index, 1);
+
+    return true;
 }
-export default router;
+
+function getTokens(user: UserSign): Tokens {
+    return {
+        token: genereteToken(user),
+        refreshToken: genereteRefreshToken(user)
+    }
+}
+
+
+function genereteToken(user: UserSign): string {
+
+    return jwt.sign({userName: user.userName, id: user.id}, env.SECRETE_TOKEN, { expiresIn: "5m" });
+
+}
+
+function genereteRefreshToken(user: UserSign): string {
+    const refreshToken =  jwt.sign({userName: user.userName, id: user.id}, env.REFRESH_TOKEN, { expiresIn: "1d" });
+
+    refreshTokens.push(refreshToken);
+
+    return refreshToken;
+}
+
+export {
+    refreshToken,
+    authValidate,
+    deleteRefreshToken,
+    getTokens,
+}

@@ -1,17 +1,19 @@
 import { IResponse } from "../../../IResponse";
 import { UserAtributs } from "../db/user";
+import * as validator from "../../../validation" 
 
 export type RequestObject = {
     type: Types;
+    token?: string;
+    refreshToken?: string;
+    roomId?: string;
     userAtributs?: UserAtributs;
     message?: Message;
 }
 
-export type Types = "register" | "login" | "chat";
+export type Types = "register" | "login" | "createChat" | "joinChat" | "chatMessage" | "newToken" ;
 
 export type Message = {
-    from: string; 
-    to: string,
     message: string;
 } 
 
@@ -29,10 +31,12 @@ export function parser(date: Buffer): IResponse<RequestObject> {
         }
 
         switch(parseDate.type) {
-            case "register": 
-                if(!parseDate.userAtributs) {
+            case "register": {
+                const { result, isError } = validator.userValidator.userValidate(parseDate.userAtributs);
+
+                if(!result) {
                     return {
-                        isError: setError("Invalid Packet")
+                        isError: isError
                     }
                 }
 
@@ -42,17 +46,14 @@ export function parser(date: Buffer): IResponse<RequestObject> {
                         userAtributs: parseDate.userAtributs
                     }
                 }
+            }
 
-            case "login":
-                if(!parseDate.userAtributs) {
+            case "login": {
+                const { result, isError } = validator.userValidator.loginValidate(parseDate.userAtributs);
+
+                if(!result) {
                     return {
-                        isError: setError("Invalid Packet")
-                    }
-                }
-                
-                if(!parseDate.userAtributs.publicKey) {
-                    return {
-                        isError: setError("Invalid Packet,to login public key is required!")
+                        isError: isError
                     }
                 }
 
@@ -62,20 +63,83 @@ export function parser(date: Buffer): IResponse<RequestObject> {
                         userAtributs: parseDate.userAtributs
                     }
                 }
+            }
 
-            case "chat": 
-                if(!parseDate.message) {
+            case "createChat": {
+                if(!parseDate.token) {
                     return {
-                        isError: setError("Invalid Packet, can't sent message without 'Message'!")
+                        isError: setError("Invalid Packet, token is required")
                     } 
                 }
 
                 return {
                     result: {
                         type: parseDate.type,
+                        token: parseDate.token,
+                    }
+                }
+            }
+
+            case "joinChat": {
+                if(!parseDate.token) {
+                    return {
+                        isError: setError("Invalid Packet, token is required")
+                    } 
+                }
+
+                if(!parseDate.roomId) {
+                    return{
+                        isError: setError("Invalid Packet, room id is required")
+                    }
+                }
+
+                return {
+                    result: {
+                        type: parseDate.type,
+                        token: parseDate.token,
+                        roomId: parseDate.roomId
+                    }
+                }
+            }
+
+            case "chatMessage": {
+                if(!parseDate.token) {
+                    return {
+                        isError: setError("Invalid Packet, token is required")
+                    } 
+                }
+
+                if(!parseDate.roomId) {
+                    return {
+                        isError: setError("Invalid Packet, room id is required")
+                    } 
+                }
+
+                const { result, isError } = validator.messageValidator.validate(parseDate.message);
+
+                if(!result) {
+                    return {
+                        isError: isError
+                    }
+                }
+
+                return {
+                    result:{
+                        type: parseDate.type,
+                        token: parseDate.token,
+                        roomId: parseDate.roomId,
                         message: parseDate.message
                     }
                 }
+            }
+
+            case "newToken": {
+                if(!parseDate.refreshToken) {
+                    return {
+                        isError: setError("Invalid Packet, refresh token is required")
+                    } 
+                }
+            }
 
             default:
                 return {
