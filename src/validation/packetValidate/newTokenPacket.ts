@@ -21,7 +21,7 @@ const joinChatPacketSchema = Joi.object({
 
 export default {
     validate: (data: any): IResponse<newTokenPacket> => {
-        const result = joinChatPacketSchema.validate(data, { allowUnknown: true });
+        const result = joinChatPacketSchema.validate(data);
 
         if(result.error) {
             return {

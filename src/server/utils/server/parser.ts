@@ -64,7 +64,7 @@ export function parser(date: Buffer): IResponse<RequestObject> {
             }
 
             case "createChat": {
-                const { result, isError } = validator.packetValidator.createChatPacket.validate(parseDate.userAttributs);
+                const { result, isError } = validator.packetValidator.createChatPacket.validate(parseDate);
 
                 if(!result) {
                     return {
@@ -81,7 +81,7 @@ export function parser(date: Buffer): IResponse<RequestObject> {
             }
 
             case "joinChat": {
-                const { result, isError } = validator.packetValidator.joinChatPacket.validate(parseDate.userAttributs);
+                const { result, isError } = validator.packetValidator.joinChatPacket.validate(parseDate);
 
                 if(!result) {
                     return {
@@ -99,7 +99,7 @@ export function parser(date: Buffer): IResponse<RequestObject> {
             }
 
             case "chatMessage": {
-                const { result, isError } = validator.packetValidator.chatMessagePacket.validate(parseDate.userAttributs);
+                const { result, isError } = validator.packetValidator.chatMessagePacket.validate(parseDate);
 
                 if(!result) {
                     return {
@@ -118,7 +118,7 @@ export function parser(date: Buffer): IResponse<RequestObject> {
             }
 
             case "newToken": {
-                const { result, isError } = validator.packetValidator.newTokenPacket.validate(parseDate.userAttributs);
+                const { result, isError } = validator.packetValidator.newTokenPacket.validate(parseDate);
 
                 if(!result) {
                     return {

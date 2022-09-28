@@ -20,7 +20,7 @@ const createChatPacketSchema = Joi.object({
 
 export default {
     validate: (data: any): IResponse<CreateChatPacket> => {
-        const result = createChatPacketSchema.validate(data, { allowUnknown: true });
+        const result = createChatPacketSchema.validate(data);
 
         if(result.error) {
             return {

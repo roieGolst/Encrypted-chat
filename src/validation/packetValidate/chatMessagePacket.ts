@@ -3,10 +3,10 @@ import { IResponse } from "../../IResponse";
 import messageConfigs from "../../config/messageConfigs.json";
 
 const MIN_TOKEN_LENGTH = 10;
-const UUID_LENGTH = 16;
+const UUID_LENGTH = 36;
 
 type ChatMessagePacket = {
-    type: "createChat";
+    type: "chatMessage";
     token: string;
     roomId: string,
     message: string
@@ -14,7 +14,7 @@ type ChatMessagePacket = {
 
 const chatMessagePacketSchema = Joi.object({
     type: Joi.string()
-        .valid("joinChat")
+        .valid("chatMessage")
         .required(),
         
     token: Joi.string()
@@ -34,7 +34,7 @@ const chatMessagePacketSchema = Joi.object({
 
 export default {
     validate: (data: any): IResponse<ChatMessagePacket> => {
-        const result = chatMessagePacketSchema.validate(data, { allowUnknown: true });
+        const result = chatMessagePacketSchema.validate(data);
 
         if(result.error) {
             return {
@@ -44,7 +44,7 @@ export default {
 
         return {
             result: {
-                type: "createChat",
+                type: "chatMessage",
                 token: data.token,
                 roomId: data.roomId,
                 message: data.message

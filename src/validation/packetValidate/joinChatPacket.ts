@@ -2,7 +2,7 @@ import Joi from "joi";
 import { IResponse } from "../../IResponse";
 
 const MIN_TOKEN_LENGTH = 10;
-const UUID_LENGTH = 16;
+const UUID_LENGTH = 36;
 
 type JoinChatPacket = {
     type: "joinChat";
@@ -28,7 +28,7 @@ const joinChatPacketSchema = Joi.object({
 
 export default {
     validate: (data: any): IResponse<JoinChatPacket> => {
-        const result = joinChatPacketSchema.validate(data, { allowUnknown: true });
+        const result = joinChatPacketSchema.validate(data);
 
         if(result.error) {
             return {

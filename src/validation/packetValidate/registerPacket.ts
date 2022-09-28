@@ -17,7 +17,7 @@ const registerPacketSchema = Joi.object({
 
 export default {
     validate: (data: any): IResponse<RegisterPacket> => {
-        const result = registerPacketSchema.validate(data, { allowUnknown: true });
+        const result = registerPacketSchema.validate(data);
 
         if(result.error) {
             return {

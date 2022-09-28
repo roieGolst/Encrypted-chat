@@ -17,7 +17,7 @@ const loginPacketSchema = Joi.object({
 
 export default {
     validate: (data: any): IResponse<LoginPacket> => {
-        const result = loginPacketSchema.validate(data, { allowUnknown: true });
+        const result = loginPacketSchema.validate(data);
 
         if(result.error) {
             return {
@@ -28,7 +28,7 @@ export default {
         return {
             result: {
                 type: "login",
-                userAttributs: data.userAttributs as LoginAttributs
+                userAttributs: result.value.userAttributs as LoginAttributs
             }
         };
     }
