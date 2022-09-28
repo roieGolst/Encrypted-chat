@@ -70,14 +70,14 @@ export class SocketMeneger {
     }
 
     private async registerLogic(data: RequestObject): Promise<void> {
-        if(!data.userAtributs) {
+        if(!data.userAttributs) {
             const err =  new Error("Error message: something worng invalid packet 'register'");
 
             this.sendError(err);
             return;
         }
 
-        const registerResult = await Router.register(data.userAtributs);
+        const registerResult = await Router.register(data.userAttributs);
 
         if(registerResult.isError) {
             this.sendError(registerResult.isError);
@@ -88,14 +88,14 @@ export class SocketMeneger {
     }
 
     private async loginLogic(data: RequestObject): Promise<void> {
-        if(!data.userAtributs) {
+        if(!data.userAttributs) {
             const err =  new Error("Error message: something worng invalid packet 'login'");
 
             this.sendError(err);
             return;
         }
 
-        const loginResult = await Router.login(data.userAtributs, this.socket);
+        const loginResult = await Router.login(data.userAttributs);
 
         if(!loginResult.result) {
             this.sendError(loginResult.isError!);
@@ -109,12 +109,7 @@ export class SocketMeneger {
 
         this.socketMap.set(user.id, userSocket);
 
-        this.send(`
-            Welcome ${loginResult.result.userName}\r\n
-            Your id: ${loginResult.result.id}\r\n
-            token: ${tokens.token}\r\n
-            refreshToken: ${tokens.refreshToken}`
-        );
+        this.send(`{"userName": "${loginResult.result.userName}", "userId": "${loginResult.result.id}", "tokens": { "token": "${tokens.token}", "refreshToken": "${tokens.refreshToken}"}}`);
     }
 
     private buildRoom(date: RequestObject): void {
@@ -131,7 +126,7 @@ export class SocketMeneger {
         }
 
         const room = Router.createRoomChat();
-        const roomId = room.getRoomId(); 
+        const roomId = room.id; 
 
         const userSocketInstance = this.socketMap.get(result.id);
 
@@ -230,7 +225,7 @@ export class SocketMeneger {
                 return;
             }
 
-            observerSocket.write(`${sender.userName}: ${message.message}`);
+            observerSocket.write(`${sender.userName}: ${message}`);
         })
     }
 
@@ -262,19 +257,6 @@ export class SocketMeneger {
         }
 
         this.destroy();
-    }
-
-    private sendMessage(from: string , to: string, message: string): void {
-        const socket = this.socketMap.get(to)?.getSocket();
-
-        if(!socket) {
-            this.sendError("User not connected");
-            return;
-        }
-
-    
-        socket.write(`${from}: ${message}`);
-        return;
     }
 
     private send(message: string) {

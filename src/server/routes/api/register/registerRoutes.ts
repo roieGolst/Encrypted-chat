@@ -1,19 +1,10 @@
-import { userValidator } from "../../../../validation";
 import { userUtils } from "../../../utils/db"
 import { IResponse } from "../../../../IResponse";
-import { UserAtributs } from "../../../utils/db/user";
+import { UserAttributs } from "../../../utils/db/user";
 
-export async function register(data: UserAtributs): Promise<IResponse<boolean>> {
-
-    const validationResult = userValidator.userValidate(data);
- 
-    if(!validationResult.result) {
-        return {
-            isError: validationResult.isError
-        }
-    }
+export async function register(data: UserAttributs): Promise<IResponse<boolean>> {
     
-    const user = await userUtils.insertUser(validationResult.result);
+    const user = await userUtils.insertUser(data);
 
     if(!user.result) {
         return {

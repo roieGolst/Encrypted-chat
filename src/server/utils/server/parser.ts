@@ -1,5 +1,5 @@
 import { IResponse } from "../../../IResponse";
-import { UserAtributs } from "../db/user";
+import { UserAttributs } from "../db/user";
 import * as validator from "../../../validation" 
 
 export type RequestObject = {
@@ -7,15 +7,13 @@ export type RequestObject = {
     token?: string;
     refreshToken?: string;
     roomId?: string;
-    userAtributs?: UserAtributs;
+    userAttributs?: UserAttributs;
     message?: Message;
 }
 
 export type Types = "register" | "login" | "createChat" | "joinChat" | "chatMessage" | "newToken" ;
 
-export type Message = {
-    message: string;
-} 
+export type Message = string
 
 export function parser(date: Buffer): IResponse<RequestObject> {
 
@@ -32,7 +30,7 @@ export function parser(date: Buffer): IResponse<RequestObject> {
 
         switch(parseDate.type) {
             case "register": {
-                const { result, isError } = validator.userValidator.userValidate(parseDate.userAtributs);
+                const { result, isError } = validator.packetValidator.registerPacket.validate(parseDate);
 
                 if(!result) {
                     return {
@@ -42,14 +40,14 @@ export function parser(date: Buffer): IResponse<RequestObject> {
 
                 return {
                     result: {
-                        type: parseDate.type,
-                        userAtributs: parseDate.userAtributs
+                        type: result.type,
+                        userAttributs: result.userAttributs
                     }
                 }
             }
 
             case "login": {
-                const { result, isError } = validator.userValidator.loginValidate(parseDate.userAtributs);
+                const { result, isError } = validator.packetValidator.loginPacket.validate(parseDate);
 
                 if(!result) {
                     return {
@@ -59,63 +57,49 @@ export function parser(date: Buffer): IResponse<RequestObject> {
 
                 return {
                     result: {
-                        type: parseDate.type,
-                        userAtributs: parseDate.userAtributs
+                        type: result.type,
+                        userAttributs: result.userAttributs
                     }
                 }
             }
 
             case "createChat": {
-                if(!parseDate.token) {
+                const { result, isError } = validator.packetValidator.createChatPacket.validate(parseDate.userAttributs);
+
+                if(!result) {
                     return {
-                        isError: setError("Invalid Packet, token is required")
-                    } 
+                        isError: isError
+                    }
                 }
 
                 return {
                     result: {
-                        type: parseDate.type,
-                        token: parseDate.token,
+                        type: result.type,
+                        token: result.token,
                     }
                 }
             }
 
             case "joinChat": {
-                if(!parseDate.token) {
-                    return {
-                        isError: setError("Invalid Packet, token is required")
-                    } 
-                }
+                const { result, isError } = validator.packetValidator.joinChatPacket.validate(parseDate.userAttributs);
 
-                if(!parseDate.roomId) {
-                    return{
-                        isError: setError("Invalid Packet, room id is required")
+                if(!result) {
+                    return {
+                        isError: isError
                     }
                 }
 
                 return {
                     result: {
-                        type: parseDate.type,
-                        token: parseDate.token,
-                        roomId: parseDate.roomId
+                        type: result.type,
+                        token: result.token,
+                        roomId: result.roomId
                     }
                 }
             }
 
             case "chatMessage": {
-                if(!parseDate.token) {
-                    return {
-                        isError: setError("Invalid Packet, token is required")
-                    } 
-                }
-
-                if(!parseDate.roomId) {
-                    return {
-                        isError: setError("Invalid Packet, room id is required")
-                    } 
-                }
-
-                const { result, isError } = validator.messageValidator.validate(parseDate.message);
+                const { result, isError } = validator.packetValidator.chatMessagePacket.validate(parseDate.userAttributs);
 
                 if(!result) {
                     return {
@@ -125,19 +109,28 @@ export function parser(date: Buffer): IResponse<RequestObject> {
 
                 return {
                     result:{
-                        type: parseDate.type,
-                        token: parseDate.token,
-                        roomId: parseDate.roomId,
-                        message: parseDate.message
+                        type: result.type,
+                        token: result.token,
+                        roomId: result.roomId,
+                        message: result.message
                     }
                 }
             }
 
             case "newToken": {
-                if(!parseDate.refreshToken) {
+                const { result, isError } = validator.packetValidator.newTokenPacket.validate(parseDate.userAttributs);
+
+                if(!result) {
                     return {
-                        isError: setError("Invalid Packet, refresh token is required")
-                    } 
+                        isError: isError
+                    }
+                }
+
+                return {
+                    result:{
+                        type: result.type,
+                        refreshToken: result.refreshToken,
+                    }
                 }
             }
 

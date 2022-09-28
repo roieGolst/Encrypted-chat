@@ -1,21 +1,12 @@
 import { userUtils } from "../../../utils/db";
-import { userValidator } from "../../../../validation";
 import { IResponse } from "../../../../IResponse";
-import { UserAtributs } from "../../../utils/db/user";
-import { Socket } from "net";
+import { UserAttributs } from "../../../utils/db/user";
 import User from "../../../DB/models/User";
 
 
-export async function login(data: UserAtributs, socket: Socket): Promise<IResponse<User>> {
-    const isValid = userValidator.loginValidate(data);
+export async function login(data: UserAttributs): Promise<IResponse<User>> {
 
-    if(!isValid.result) {
-        return {
-            isError: isValid.isError
-        }
-    }
-
-    const user = await userUtils.checkUser(isValid.result);
+    const user = await userUtils.checkUser(data);
 
     if(!user) {
         return {

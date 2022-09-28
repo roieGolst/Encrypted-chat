@@ -6,13 +6,13 @@ import { IResponse } from "../../../IResponse";
 
 const SALT_ROUNDS = 10;
 
-export type UserAtributs = {
+export type UserAttributs = {
     userName: string,
     password: string
     publicKey?: string;
 }
 
-export async function insertUser(obj: UserAtributs): Promise<IResponse<User>> {
+export async function insertUser(obj: UserAttributs): Promise<IResponse<User>> {
     try {
         const user = await User.create(
             {
@@ -53,7 +53,7 @@ export async function getUserById(userId: string): Promise<User | null> {
     return user;
 }
 
-export async function checkUser(obj: UserAtributs): Promise<User | undefined> {
+export async function checkUser(obj: UserAttributs): Promise<User | undefined> {
     const user = await getUserByPk(obj.userName);
     
     if(!user) {

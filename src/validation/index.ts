@@ -1,4 +1,3 @@
-import userValidator from "./user";
-import messageValidator from "./message";
+import * as packetValidator from "./packetValidate";
 
-export { userValidator, messageValidator };
+export { packetValidator };
