@@ -1,13 +1,16 @@
 import net, { Socket } from "net";
-import { SocketMap } from "../utils/server/SocketMap";
+import { ConnectUserMap } from "../utils/server/ConnectUserMap";
 import { SocketMeneger } from "../utils/server/SocketMeneger";
+import RequestHandel from "../utils/server/RequstHandel";
 
-const socketMap = new SocketMap();
+
+const connectUserMap: ConnectUserMap = new ConnectUserMap();
+const requestHandel: RequestHandel = new RequestHandel(connectUserMap);
 
 const handleNewConnection =  function(socket: Socket) {
-    const socketMeneger = new SocketMeneger(socket, socketMap);
+    const socketMeneger = new SocketMeneger(socket);
 
-    socketMeneger.init();
+    socketMeneger.init(requestHandel);
 }
 
 const server = net.createServer(handleNewConnection);

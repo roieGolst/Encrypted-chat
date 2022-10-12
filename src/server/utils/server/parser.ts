@@ -1,152 +1,121 @@
 import { IResponse } from "../../../IResponse";
-import { UserAttributs } from "../db/user";
 import * as validator from "../../../validation" 
+import { RequestObject, Types } from "./RequiestObject";
 
-export type RequestObject = {
-    type: Types;
-    token?: string;
-    refreshToken?: string;
-    roomId?: string;
-    userAttributs?: UserAttributs;
-    message?: Message;
-}
+class Parser {
 
-export type Types = "register" | "login" | "createChat" | "joinChat" | "chatMessage" | "newToken" ;
+    private dataToJson(data: string): IResponse<RequestObject> {
+        try {
+            const parseData = JSON.parse(data);
 
-export type Message = string
-
-export function parser(date: Buffer): IResponse<RequestObject> {
-
-    try {
-        const stringDate = date.toString("utf-8");
-
-        const parseDate: RequestObject = JSON.parse(stringDate);
-
-        if(!parseDate.type) {
             return {
-                isError: setError("'Type' is required")
+                result: parseData
+            };
+        }
+        catch(err) {
+            return {
+                isError: `${err}`
+            }
+        }
+    }
+
+
+    parse(data: Buffer): IResponse<RequestObject> {
+        const stringData = data.toString("utf-8");
+
+        const { result, isError } = this.dataToJson(stringData);
+
+        if(!result) {
+            return {
+                isError: isError
             }
         }
 
-        switch(parseDate.type) {
-            case "register": {
-                const { result, isError } = validator.packetValidator.registerPacket.validate(parseDate);
+        const parseData: RequestObject = result;
 
-                if(!result) {
-                    return {
-                        isError: isError
-                    }
-                }
-
-                return {
-                    result: {
-                        type: result.type,
-                        userAttributs: result.userAttributs
-                    }
-                }
+        if(!parseData.type) {
+            return {
+                isError: this.setError("'Type' is required")
             }
+        }
 
-            case "login": {
-                const { result, isError } = validator.packetValidator.loginPacket.validate(parseDate);
+        switch(parseData.type) {
+            case Types.Rgister: 
+                return this.parseRegister(parseData);
 
-                if(!result) {
-                    return {
-                        isError: isError
-                    }
-                }
+            case Types.Login: 
+                return this.parseLogin(parseData);
 
-                return {
-                    result: {
-                        type: result.type,
-                        userAttributs: result.userAttributs
-                    }
-                }
-            }
+            case Types.createChat: 
+                return this.parseCreateChat(parseData);
 
-            case "createChat": {
-                const { result, isError } = validator.packetValidator.createChatPacket.validate(parseDate);
+            case Types.joinChat: 
+                return this.parseJoinChat(parseData);
 
-                if(!result) {
-                    return {
-                        isError: isError
-                    }
-                }
+            case Types.chatMessage: 
+                return this.parseChatMessage(parseData);
 
-                return {
-                    result: {
-                        type: result.type,
-                        token: result.token,
-                    }
-                }
-            }
-
-            case "joinChat": {
-                const { result, isError } = validator.packetValidator.joinChatPacket.validate(parseDate);
-
-                if(!result) {
-                    return {
-                        isError: isError
-                    }
-                }
-
-                return {
-                    result: {
-                        type: result.type,
-                        token: result.token,
-                        roomId: result.roomId
-                    }
-                }
-            }
-
-            case "chatMessage": {
-                const { result, isError } = validator.packetValidator.chatMessagePacket.validate(parseDate);
-
-                if(!result) {
-                    return {
-                        isError: isError
-                    }
-                }
-
-                return {
-                    result:{
-                        type: result.type,
-                        token: result.token,
-                        roomId: result.roomId,
-                        message: result.message
-                    }
-                }
-            }
-
-            case "newToken": {
-                const { result, isError } = validator.packetValidator.newTokenPacket.validate(parseDate);
-
-                if(!result) {
-                    return {
-                        isError: isError
-                    }
-                }
-
-                return {
-                    result:{
-                        type: result.type,
-                        refreshToken: result.refreshToken,
-                    }
-                }
-            }
+            case Types.newToken:
+                return this.parseNewToken(parseData);
 
             default:
                 return {
-                    isError: setError("Invalid 'Type' of requset")
+                    isError: this.setError("Invalid 'Type' of requset")
                 }
         }
     }
-    catch(err) {
-        return {
-            isError: `${err}`
+
+    private parseRegister(pureData: RequestObject): IResponse<RequestObject> {
+        const validatorResponse = validator.packetValidator.registerPacket.validate(pureData);
+
+        return this.fetchValdatorResponse(validatorResponse);
+    }
+
+    private parseLogin(pureData: RequestObject): IResponse<RequestObject> {
+        const validatorResponse = validator.packetValidator.loginPacket.validate(pureData);
+
+        return this.fetchValdatorResponse(validatorResponse);
+    }
+
+    private parseCreateChat(pureData: RequestObject): IResponse<RequestObject> {
+        const validatorResponse = validator.packetValidator.createChatPacket.validate(pureData);
+
+        return this.fetchValdatorResponse(validatorResponse);
+    }
+
+    private parseJoinChat(pureData: RequestObject): IResponse<RequestObject> {
+        const validatorResponse = validator.packetValidator.joinChatPacket.validate(pureData);
+
+        return this.fetchValdatorResponse(validatorResponse);
+    }
+
+    private parseChatMessage(pureData: RequestObject): IResponse<RequestObject> {
+        const validatorResponse = validator.packetValidator.chatMessagePacket.validate(pureData);
+
+        return this.fetchValdatorResponse(validatorResponse);
+    }
+
+    private parseNewToken(pureData: RequestObject): IResponse<RequestObject> {
+        const validatorResponse = validator.packetValidator.newTokenPacket.validate(pureData);
+
+        return this.fetchValdatorResponse(validatorResponse);
+    }
+
+    private setError(message: string): Error {
+        return new Error(message);
+    }
+
+    private fetchValdatorResponse(response: IResponse<any>): IResponse<RequestObject> {
+        if(!response.result) {
+            return {
+                isError: response.isError
+            }
         }
-    }    
+
+        return {
+            result: response.result
+        }
+    }
 }
 
-function setError(message: string): Error {
-    return new Error(message);
-}
+export default new Parser();

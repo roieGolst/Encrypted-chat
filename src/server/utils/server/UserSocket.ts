@@ -2,8 +2,8 @@ import { Socket } from "net";
 import User from "../../DB/models/User";
 
 export class UserSocket {
-    private socket: Socket;
-    private user: User;
+    private readonly socket: Socket;
+    private readonly user: User;
 
     constructor(user: User, socket: Socket) {
         this.user = user;
