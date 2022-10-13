@@ -15,10 +15,9 @@ class Parser {
         catch(err) {
             return {
                 isError: `${err}`
-            }
+            };
         }
     }
-
 
     parse(data: Buffer): IResponse<RequestObject> {
         const stringData = data.toString("utf-8");
@@ -46,16 +45,16 @@ class Parser {
             case Types.Login: 
                 return this.parseLogin(parseData);
 
-            case Types.createChat: 
+            case Types.CreateChat: 
                 return this.parseCreateChat(parseData);
 
-            case Types.joinChat: 
+            case Types.JoinChat: 
                 return this.parseJoinChat(parseData);
 
-            case Types.chatMessage: 
+            case Types.ChatMessage: 
                 return this.parseChatMessage(parseData);
 
-            case Types.newToken:
+            case Types.NewToken:
                 return this.parseNewToken(parseData);
 
             default:

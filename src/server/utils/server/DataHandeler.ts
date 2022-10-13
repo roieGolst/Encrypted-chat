@@ -1,5 +1,5 @@
-import { RequestObject } from "./RequiestObject";
-import Router from "../../routes/api/";
+import { RequestObject, Types } from "./RequiestObject";
+import Router from "../../routes/api";
 import { IResponse } from "../../../IResponse";
 import { UserSocket } from "./UserSocket";
 import { ConnectUserMap } from "./ConnectUserMap";
@@ -10,7 +10,7 @@ import parser from "./Parser";
 
 const rooms = new Map<String, Room>();
 
-export default class RequestHandel {
+export default class DataHandeler {
 
     private readonly connectUserMap: ConnectUserMap;
     private socket: Socket;
@@ -20,7 +20,6 @@ export default class RequestHandel {
     }
 
     public async handelRequest(data: Buffer, socket: Socket): Promise<IResponse<string>> {
-
         this.socket = socket;
 
         const { result, isError } = parser.parse(data);
@@ -39,22 +38,22 @@ export default class RequestHandel {
     private async handelByType(data: RequestObject): Promise<IResponse<string>> {
         
         switch(data.type) {
-            case "register":
+            case Types.Rgister:
                 return this.registerLogic(data);
 
-            case "login":
+            case Types.Login:
                 return this.loginLogic(data);
             
-            case "createChat":
+            case Types.CreateChat:
                 return this.buildRoom(data);
                 
-            case "joinChat":
+            case Types.JoinChat:
                 return this.joinChat(data);
                     
-            case "chatMessage":
+            case Types.ChatMessage:
                 return this.chatLogic(data);
 
-            case "newToken":
+            case Types.NewToken:
                 return this.sendNewToken(data);
                         
             default : 
@@ -94,11 +93,18 @@ export default class RequestHandel {
         const user = loginResult.result
 
         const userSocket = new UserSocket(user, this.socket);
+        
+        this.connectUserMap.set(user.id, userSocket);
+        
         const tokens = Router.authentication.getTokens(user);
 
-        this.connectUserMap.set(user.id, userSocket);
+        const responseData = {
+            userName: loginResult.result.userName,
+            userId: loginResult.result.id,
+            tokens
+        }
 
-        return this.send(`{"userName": "${loginResult.result.userName}", "userId": "${loginResult.result.id}", "tokens": { "token": "${tokens.token}", "refreshToken": "${tokens.refreshToken}"}}`);
+        return this.send(JSON.stringify(responseData));
     }
 
     private buildRoom(date: RequestObject): IResponse<string> {

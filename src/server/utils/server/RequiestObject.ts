@@ -13,10 +13,10 @@ export type RequestObject = {
 export enum Types {
     Rgister = "register",
     Login = "login",
-    createChat = "createChat", 
-    joinChat = "joinChat", 
-    chatMessage= "chatMessage", 
-    newToken = "newToken",
+    CreateChat = "createChat", 
+    JoinChat = "joinChat", 
+    ChatMessage= "chatMessage", 
+    NewToken = "newToken",
 } 
 
 export type Message = string
