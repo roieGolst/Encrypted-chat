@@ -12,16 +12,74 @@ type Tokens = {
     refreshToken: string
 }
 
-const refreshTokens: string[] = [];
+class TokensManeger {
 
-function refreshToken(refreshToken: string): IResponse<string> {
-        const isExist = refreshTokens.includes(refreshToken);
+    private readonly refreshTokensMap: Map<string, Date> = new Map();
+
+    private genereteToken(user: UserSign): string {
+
+        return jwt.sign({userName: user.userName, id: user.id}, env.SECRETE_TOKEN, { expiresIn: "5m" });
+    
+    }
+
+    private genereteRefreshToken(user: UserSign): string {
+        const refreshToken =  jwt.sign({userName: user.userName, id: user.id}, env.REFRESH_TOKEN, { expiresIn: "1d" });
+
+        let nowTime = new Date();
+        nowTime.setMonth(nowTime.getMonth() + 6);
+    
+        this.refreshTokensMap.set(refreshToken, nowTime);
+    
+        return refreshToken;
+    }
+
+    getTokens(user: UserSign): Tokens {
+        return {
+            token: this.genereteToken(user),
+            refreshToken: this.genereteRefreshToken(user)
+        }
+    }
+
+    authValidate(token: string): IResponse<UserSign> {
+        let result: Object | string;
+    
+        try {
+            result =  jwt.verify(token, env.SECRETE_TOKEN);
+        }
+        catch(err) {
+            return {
+                isError: `${err}`
+            }
+        }
+    
+        if(!result) {
+            return {
+                isError: "Access denied"
+            }
+        }
+    
+        return {
+            result: result as UserSign
+        }
+        
+    }
+
+    authRefreshToken(refreshToken: string): IResponse<string> {
+        const isExist = this.refreshTokensMap.get(refreshToken);
 
         if(!isExist) {
             return {
                 isError: "Refresh token not exist"
             };
         }
+
+        const isExpired = this.authExpiration(refreshToken);
+
+        if(isExpired) {
+            return {
+                isError: "Refresh token expired please logged in."
+            }
+        } 
 
         let user: Object | string;
         try {
@@ -33,74 +91,32 @@ function refreshToken(refreshToken: string): IResponse<string> {
             }
         }
 
-        const newToken = genereteToken(user as UserSign);
+        const newToken = this.genereteToken(user as UserSign);
 
         return {
             result: newToken
         }
-}
-
-function authValidate(token: string): IResponse<UserSign> {
-    let result: Object | string;
-
-    try {
-        result =  jwt.verify(token, env.SECRETE_TOKEN);
-    }
-    catch(err) {
-        return {
-            isError: `${err}`
-        }
-    }
-
-    if(!result) {
-        return {
-            isError: "Access denied"
-        }
-    }
-
-    return {
-        result: result as UserSign
     }
     
-}
+    
+    private authExpiration(refreshToken: string): boolean {
+        const exp = this.refreshTokensMap.get(refreshToken);
 
-function deleteRefreshToken(refreshToken: string): boolean {
-    const index = refreshTokens.indexOf(refreshToken);
+        if(!exp) {
+            return false;
+        }
+        
+        const nowTime = new Date();
 
-    if(index < 0) {
-        return false;
+        if(exp < nowTime) {
+            return false; 
+        }
+
+        return true;
     }
-
-    refreshTokens.splice(index, 1);
-
-    return true;
-}
-
-function getTokens(user: UserSign): Tokens {
-    return {
-        token: genereteToken(user),
-        refreshToken: genereteRefreshToken(user)
+    
+    deleteRefreshToken(refreshToken: string): boolean {
+        return this.refreshTokensMap.delete(refreshToken);
     }
 }
-
-
-function genereteToken(user: UserSign): string {
-
-    return jwt.sign({userName: user.userName, id: user.id}, env.SECRETE_TOKEN, { expiresIn: "5m" });
-
-}
-
-function genereteRefreshToken(user: UserSign): string {
-    const refreshToken =  jwt.sign({userName: user.userName, id: user.id}, env.REFRESH_TOKEN, { expiresIn: "1d" });
-
-    refreshTokens.push(refreshToken);
-
-    return refreshToken;
-}
-
-export {
-    refreshToken,
-    authValidate,
-    deleteRefreshToken,
-    getTokens,
-}
+export default new TokensManeger(); 

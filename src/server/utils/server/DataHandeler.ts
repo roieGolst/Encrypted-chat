@@ -225,7 +225,7 @@ export default class DataHandeler {
             return this.setError("refreshToken is required");
         }
 
-        const { result } = Router.authentication.refreshToken(refreshToken);
+        const { result } = Router.authentication.authRefreshToken(refreshToken);
 
         if(!result) {
             return this.setError("Invalid token");
