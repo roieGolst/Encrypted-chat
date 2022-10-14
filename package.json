@@ -7,9 +7,9 @@
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf ./dist",
-    "start": "node ./dist/server",
+    "start": "node ./dist",
     "build": "npx tsc",
-    "buildAndStart": "yarn run prebuild && yarn run build && yarn start"
+    "buildAndStart": "yarn run build && yarn start"
   },
   "dependencies": {
     "chalk": "4.1.2",

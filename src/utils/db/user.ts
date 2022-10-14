@@ -2,7 +2,7 @@
 import User from "../../DB/models/User";
 import { UniqueConstraintError } from "sequelize"; 
 import bcrypt from "bcrypt"; 
-import { IResponse } from "../../../IResponse";
+import { IResponse } from "../../IResponse";
 
 const SALT_ROUNDS = 10;
 

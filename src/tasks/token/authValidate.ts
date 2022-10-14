@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import env from "../../../../config/env.json";
-import { IResponse } from "../../../../IResponse";
+import env from "../../config/env.json";
+import { IResponse } from "../../IResponse";
 
 type UserSign = {
     userName: string
@@ -23,7 +23,7 @@ class TokensManeger {
     }
 
     private genereteRefreshToken(user: UserSign): string {
-        const refreshToken =  jwt.sign({userName: user.userName, id: user.id}, env.REFRESH_TOKEN, { expiresIn: "1d" });
+        const refreshToken =  jwt.sign({userName: user.userName, id: user.id}, env.REFRESH_TOKEN);
 
         let nowTime = new Date();
         nowTime.setMonth(nowTime.getMonth() + 6);
@@ -75,7 +75,7 @@ class TokensManeger {
 
         const isExpired = this.authExpiration(refreshToken);
 
-        if(isExpired) {
+        if(!isExpired) {
             return {
                 isError: "Refresh token expired please logged in."
             }

@@ -1,6 +1,6 @@
-import { userUtils } from "../../../utils/db"
-import { IResponse } from "../../../../IResponse";
-import { UserAttributs } from "../../../utils/db/user";
+import { userUtils } from "../../utils/db"
+import { IResponse } from "../../IResponse";
+import { UserAttributs } from "../../utils/db/user";
 
 export async function register(data: UserAttributs): Promise<IResponse<boolean>> {
     

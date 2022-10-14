@@ -1,5 +1,5 @@
-import { IResponse } from "../../../IResponse";
-import * as validator from "../../../validation" 
+import { IResponse } from "../../IResponse";
+import * as validator from "../../validation" 
 import { RequestObject, Types } from "./RequiestObject";
 
 class Parser {
@@ -14,7 +14,7 @@ class Parser {
         }
         catch(err) {
             return {
-                isError: `${err}`
+                isError: `Invalid packet`
             };
         }
     }
@@ -26,8 +26,8 @@ class Parser {
 
         if(!result) {
             return {
-                isError: isError
-            }
+                isError
+            };
         }
 
         const parseData: RequestObject = result;
@@ -35,7 +35,7 @@ class Parser {
         if(!parseData.type) {
             return {
                 isError: this.setError("'Type' is required")
-            }
+            };
         }
 
         switch(parseData.type) {

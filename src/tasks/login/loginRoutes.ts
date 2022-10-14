@@ -1,7 +1,7 @@
-import { userUtils } from "../../../utils/db";
-import { IResponse } from "../../../../IResponse";
-import { UserAttributs } from "../../../utils/db/user";
-import User from "../../../DB/models/User";
+import { userUtils } from "../../utils/db";
+import { IResponse } from "../../IResponse";
+import { UserAttributs } from "../../utils/db/user";
+import User from "../../DB/models/User";
 
 
 export async function login(data: UserAttributs): Promise<IResponse<User>> {

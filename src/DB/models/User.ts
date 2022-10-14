@@ -1,5 +1,5 @@
 import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
-import userConfigs from "../../../config/userConfigs.json";
+import userConfigs from "../../config/userConfigs.json";
 import db from "../initDb";
 
 export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {

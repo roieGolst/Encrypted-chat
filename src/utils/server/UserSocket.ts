@@ -1,9 +1,12 @@
 import { Socket } from "net";
-import { IResponse } from "../../../IResponse";
-import RequestHandel from "./DataHandeler";
+import { IResponse } from "../../IResponse";
 import { v4 } from 'uuid';
 
-export class SocketMeneger {
+export interface IHandler {
+    handleOnData(data: Buffer): Promise<IResponse<string>>;
+}
+
+export class UserSocket {
 
     private  socket: Socket;
     public readonly socketId: string = v4();
@@ -13,16 +16,15 @@ export class SocketMeneger {
     }
     
 
-    init(handel: RequestHandel) {
+    init(handler: IHandler) {
 
         this.socket.on("error", (err) => {
-            console.log(err);
 
             this.destroy();
         });
 
         this.socket.on("data", async (data) => {
-            const response = await handel.handelRequest(data, this.socket);
+            const response = await handler.handleOnData(data);
 
             this.fetchResponse(response);
         });
@@ -54,7 +56,7 @@ export class SocketMeneger {
         this.destroy();
     }
 
-    private send(message: string) {
+    send(message: string) {
         this.socket.write(message);
     }
 
