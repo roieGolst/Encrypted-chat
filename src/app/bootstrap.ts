@@ -1,14 +1,16 @@
-import { Server } from "net";
+import { TcpServer } from "../server/@types";
 
 export type BootstrapArgs = {
     driverInitializer: () => Promise<boolean>,
-    app: Server,
-    port: number
+    app: TcpServer.Server
+    appArgs: TcpServer.ServerArgs,
+    connectedUserMap: TcpServer.SocketObserver
 }
 
 export async function bootstrap(args: BootstrapArgs, cb?: () => void) {
     await args.driverInitializer();
     console.log("database is ready");
 
-    args.app.listen(args.port, cb);
+    args.app.setListener(args.connectedUserMap);
+    args.app.start(args.appArgs);
 }

@@ -1,10 +1,7 @@
 import { Socket } from "net";
 import { IResponse } from "../common/IResponse";
 import { v4 } from 'uuid';
-
-export interface IHandler {
-    handleOnData(data: Buffer): Promise<IResponse<string>>;
-}
+import { TcpServer } from "./@types";
 
 export class UserSocket {
 
@@ -16,7 +13,7 @@ export class UserSocket {
     }
     
 
-    init(handler: IHandler) {
+    init(handler: TcpServer.IHandler) {
 
         this.socket.on("error", (err) => {
 
@@ -34,6 +31,15 @@ export class UserSocket {
         this.socket.on("close", cb);
 
         this.socket.on("end", cb);
+    }
+
+    setTimeout(interval: number, cb: (socketId: string) => void) {
+        this.socket.setTimeout(interval);
+
+        this.socket.on("timeout", () => {
+            cb(this.socketId)
+            this.destroy();
+        });
     }
 
     private fetchResponse(response: IResponse<string>): void {

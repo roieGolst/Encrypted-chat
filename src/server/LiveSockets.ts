@@ -19,6 +19,7 @@ class LiveSockets implements Manager, IMessageSender {
     }
 
     delete(socketId: string): boolean {
+        console.log(`socket: ${socketId} is destroyed from "LiveSockets"`);
         return this.socketsMap.delete(socketId);
     }
 

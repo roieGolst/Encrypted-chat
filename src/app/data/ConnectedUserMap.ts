@@ -1,4 +1,5 @@
 import liveSockets from "../../server/LiveSockets";
+import { TcpServer } from "../../server/@types";
 
 export interface ConnectedUserMeneger {
     add(userId: string, socketId: string): void;
@@ -7,8 +8,12 @@ export interface ConnectedUserMeneger {
     isConnected(userId: string): boolean;
 }
 
-class ConnectedUserMap implements ConnectedUserMeneger {
+class ConnectedUserMap implements ConnectedUserMeneger, TcpServer.SocketObserver{
     private userMap: Map<string, string> = new Map<string, string>();
+
+    onSocketDeleted(socketId: string): void {
+        console.log(`socket: ${socketId} is destroyed from "ConnectedUserMap"`);
+    }
 
     add(userId: string, socketId: string): void {
         if(!this.userMap) {

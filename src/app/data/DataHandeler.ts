@@ -4,12 +4,12 @@ import { IResponse } from "../../common/IResponse";
 import connectedUserMap, { ConnectedUserMeneger } from "./ConnectedUserMap";
 import { ChatRoom } from "./rooms/ChatRoom";
 import parser from "../utils/packetParser";
-import { IHandler } from "../../server/UserSocket";
+import { TcpServer } from "../../server/@types";
 
 
 const rooms = new Map<String, ChatRoom>();
 
-export default class DataHandeler implements IHandler {
+ class DataHandeler implements TcpServer.IHandler {
 
     private readonly connectedUserMap: ConnectedUserMeneger = connectedUserMap;
     private socketId: string;
@@ -244,4 +244,8 @@ export default class DataHandeler implements IHandler {
         };
         
     }
+}
+
+export default function(socketId: string): TcpServer.IHandler {
+    return new DataHandeler(socketId);
 }

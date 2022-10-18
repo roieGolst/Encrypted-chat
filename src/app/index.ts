@@ -1,6 +1,8 @@
 import { bootstrap } from "./bootstrap";
 import driverInitializer from "./db";
-import app from "../server"; 
+import app from "../server";
+import dataHandelerFactroy from "./data/DataHandeler";
+import connectedUserMap from "./data/ConnectedUserMap";
 
 const PORT = 3000;
 
@@ -8,8 +10,11 @@ bootstrap(
     {
         driverInitializer,
         app,
-        port: PORT
-    },
-    
-    () => console.log("Server bound")
+        appArgs: {
+            port: PORT,
+            cb: () => console.log("Server bound"),
+            handler: dataHandelerFactroy
+        },
+        connectedUserMap
+    }
 );
