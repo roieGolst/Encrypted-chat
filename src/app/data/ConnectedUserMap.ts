@@ -1,5 +1,5 @@
-import liveSockets from "../../server/LiveSockets";
-import { TcpServer } from "../../server/@types";
+import app from "../../server/";
+import { TcpServer } from "../../server/types";
 
 export interface ConnectedUserMeneger {
     add(userId: string, socketId: string): void;
@@ -8,10 +8,14 @@ export interface ConnectedUserMeneger {
     isConnected(userId: string): boolean;
 }
 
-class ConnectedUserMap implements ConnectedUserMeneger, TcpServer.SocketObserver{
+class ConnectedUserMap implements ConnectedUserMeneger, TcpServer.ISocketsManagerObserver{
     private userMap: Map<string, string> = new Map<string, string>();
 
-    onSocketDeleted(socketId: string): void {
+    onSocketAdded(socketId: string): void {
+        console.log(`socket: ${socketId} is add from "ConnectedUserMap"`);
+    }
+
+    onSocketRemoved(socketId: string): void {
         console.log(`socket: ${socketId} is destroyed from "ConnectedUserMap"`);
     }
 
@@ -50,7 +54,7 @@ class ConnectedUserMap implements ConnectedUserMeneger, TcpServer.SocketObserver
         }
 
 
-        return liveSockets.sendMessage(userId, socketId, message);
+        return app.sendMessageTo(socketId, message);
     }
 }
 

@@ -1,7 +1,7 @@
 import { Socket } from "net";
 import { IResponse } from "../common/IResponse";
 import { v4 } from 'uuid';
-import { TcpServer } from "./@types";
+import { TcpServer } from "./types";
 
 export class UserSocket {
 

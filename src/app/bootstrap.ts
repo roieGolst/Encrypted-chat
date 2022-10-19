@@ -1,10 +1,10 @@
-import { TcpServer } from "../server/@types";
+import { TcpServer } from "../server/types"
 
 export type BootstrapArgs = {
     driverInitializer: () => Promise<boolean>,
     app: TcpServer.Server
     appArgs: TcpServer.ServerArgs,
-    connectedUserMap: TcpServer.SocketObserver
+    connectedUserMap: TcpServer.ISocketsManagerObserver
 }
 
 export async function bootstrap(args: BootstrapArgs, cb?: () => void) {

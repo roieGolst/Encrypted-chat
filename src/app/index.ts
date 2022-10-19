@@ -12,7 +12,7 @@ bootstrap(
         app,
         appArgs: {
             port: PORT,
-            cb: () => console.log("Server bound"),
+            onServerInitializer: () => console.log("Server bound"),
             handler: dataHandelerFactroy
         },
         connectedUserMap

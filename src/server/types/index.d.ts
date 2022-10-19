@@ -1,21 +1,19 @@
-import SocketObserver from "./common/SocketObserver";
-import { ServerArgs } from "./index";
-
-export module TcpServer {
+export declare module TcpServer {
     
     interface Server {
-        setListener(listener: SocketObserver): void;
+        setListener(listener: ISocketsManagerObserver): void;
         start(args: ServerArgs): void
         sendMessageTo(fromId: string, socketId: string, content:string): boolean;
     }
 
-    interface SocketObserver {
-        onSocketDeleted(socketId: string): void;
+    interface ISocketsManagerObserver {
+        onSocketAdded(socketId: string): void;
+        onSocketRemoved(socketId: string): void;
     }
 
     type ServerArgs = {
         port: number,
-        cb: () => void,
+        onServerInitializer: () => void,
         handler: HandlerFactory,
     }
     

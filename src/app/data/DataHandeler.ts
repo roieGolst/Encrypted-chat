@@ -4,7 +4,7 @@ import { IResponse } from "../../common/IResponse";
 import connectedUserMap, { ConnectedUserMeneger } from "./ConnectedUserMap";
 import { ChatRoom } from "./rooms/ChatRoom";
 import parser from "../utils/packetParser";
-import { TcpServer } from "../../server/@types";
+import { TcpServer } from "../../server/types";
 
 
 const rooms = new Map<String, ChatRoom>();
