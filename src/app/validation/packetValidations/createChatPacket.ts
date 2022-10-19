@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { IResponse } from "../../../common/IResponse";
+import { IResult } from "../../../common/IResult";
 
 const MIN_TOKEN_LENGTH = 10;
 
@@ -19,7 +19,7 @@ const createChatPacketSchema = Joi.object({
 });
 
 export default {
-    validate: (data: any): IResponse<CreateChatPacket> => {
+    validate: (data: any): IResult<CreateChatPacket> => {
         const result = createChatPacketSchema.validate(data);
 
         if(result.error) {

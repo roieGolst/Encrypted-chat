@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import env from "../../config/env.json";
-import { IResponse } from "../../../common/IResponse";
+import { IResult } from "../../../common/IResult";
 
 type UserSign = {
     userName: string
@@ -40,7 +40,7 @@ class TokensManeger {
         }
     }
 
-    authValidate(token: string): IResponse<UserSign> {
+    authValidate(token: string): IResult<UserSign> {
         let result: Object | string;
     
         try {
@@ -64,7 +64,7 @@ class TokensManeger {
         
     }
 
-    authRefreshToken(refreshToken: string): IResponse<string> {
+    authRefreshToken(refreshToken: string): IResult<string> {
         const isExist = this.refreshTokensMap.get(refreshToken);
 
         if(!isExist) {

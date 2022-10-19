@@ -1,4 +1,4 @@
-export interface IResponse<T> {
+export interface IResult<T> {
     result?: T;
     isError?: Error | string;
 }

@@ -1,6 +1,6 @@
 import { RequestObject, Types } from "../utils/packetParser/RequestObject";
 import * as useCases from "../tasks";
-import { IResponse } from "../../common/IResponse";
+import { IResult } from "../../common/IResult";
 import connectedUserMap, { ConnectedUserMeneger } from "./ConnectedUserMap";
 import { ChatRoom } from "./rooms/ChatRoom";
 import parser from "../utils/packetParser";
@@ -18,7 +18,7 @@ const rooms = new Map<String, ChatRoom>();
         this.socketId = socketId;
     }
 
-    async handleOnData(data: Buffer): Promise<IResponse<string>> {
+    async handleOnData(data: Buffer): Promise<IResult<string>> {
 
         const { result, isError } = parser.parse(data);
 
@@ -33,7 +33,7 @@ const rooms = new Map<String, ChatRoom>();
         return await this.handelByType(result);
     }
 
-    private async handelByType(data: RequestObject): Promise<IResponse<string>> {
+    private async handelByType(data: RequestObject): Promise<IResult<string>> {
         
         switch(data.type) {
             case Types.Rgister:
@@ -59,7 +59,7 @@ const rooms = new Map<String, ChatRoom>();
         }
     }
 
-    private async registerLogic(data: RequestObject): Promise<IResponse<string>> {
+    private async registerLogic(data: RequestObject): Promise<IResult<string>> {
         if(!data.userAttributs) {
             const err =  new Error("something worng invalid packet 'register'");
 
@@ -75,7 +75,7 @@ const rooms = new Map<String, ChatRoom>();
         return this.send("User create");
     }
 
-    private async loginLogic(data: RequestObject): Promise<IResponse<string>> {
+    private async loginLogic(data: RequestObject): Promise<IResult<string>> {
         if(!data.userAttributs) {
             const err =  new Error("something worng invalid packet 'login'");
 
@@ -107,7 +107,7 @@ const rooms = new Map<String, ChatRoom>();
         return this.send(JSON.stringify(responseData));
     }
 
-    private createRoom(date: RequestObject): IResponse<string> {
+    private createRoom(date: RequestObject): IResult<string> {
         if(!date.token) {
             return this.sendError("can't bulid room without user token");
         }
@@ -148,7 +148,7 @@ const rooms = new Map<String, ChatRoom>();
         return this.send(`Room id: ${room.id}`);
     }
 
-    private joinChat(data: RequestObject): IResponse<string> {
+    private joinChat(data: RequestObject): IResult<string> {
         const roomId = data.roomId;
         const token = data.token;
         
@@ -181,7 +181,7 @@ const rooms = new Map<String, ChatRoom>();
         return this.send(`Wellcome to room : ${roomId}`);
     }
 
-    private async chatLogic(data: RequestObject): Promise<IResponse<string>> {
+    private async chatLogic(data: RequestObject): Promise<IResult<string>> {
         const token = data.token;
         const roomId = data.roomId;
         const message = data.message;
@@ -209,7 +209,7 @@ const rooms = new Map<String, ChatRoom>();
         return this.send("Message sends");
     }
 
-    private sendNewToken(data: RequestObject): IResponse<string> {
+    private sendNewToken(data: RequestObject): IResult<string> {
         const refreshToken = data.refreshToken;
 
         if(!refreshToken) {
@@ -225,14 +225,14 @@ const rooms = new Map<String, ChatRoom>();
         return this.send(`token: ${result}`);
     }
 
-    private send(message: string): IResponse<string> {
+    private send(message: string): IResult<string> {
         return {
             result: message
         };
     }
 
 
-    private sendError(exception: Error | string): IResponse<string> {
+    private sendError(exception: Error | string): IResult<string> {
         if(exception instanceof Error) {
             return {
                 isError: `${exception.message}`

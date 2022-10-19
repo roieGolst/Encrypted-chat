@@ -2,14 +2,14 @@
 import { UniqueConstraintError } from "sequelize"; 
 import bcrypt from "bcrypt";
 import User from "../models/User";
-import { IResponse } from "../../../common/IResponse";
+import { IResult } from "../../../common/IResult";
 import { UserAttributs } from "../../common/UserAttributs";
 
 const SALT_ROUNDS = 10;
 
 
 
-export async function insertUser(obj: UserAttributs): Promise<IResponse<User>> {
+export async function insertUser(obj: UserAttributs): Promise<IResult<User>> {
     try {
         const user = await User.create(
             {

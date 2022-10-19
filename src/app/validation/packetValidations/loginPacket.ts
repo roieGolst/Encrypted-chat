@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { IResponse } from "../../../common/IResponse";
+import { IResult } from "../../../common/IResult";
 import { UserAttributs } from "../../common/UserAttributs";
 import userAttributsSchema from "./schemas/userAttributsSchema";
 
@@ -18,7 +18,7 @@ const loginPacketSchema = Joi.object({
 });
 
 export default {
-    validate: (data: any): IResponse<LoginPacket> => {
+    validate: (data: any): IResult<LoginPacket> => {
         const result = loginPacketSchema.validate(data);
 
         if(result.error) {

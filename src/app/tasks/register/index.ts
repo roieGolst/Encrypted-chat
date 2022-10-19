@@ -1,8 +1,8 @@
 import { utils } from "../../db";
 import { UserAttributs } from "../../common/UserAttributs";
-import { IResponse } from "../../../common/IResponse";
+import { IResult } from "../../../common/IResult";
 
-export async function insertUser(data: UserAttributs): Promise<IResponse<boolean>> {
+export async function insertUser(data: UserAttributs): Promise<IResult<boolean>> {
     
     const user = await utils.user.insertUser(data);
 

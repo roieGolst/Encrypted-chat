@@ -1,7 +1,7 @@
-import { IResponse } from "../../common/IResponse";
+import { IResult } from "../../common/IResult";
 
 export interface IHandler {
-    handleOnData(data: Buffer): Promise<IResponse<string>>;
+    handleOnData(data: Buffer): Promise<IResult<string>>;
 }
 
 export type HandlerFactory = (socketId: string) => IHandler;

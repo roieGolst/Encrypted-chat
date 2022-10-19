@@ -1,5 +1,5 @@
 import { Socket } from "net";
-import { IResponse } from "../common/IResponse";
+import { IResult } from "../common/IResult";
 import { v4 } from 'uuid';
 import { TcpServer } from "./types";
 
@@ -42,7 +42,7 @@ export class UserSocket {
         });
     }
 
-    private fetchResponse(response: IResponse<string>): void {
+    private fetchResponse(response: IResult<string>): void {
         if(!response.result) {
             this.sendError(response.isError!);
             return;

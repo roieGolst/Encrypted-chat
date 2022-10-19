@@ -1,10 +1,10 @@
-import { IResponse } from "../../../common/IResponse";
+import { IResult } from "../../../common/IResult";
 import * as validator from "../../validation" 
 import { RequestObject, Types } from "./RequestObject";
 
 class PacketParser {
 
-    private dataToJson(data: string): IResponse<RequestObject> {
+    private dataToJson(data: string): IResult<RequestObject> {
         try {
             const parseData = JSON.parse(data);
 
@@ -19,7 +19,7 @@ class PacketParser {
         }
     }
 
-    parse(data: Buffer): IResponse<RequestObject> {
+    parse(data: Buffer): IResult<RequestObject> {
         const stringData = data.toString("utf-8");
 
         const { result, isError } = this.dataToJson(stringData);
@@ -64,37 +64,37 @@ class PacketParser {
         }
     }
 
-    private parseRegister(pureData: RequestObject): IResponse<RequestObject> {
+    private parseRegister(pureData: RequestObject): IResult<RequestObject> {
         const validatorResponse = validator.packets.registerPacket.validate(pureData);
 
         return this.fetchValdatorResponse(validatorResponse);
     }
 
-    private parseLogin(pureData: RequestObject): IResponse<RequestObject> {
+    private parseLogin(pureData: RequestObject): IResult<RequestObject> {
         const validatorResponse = validator.packets.loginPacket.validate(pureData);
 
         return this.fetchValdatorResponse(validatorResponse);
     }
 
-    private parseCreateChat(pureData: RequestObject): IResponse<RequestObject> {
+    private parseCreateChat(pureData: RequestObject): IResult<RequestObject> {
         const validatorResponse = validator.packets.createChatPacket.validate(pureData);
 
         return this.fetchValdatorResponse(validatorResponse);
     }
 
-    private parseJoinChat(pureData: RequestObject): IResponse<RequestObject> {
+    private parseJoinChat(pureData: RequestObject): IResult<RequestObject> {
         const validatorResponse = validator.packets.joinChatPacket.validate(pureData);
 
         return this.fetchValdatorResponse(validatorResponse);
     }
 
-    private parseChatMessage(pureData: RequestObject): IResponse<RequestObject> {
+    private parseChatMessage(pureData: RequestObject): IResult<RequestObject> {
         const validatorResponse = validator.packets.chatMessagePacket.validate(pureData);
 
         return this.fetchValdatorResponse(validatorResponse);
     }
 
-    private parseNewToken(pureData: RequestObject): IResponse<RequestObject> {
+    private parseNewToken(pureData: RequestObject): IResult<RequestObject> {
         const validatorResponse = validator.packets.newTokenPacket.validate(pureData);
 
         return this.fetchValdatorResponse(validatorResponse);
@@ -104,7 +104,7 @@ class PacketParser {
         return new Error(message);
     }
 
-    private fetchValdatorResponse(response: IResponse<any>): IResponse<RequestObject> {
+    private fetchValdatorResponse(response: IResult<any>): IResult<RequestObject> {
         if(!response.result) {
             return {
                 isError: response.isError
