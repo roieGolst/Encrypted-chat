@@ -54,7 +54,7 @@ export default class RequestParser {
     }
 
     private static parseLoginRequest(packetId: string, payload: any): RequestPackets.LoginRequest | undefined {
-        if(!payload["userAttributs"]) {
+        if(!payload["authAttributs"]) {
             if(!payload["authAttributs"]["username"] || !payload["authAttributs"]["password"]) {
                 return undefined;
             }
@@ -67,12 +67,12 @@ export default class RequestParser {
 
         return new RequestPackets.LoginRequest.Builder()
             .setPacketId(packetId)
-            .setAuthAttributs(username, packetId)
+            .setAuthAttributs(username, password)
             .build()
     }
 
     private static parseCreateChatRequest(packetId: string, payload: any): RequestPackets.CreateChatRequest | undefined {
-        if(!payload["roomId"] || !payload["token"]) {
+        if(!payload["token"]) {
             return undefined;
         }
 
