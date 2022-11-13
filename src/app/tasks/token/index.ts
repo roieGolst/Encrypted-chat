@@ -18,7 +18,7 @@ class TokensManeger {
 
     private genereteToken(user: UserSign): string {
 
-        return jwt.sign({userName: user.userName, id: user.id}, env.SECRETE_TOKEN, { expiresIn: "5m" });
+        return jwt.sign({userName: user.userName, id: user.id}, env.SECRETE_TOKEN, { expiresIn: "10m" });
     
     }
 

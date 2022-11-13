@@ -6,7 +6,7 @@ import { ISocketsManager } from "./socketManager/ISocketsManager";
 import { UserSocket } from "./UserSocket";
 import ISocketsManagerObserver from "./socketManager/ISocketsManagerObserver";
 
-const SOCKET_INACTIVE_TIMEOUT = 1000 * 60 * 5;
+const SOCKET_INACTIVE_TIMEOUT = 1000 * 60 * 10;
 
 export type ServerArgs = {
     readonly port: number,

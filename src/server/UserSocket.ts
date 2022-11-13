@@ -43,12 +43,12 @@ export class UserSocket {
     }
 
     private fetchResponse(response: IResult<string>): void {
-        if(!response.result) {
-            this.sendError(response.isError!);
+        if(!response.isSuccess) {
+            this.sendError(response.error!);
             return;
         }
 
-        return this.send(response.result);
+        return this.send(response.value);
     }
 
     private sendError(exception: Error | string) {
@@ -58,8 +58,6 @@ export class UserSocket {
         else{
             this.send(`Error message: ${exception}`);
         }
-
-        this.destroy();
     }
 
     send(message: string) {
