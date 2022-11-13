@@ -1,4 +1,4 @@
-import { PacketType } from "../utils/encryptedChatProtocol/commonTypes";
+import { PacketType, Statuses } from "../utils/encryptedChatProtocol/commonTypes";
 import * as useCases from "../tasks";
 import { IResult } from "../../common/IResult";
 import connectedUserMap, { ConnectedUserMeneger } from "./ConnectedUserMap";
@@ -7,6 +7,7 @@ import parser from "../utils/encryptedChatProtocol/parser";
 import { TcpServer } from "../../server/types";
 import RequestPacket from "../utils/encryptedChatProtocol/requestPackets/RequsetPacket";
 import * as RequestPackets from "../utils/encryptedChatProtocol/requestPackets";
+import * as ResponsePackets from "../utils/encryptedChatProtocol/responsePackets";
 
 
 const rooms = new Map<String, ChatRoom>();
@@ -59,61 +60,107 @@ const rooms = new Map<String, ChatRoom>();
 
     private async registerLogic(data: RequestPacket): Promise<IResult<string>> {
         if(! (data instanceof RequestPackets.RegisterRequest)) {
-            const err =  new Error("something worng invalid packet 'register'");
+            const responsePacket = new ResponsePackets.RegisterResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.Register)
+                .setStatus(Statuses.Failed)
+                .build()
 
-            return this.sendError(err);
+            return this.send(responsePacket.toString())
         }
 
         const registerResult = await useCases.register.insertUser(data.userAttributs);
 
         if(!registerResult.isSuccess) {
-            return this.sendError(registerResult.error);
+            const responsePacket = new ResponsePackets.RegisterResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.Register)
+                .setStatus(Statuses.Failed)
+                .build()
+
+            return this.send(responsePacket.toString())
         }
 
-        return this.send("User create");
+        const responsePacket = new ResponsePackets.RegisterResponse.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.Register)
+            .setStatus(Statuses.Succeeded)
+            .build()
+
+        return this.send(responsePacket.toString());
     }
 
     private async loginLogic(data: RequestPacket): Promise<IResult<string>> {
         if(! (data instanceof RequestPackets.LoginRequest)) {
-            const err =  new Error("something worng invalid packet 'login'");
+            const responsePacket = new ResponsePackets.LoginResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.Login)
+                .setStatus(Statuses.Failed)
+                .build()
 
-            return this.sendError(err);
+            return this.send(responsePacket.toString())
         }
 
         const loginResult = await useCases.login.isValidLogin(data.userAttributs);
 
         if(!loginResult.isSuccess) {
-            return this.sendError(loginResult.error);
+            const responsePacket = new ResponsePackets.LoginResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.Login)
+                .setStatus(Statuses.Failed)
+                .build()
+
+            return this.send(responsePacket.toString())
         }
 
         const user = loginResult.value;
 
         if(this.connectedUserMap.isConnected(user.id)) {
-            return this.sendError("This user is already connected");
+            const responsePacket = new ResponsePackets.LoginResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.Login)
+                .setStatus(Statuses.Failed)
+                .build()
+
+            return this.send(responsePacket.toString())
         }
         
         this.connectedUserMap.add(user.id, this.socketId);
         
         const tokens = useCases.token.getTokens(user);
 
-        const responseData = {
-            userName: loginResult.value.userName,
-            userId: loginResult.value.id,
-            tokens
-        }
+        const responseData = new ResponsePackets.LoginResponse.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.Login)
+            .setStatus(Statuses.Succeeded)
+            .setTokens(tokens)
+            .setUserAttributs({userId: user.id, username: user.userName})
+            .build();
 
-        return this.send(JSON.stringify(responseData));
+        return this.send(responseData.toString());
     }
 
-    private createRoom(date: RequestPacket): IResult<string> {
-        if(! (date instanceof RequestPackets.CreateChatRequest)) {
-            return this.sendError("can't bulid room without user token");
+    private createRoom(data: RequestPacket): IResult<string> {
+        if(! (data instanceof RequestPackets.CreateChatRequest)) {
+            const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.CreateChat)
+                .setStatus(Statuses.Failed)
+                .build()
+
+            return this.send(responsePacket.toString())
         }
 
-        const authResult = useCases.token.authValidate(date.token.token);
+        const authResult = useCases.token.authValidate(data.token.token);
 
         if(!authResult.isSuccess) {
-            return this.sendError(authResult.error);
+            const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.CreateChat)
+                .setStatus(Statuses.Failed)
+                .build()
+
+            return this.send(responsePacket.toString())
         }
 
         const room = useCases.room.createRoomChat({
@@ -139,52 +186,103 @@ const rooms = new Map<String, ChatRoom>();
         room.addUser(authResult.value.id);
         rooms.set(room.id, room);
 
-        return this.send(`Room id: ${room.id}`);
+        const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.CreateChat)
+            .setStatus(Statuses.Succeeded)
+            .setRoomId(room.id)
+            .build();
+
+        return this.send(responsePacket.toString());
     }
 
     private joinChat(data: RequestPacket): IResult<string> {
         if(! (data instanceof RequestPackets.JoinChatRequest)) {
-            const err =  new Error("something worng invalid packet 'Join chat'");
+            const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.JoinChat)
+                .setStatus(Statuses.Failed)
+                .build()
 
-            return this.sendError(err);
+            return this.send(responsePacket.toString())
         }
 
         const roomId = data.roomId;
-        const token = data.token.token
-        
-        if(!roomId || !token){
-            const err =  new Error("something worng invalid packet 'joinChat'");
-
-            return this.sendError(err);
-        }
+        const token = data.token.token;
 
         const authResult = useCases.token.authValidate(token);
 
         if(!authResult.isSuccess) {
-            return this.sendError(authResult.error);
+            const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.JoinChat)
+                .setStatus(Statuses.Failed)
+                .build()
+
+            return this.send(responsePacket.toString())
         }
 
         const userSocket = this.connectedUserMap.get(authResult.value.id);
 
         if(!userSocket) {
-            return this.sendError("You must to loged in before create room");
+            const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.JoinChat)
+                .setStatus(Statuses.Failed)
+                .build()
+
+            return this.send(responsePacket.toString())
         }
 
         const room = rooms.get(roomId);
 
         if(!room) {
-            return this.sendError("room not exists!");
+            const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.JoinChat)
+                .setStatus(Statuses.Failed)
+                .build()
+
+            return this.send(responsePacket.toString())
         }
 
         room.addUser(authResult.value.id);
 
-        return this.send(`Wellcome to room : ${roomId}`);
+        const members: string[] = room.getUsers();
+        const mapMembers: Map<string, string> = new Map();
+
+        for(let id in members) {
+            const socketId = this.connectedUserMap.get(id);
+
+            if(!socketId) {
+                break;
+            }
+
+            mapMembers.set(socketId, id);
+        }
+        
+
+        const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
+                .setPacketId(data.getPacketId())
+                .setType(PacketType.JoinChat)
+                .setStatus(Statuses.Succeeded)
+                .setMembers(mapMembers)
+                .build();
+
+        return this.send(responsePacket.toString())
     }
 
     private async chatLogic(data: RequestPacket): Promise<IResult<string>> {
         if(! (data instanceof RequestPackets.ChatMessageRequest)) {
-            return this.sendError(`something worng invalid packet 'Chat message'`);
+            const responsePacket = new ResponsePackets.ChatMessage.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.ChatMessage)
+            .setStatus(Statuses.Failed)
+            .build()
+
+            return this.send(responsePacket.toString());
         }
+
         const token = data.token.token;
         const roomId = data.roomId;
         const message = data.message;
@@ -192,13 +290,25 @@ const rooms = new Map<String, ChatRoom>();
         const authResult = useCases.token.authValidate(token);
 
         if(!authResult.isSuccess) {
-            return this.sendError(authResult.error);
+           const responsePacket = new ResponsePackets.ChatMessage.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.ChatMessage)
+            .setStatus(Statuses.Failed)
+            .build()
+
+            return this.send(responsePacket.toString());
         }
 
         const room = rooms.get(roomId);
 
         if(!room) {
-            return this.sendError("room not exists!");
+            const responsePacket = new ResponsePackets.ChatMessage.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.ChatMessage)
+            .setStatus(Statuses.Failed)
+            .build()
+
+            return this.send(responsePacket.toString());
         }
 
         room.sendMessage(authResult.value.id, message);
@@ -208,22 +318,46 @@ const rooms = new Map<String, ChatRoom>();
 
     private sendNewToken(data: RequestPacket): IResult<string> {
         if(! (data instanceof RequestPackets.NewTokenRequest)) {
-            return this.sendError(`something worng invalid packet 'New token'`);
+            const responsePacket = new ResponsePackets.ChatMessage.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.ChatMessage)
+            .setStatus(Statuses.Failed)
+            .build()
+
+            return this.send(responsePacket.toString());
         }
 
         const refreshToken = data.refreshToken;
 
         if(!refreshToken) {
-            return this.sendError("refreshToken is required");
+            const responsePacket = new ResponsePackets.ChatMessage.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.ChatMessage)
+            .setStatus(Statuses.Failed)
+            .build()
+
+            return this.send(responsePacket.toString());
         }
 
         const authResult = useCases.token.authRefreshToken(refreshToken);
 
         if(!authResult.isSuccess) {
-            return this.sendError("Invalid token");
+            const responsePacket = new ResponsePackets.ChatMessage.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.ChatMessage)
+            .setStatus(Statuses.Failed)
+            .build()
+
+            return this.send(responsePacket.toString());
         }
 
-        return this.send(`token: ${authResult.value}`);
+        const responsePacket = new ResponsePackets.ChatMessage.Builder()
+            .setPacketId(data.getPacketId())
+            .setType(PacketType.ChatMessage)
+            .setStatus(Statuses.Succeeded)
+            .build()
+
+        return this.send(responsePacket.toString());
     }
 
     private send(message: string): IResult<string> {
