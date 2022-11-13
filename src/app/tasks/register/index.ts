@@ -1,8 +1,9 @@
 import { utils } from "../../db";
 import { UserAttributs } from "../../common/UserAttributs";
 import { IResult } from "../../../common/IResult";
+import { AuthAttributs } from "../../utils/encryptedChatProtocol/commonTypes";
 
-export async function insertUser(data: UserAttributs): Promise<IResult<boolean>> {
+export async function insertUser(data: AuthAttributs): Promise<IResult<boolean>> {
     
     const user = await utils.user.insertUser(data);
 

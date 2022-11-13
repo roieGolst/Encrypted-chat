@@ -10,13 +10,13 @@ export type SingleMember = {
 export default class NewRoomMember extends ResponsePacket {
     readonly members: SingleMember;
 
-    constructor(packetId: string, status: Statuses, type: PacketType, members: SingleMember) {
-        super(type, status, packetId);
+    constructor(status: Statuses, members: SingleMember, packetId?: string) {
+        super(PacketType.NewRoomMember, status, packetId);
         this.members = members;
     }
 
     static Builder = class implements IBuilder<NewRoomMember> {
-        packetId: string;
+        packetId?: string;
         type: PacketType;
         status: Statuses;
         member: SingleMember;
@@ -58,7 +58,7 @@ export default class NewRoomMember extends ResponsePacket {
                 throw new Error("'Member' is is required");
             }
 
-            return new NewRoomMember(this.packetId, this.status, this.type, this.member);
+            return new NewRoomMember(this.status, this.member, this.packetId);
         }
     }
 }

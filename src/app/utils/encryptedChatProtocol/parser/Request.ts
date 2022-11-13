@@ -36,16 +36,12 @@ export default class RequestParser {
     }
 
     private static parseRegisterRequest(packetId: string, payload: any): RequestPackets.RegisterRequest | undefined {
-        if(!payload["authAttributs"]) {
-            if(!payload["authAttributs"]["username"] || !payload["authAttributs"]["password"]) {
-                return undefined;
-            }
-
-            return  undefined;
+        if(!payload["authAttributs"]?.username || !payload["authAttributs"]?.password) {
+            return undefined;
         }
 
-        const username = payload["authAttributs"]["username"];
-        const password = payload["authAttributs"]["password"];
+        const username: string = payload["authAttributs"].username;
+        const password: string = payload["authAttributs"].password;
 
         return new RequestPackets.RegisterRequest.Builder()
             .setPacketId(packetId)
@@ -54,15 +50,12 @@ export default class RequestParser {
     }
 
     private static parseLoginRequest(packetId: string, payload: any): RequestPackets.LoginRequest | undefined {
-        if(!payload["authAttributs"]) {
-            if(!payload["authAttributs"]["username"] || !payload["authAttributs"]["password"]) {
-                return undefined;
-            }
-            return undefined
+        if(!payload["authAttributs"]?.username || !payload["authAttributs"]?.password) {
+            return undefined;
         }
 
-        const username = payload["authAttributs"]["username"];
-        const password = payload["authAttributs"]["password"];
+        const username: string = payload["authAttributs"].username;
+        const password: string = payload["authAttributs"].password;
 
 
         return new RequestPackets.LoginRequest.Builder()

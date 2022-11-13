@@ -6,14 +6,13 @@ import { SingleMember } from "../responsePackets/NewRoomMember";
 export default class NewRoonMemberRequestPacket extends Packet {
     readonly member: SingleMember;
 
-    constructor(packetId: string, type: PacketType, member: SingleMember) {
-        super(type, packetId);
+    constructor(member: SingleMember, packetId?: string) {
+        super(PacketType.NewRoomMember, packetId);
         this.member = member;
     }
 
     static Builder = class implements IBuilder<NewRoonMemberRequestPacket> {
-        private type: PacketType = PacketType.NewRoomMember;
-        private packetId: string;
+        private packetId?: string;
         private member: SingleMember;
 
         setPacketId(packetId: string): this {
@@ -28,19 +27,11 @@ export default class NewRoonMemberRequestPacket extends Packet {
         }
 
         build(): NewRoonMemberRequestPacket {
-            if(!this.packetId) {
-                throw new Error("'PacketId' is required");
-            }
-
-            else if(!this.type) {
-                throw new Error("'Type' is required");
-            }
-
-            else if(!this.member) {
+            if(!this.member) {
                 throw new Error("'Member' is required")
             }
 
-            return new NewRoonMemberRequestPacket(this.packetId, this.type, this.member);
+            return new NewRoonMemberRequestPacket(this.member, this.packetId);
         }
     }
 }

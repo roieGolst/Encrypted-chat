@@ -5,14 +5,13 @@ import Packet from "../Packet";
 export default class RegisterRequstPacket extends Packet {
     readonly userAttributs: AuthAttributs;
 
-    constructor(packetId: string, type: PacketType, userAttributs: AuthAttributs) {
-        super(type, packetId);
+    constructor(userAttributs: AuthAttributs, packetId?: string) {
+        super(PacketType.Register, packetId);
         this.userAttributs = userAttributs;
     }
 
     static Builder = class implements IBuilder<RegisterRequstPacket> {
-        private type: PacketType = PacketType.Register;
-        private packetId: string;
+        private packetId?: string;
         private authAttributs: AuthAttributs;
 
         setPacketId(packetId: string): this {
@@ -22,26 +21,18 @@ export default class RegisterRequstPacket extends Packet {
 
         setAuthAttributs(username: string, password: string): this {
             this.authAttributs = {
-                userName: username,
+                username: username,
                 password: password
             }
             return this;
         }
 
         build(): RegisterRequstPacket {
-            if(!this.packetId) {
-                throw new Error("'PacketId' is required");
-            }
-
-            else if(!this.type) {
-                throw new Error("'Type' is required");
-            }
-
-            else if(!this.authAttributs) {
+            if(!this.authAttributs) {
                 throw new Error("'Authentication attributs' is required")
             }
 
-            return new RegisterRequstPacket(this.packetId, this.type, this.authAttributs);
+            return new RegisterRequstPacket(this.authAttributs, this.packetId);
         }
     }
 }

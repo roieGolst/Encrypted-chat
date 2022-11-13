@@ -101,7 +101,7 @@ const rooms = new Map<String, ChatRoom>();
             return this.send(responsePacket.toString())
         }
 
-        const loginResult = await useCases.login.isValidLogin(data.userAttributs);
+        const loginResult = await useCases.login.isValidLogin(data.authAttributs);
 
         if(!loginResult.isSuccess) {
             const responsePacket = new ResponsePackets.LoginResponse.Builder()

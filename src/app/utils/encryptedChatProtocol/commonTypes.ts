@@ -14,7 +14,7 @@ export enum Statuses {
 };
 
 export type AuthAttributs = {
-    userName: string,
+    username: string,
     password: string
 };
 

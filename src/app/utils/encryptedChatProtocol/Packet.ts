@@ -5,7 +5,7 @@ export default abstract class Packet {
     protected readonly packetId: string;
     protected readonly type: PacketType;
 
-    constructor(type: PacketType, packetId: string = v4()) {
+    constructor(type: PacketType, packetId: string | undefined = v4()) {
         this.packetId = packetId;
         this.type = type;
     }

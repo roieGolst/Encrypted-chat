@@ -5,14 +5,13 @@ import Packet from "../Packet";
 export default class NewTokenRequestPacket extends Packet {
     readonly refreshToken: string;
 
-    constructor(packetId: string, type: PacketType, refreshToken: string) {
-        super(type, packetId);
+    constructor(refreshToken: string, packetId?: string) {
+        super(PacketType.NewToken, packetId);
         this.refreshToken = refreshToken;
     }
 
     static Builder = class implements IBuilder<NewTokenRequestPacket> {
-        private type: PacketType = PacketType.NewToken;
-        private packetId: string;
+        private packetId?: string;
         private refreshToken: string;
 
         setPacketId(packetId: string): this {
@@ -27,19 +26,11 @@ export default class NewTokenRequestPacket extends Packet {
         }
 
         build(): NewTokenRequestPacket {
-            if(!this.packetId) {
-                throw new Error("'PacketId' is required");
-            }
-
-            else if(!this.type) {
-                throw new Error("'Type' is required");
-            }
-
-            else if(!this.refreshToken) {
+            if(!this.refreshToken) {
                 throw new Error("'Refresh token' is required")
             }
 
-            return new NewTokenRequestPacket(this.packetId, this.type, this.refreshToken);
+            return new NewTokenRequestPacket(this.refreshToken, this.packetId);
         }
     }
 }
