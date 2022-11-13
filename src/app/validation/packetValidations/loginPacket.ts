@@ -23,12 +23,14 @@ export default {
 
         if(result.error) {
             return {
-                isError: result?.error?.details[0].message || "Vlidation error"
+                isSuccess: false,
+                error: result?.error?.details[0].message || "Vlidation error"
             };
         }
 
         return {
-            result: {
+            isSuccess: true,
+            value: {
                 type: "login",
                 userAttributs: result.value.userAttributs as UserAttributs
             }

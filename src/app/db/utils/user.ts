@@ -19,17 +19,20 @@ export async function insertUser(obj: UserAttributs): Promise<IResult<User>> {
         )
 
         return {
-            result: user 
+            isSuccess: true,
+            value: user 
         }
     }
     catch(err) {
         if(err instanceof UniqueConstraintError) {
             return {
-                isError: err.errors[0].message || "Validation error"
+                isSuccess: false,
+                error: err.errors[0].message || "Validation error"
             }  
         }
         return {
-            isError: `${err}`
+            isSuccess: false,
+            error: `${err}`
         }  
     }
 }

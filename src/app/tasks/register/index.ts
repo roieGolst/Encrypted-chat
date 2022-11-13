@@ -6,13 +6,12 @@ export async function insertUser(data: UserAttributs): Promise<IResult<boolean>>
     
     const user = await utils.user.insertUser(data);
 
-    if(!user.result) {
-        return {
-            isError: user.isError
-        }
+    if(!user.isSuccess) {
+        return user
     }
 
     return {
-        result: true
+        isSuccess: true,
+        value: true
     }
 };

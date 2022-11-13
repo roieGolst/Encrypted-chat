@@ -1,4 +1,1 @@
-export interface IResult<T> {
-    result?: T;
-    isError?: Error | string;
-}
+export type IResult<T, E = string> = { isSuccess: true; value: T }  | { isSuccess: false; error: E };

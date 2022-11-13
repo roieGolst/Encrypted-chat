@@ -1,10 +1,12 @@
-import { RequestObject, Types } from "../utils/packetParser/RequestObject";
+import { PacketType } from "../utils/encryptedChatProtocol/commonTypes";
 import * as useCases from "../tasks";
 import { IResult } from "../../common/IResult";
 import connectedUserMap, { ConnectedUserMeneger } from "./ConnectedUserMap";
 import { ChatRoom } from "./rooms/ChatRoom";
-import parser from "../utils/packetParser";
+import parser from "../utils/encryptedChatProtocol/parser";
 import { TcpServer } from "../../server/types";
+import RequestPacket from "../utils/encryptedChatProtocol/requestPackets/RequsetPacket";
+import * as RequestPackets from "../utils/encryptedChatProtocol/requestPackets";
 
 
 const rooms = new Map<String, ChatRoom>();
@@ -20,38 +22,34 @@ const rooms = new Map<String, ChatRoom>();
 
     async handleOnData(data: Buffer): Promise<IResult<string>> {
 
-        const { result, isError } = parser.parse(data);
+        const parseResult = parser.parse(data);
 
-        if(!result) {
-            if(!isError) {
-                return this.sendError("Parser Error");
-            }
-
-            return this.sendError(isError);
+        if(!parseResult.isSuccess) {
+            return this.sendError(parseResult.error);
         }
 
-        return await this.handelByType(result);
+        return await this.handelByType(parseResult.value);
     }
 
-    private async handelByType(data: RequestObject): Promise<IResult<string>> {
+    private async handelByType(data: RequestPacket): Promise<IResult<string>> {
         
-        switch(data.type) {
-            case Types.Rgister:
+        switch(data.getType()) {
+            case PacketType.Register:
                 return await this.registerLogic(data);
 
-            case Types.Login:
+            case PacketType.Login:
                 return await this.loginLogic(data);
             
-            case Types.CreateChat:
+            case PacketType.CreateChat:
                 return this.createRoom(data);
                 
-            case Types.JoinChat:
+            case PacketType.JoinChat:
                 return this.joinChat(data);
                     
-            case Types.ChatMessage:
+            case PacketType.ChatMessage:
                 return await this.chatLogic(data);
 
-            case Types.NewToken:
+            case PacketType.NewToken:
                 return this.sendNewToken(data);
                         
             default : 
@@ -59,8 +57,8 @@ const rooms = new Map<String, ChatRoom>();
         }
     }
 
-    private async registerLogic(data: RequestObject): Promise<IResult<string>> {
-        if(!data.userAttributs) {
+    private async registerLogic(data: RequestPacket): Promise<IResult<string>> {
+        if(! (data instanceof RequestPackets.RegisterRequest)) {
             const err =  new Error("something worng invalid packet 'register'");
 
             return this.sendError(err);
@@ -68,15 +66,15 @@ const rooms = new Map<String, ChatRoom>();
 
         const registerResult = await useCases.register.insertUser(data.userAttributs);
 
-        if(registerResult.isError) {
-            return this.sendError(registerResult.isError);
+        if(!registerResult.isSuccess) {
+            return this.sendError(registerResult.error);
         }
 
         return this.send("User create");
     }
 
-    private async loginLogic(data: RequestObject): Promise<IResult<string>> {
-        if(!data.userAttributs) {
+    private async loginLogic(data: RequestPacket): Promise<IResult<string>> {
+        if(! (data instanceof RequestPackets.LoginRequest)) {
             const err =  new Error("something worng invalid packet 'login'");
 
             return this.sendError(err);
@@ -84,11 +82,11 @@ const rooms = new Map<String, ChatRoom>();
 
         const loginResult = await useCases.login.isValidLogin(data.userAttributs);
 
-        if(!loginResult.result) {
-            return this.sendError(loginResult.isError!);
+        if(!loginResult.isSuccess) {
+            return this.sendError(loginResult.error);
         }
 
-        const user = loginResult.result;
+        const user = loginResult.value;
 
         if(this.connectedUserMap.isConnected(user.id)) {
             return this.sendError("This user is already connected");
@@ -99,27 +97,23 @@ const rooms = new Map<String, ChatRoom>();
         const tokens = useCases.token.getTokens(user);
 
         const responseData = {
-            userName: loginResult.result.userName,
-            userId: loginResult.result.id,
+            userName: loginResult.value.userName,
+            userId: loginResult.value.id,
             tokens
         }
 
         return this.send(JSON.stringify(responseData));
     }
 
-    private createRoom(date: RequestObject): IResult<string> {
-        if(!date.token) {
+    private createRoom(date: RequestPacket): IResult<string> {
+        if(! (date instanceof RequestPackets.CreateChatRequest)) {
             return this.sendError("can't bulid room without user token");
         }
 
-        const { result, isError } = useCases.token.authValidate(date.token);
+        const authResult = useCases.token.authValidate(date.token.token);
 
-        if(isError) {
-            return this.sendError(isError);
-        }
-
-        if(!result) {
-            return this.sendError("Invalid user details");
+        if(!authResult.isSuccess) {
+            return this.sendError(authResult.error);
         }
 
         const room = useCases.room.createRoomChat({
@@ -142,15 +136,21 @@ const rooms = new Map<String, ChatRoom>();
             }
         });
 
-        room.addUser(result.id);
+        room.addUser(authResult.value.id);
         rooms.set(room.id, room);
 
         return this.send(`Room id: ${room.id}`);
     }
 
-    private joinChat(data: RequestObject): IResult<string> {
+    private joinChat(data: RequestPacket): IResult<string> {
+        if(! (data instanceof RequestPackets.JoinChatRequest)) {
+            const err =  new Error("something worng invalid packet 'Join chat'");
+
+            return this.sendError(err);
+        }
+
         const roomId = data.roomId;
-        const token = data.token;
+        const token = data.token.token
         
         if(!roomId || !token){
             const err =  new Error("something worng invalid packet 'joinChat'");
@@ -158,13 +158,13 @@ const rooms = new Map<String, ChatRoom>();
             return this.sendError(err);
         }
 
-        const { result, isError } = useCases.token.authValidate(token);
+        const authResult = useCases.token.authValidate(token);
 
-        if(!result) {
-            return this.sendError(isError!);
+        if(!authResult.isSuccess) {
+            return this.sendError(authResult.error);
         }
 
-        const userSocket = this.connectedUserMap.get(result.id);
+        const userSocket = this.connectedUserMap.get(authResult.value.id);
 
         if(!userSocket) {
             return this.sendError("You must to loged in before create room");
@@ -176,26 +176,23 @@ const rooms = new Map<String, ChatRoom>();
             return this.sendError("room not exists!");
         }
 
-        room.addUser(result.id);
+        room.addUser(authResult.value.id);
 
         return this.send(`Wellcome to room : ${roomId}`);
     }
 
-    private async chatLogic(data: RequestObject): Promise<IResult<string>> {
-        const token = data.token;
+    private async chatLogic(data: RequestPacket): Promise<IResult<string>> {
+        if(! (data instanceof RequestPackets.ChatMessageRequest)) {
+            return this.sendError(`something worng invalid packet 'Chat message'`);
+        }
+        const token = data.token.token;
         const roomId = data.roomId;
         const message = data.message;
 
-        if(!message || !token || !roomId) {
-            const err =  new Error("something worng invalid packet 'message'");
+        const authResult = useCases.token.authValidate(token);
 
-            return this.sendError(err);
-        }
-
-        const { result, isError } = useCases.token.authValidate(token);
-
-        if(!result) {
-            return this.sendError(isError!);
+        if(!authResult.isSuccess) {
+            return this.sendError(authResult.error);
         }
 
         const room = rooms.get(roomId);
@@ -204,30 +201,35 @@ const rooms = new Map<String, ChatRoom>();
             return this.sendError("room not exists!");
         }
 
-        room.sendMessage(result.id, message);
+        room.sendMessage(authResult.value.id, message);
 
         return this.send("Message sends");
     }
 
-    private sendNewToken(data: RequestObject): IResult<string> {
+    private sendNewToken(data: RequestPacket): IResult<string> {
+        if(! (data instanceof RequestPackets.NewTokenRequest)) {
+            return this.sendError(`something worng invalid packet 'New token'`);
+        }
+
         const refreshToken = data.refreshToken;
 
         if(!refreshToken) {
             return this.sendError("refreshToken is required");
         }
 
-        const { result } = useCases.token.authRefreshToken(refreshToken);
+        const authResult = useCases.token.authRefreshToken(refreshToken);
 
-        if(!result) {
+        if(!authResult.isSuccess) {
             return this.sendError("Invalid token");
         }
 
-        return this.send(`token: ${result}`);
+        return this.send(`token: ${authResult.value}`);
     }
 
     private send(message: string): IResult<string> {
         return {
-            result: message
+            isSuccess: true,
+            value: message
         };
     }
 
@@ -235,12 +237,14 @@ const rooms = new Map<String, ChatRoom>();
     private sendError(exception: Error | string): IResult<string> {
         if(exception instanceof Error) {
             return {
-                isError: `${exception.message}`
+                isSuccess: false,
+                error: `${exception.message}`
             };
         }
 
         return {
-            isError: `${exception}`
+            isSuccess: false,
+            error: `${exception}`
         };
         
     }

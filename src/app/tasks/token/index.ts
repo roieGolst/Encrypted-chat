@@ -7,7 +7,7 @@ type UserSign = {
     id: string
 }
 
-type Tokens = {
+export type Tokens = {
     token: string,
     refreshToken: string
 }
@@ -48,18 +48,21 @@ class TokensManeger {
         }
         catch(err) {
             return {
-                isError: `${err}`
+                isSuccess: false,
+                error: `${err}`
             }
         }
     
         if(!result) {
             return {
-                isError: "Access denied"
+                isSuccess: false,
+                error: "Access denied"
             }
         }
     
         return {
-            result: result as UserSign
+            isSuccess: true,
+            value: result as UserSign
         }
         
     }
@@ -69,7 +72,8 @@ class TokensManeger {
 
         if(!isExist) {
             return {
-                isError: "Refresh token not exist"
+                isSuccess: false,
+                error: "Refresh token not exist"
             };
         }
 
@@ -77,7 +81,8 @@ class TokensManeger {
 
         if(!isExpired) {
             return {
-                isError: "Refresh token expired please logged in."
+                isSuccess: false,
+                error: "Refresh token expired please logged in."
             }
         } 
 
@@ -87,14 +92,16 @@ class TokensManeger {
         }
         catch(err) {
             return {
-                isError: `${err}`
+                isSuccess: false,
+                error: `${err}`
             }
         }
 
         const newToken = this.genereteToken(user as UserSign);
 
         return {
-            result: newToken
+            isSuccess: true,
+            value: newToken
         }
     }
     

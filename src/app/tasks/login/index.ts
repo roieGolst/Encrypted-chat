@@ -4,17 +4,19 @@ import { UserAttributs } from "../../common/UserAttributs";
 import { IResult } from "../../../common/IResult";
 
 
-export async function isValidLogin(data: UserAttributs): Promise<IResult<User>> {
+export async function isValidLogin(data: UserAttributs): Promise<IResult<User, Error>> {
 
     const user = await utils.user.checkUser(data);
 
     if(!user) {
         return {
-            isError: new Error("User not defind")
+            isSuccess: false,
+            error: new Error("User not defind")
         }
     }
 
     return {
-        result: user
+        isSuccess: true,
+        value: user
     }
 };
