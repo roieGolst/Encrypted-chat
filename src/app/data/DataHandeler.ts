@@ -101,7 +101,7 @@ const rooms = new Map<String, ChatRoom>();
             return this.send(responsePacket.toString())
         }
 
-        const loginResult = await useCases.login.isValidLogin(data.authAttributs);
+        const loginResult = await useCases.login.isValidLogin(data.userAttributs);
 
         if(!loginResult.isSuccess) {
             const responsePacket = new ResponsePackets.LoginResponse.Builder()
@@ -222,9 +222,7 @@ const rooms = new Map<String, ChatRoom>();
             return this.send(responsePacket.toString())
         }
 
-        const userSocket = this.connectedUserMap.get(authResult.value.id);
-
-        if(!userSocket) {
+        if(this.connectedUserMap.isConnected(authResult.value.id)) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.getPacketId())
                 .setType(PacketType.JoinChat)
@@ -252,7 +250,7 @@ const rooms = new Map<String, ChatRoom>();
         const mapMembers: Map<string, string> = new Map();
 
         for(let id in members) {
-            const socketId = this.connectedUserMap.get(id);
+            const socketId = this.connectedUserMap.getByUserId(id);
 
             if(!socketId) {
                 break;
