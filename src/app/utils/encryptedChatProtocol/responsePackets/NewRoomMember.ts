@@ -4,7 +4,7 @@ import ResponsePacket from "./ResponsePacket";
 
 export type SingleMember = {
     socketId: string,
-    nickName: string
+    username: string
 };
 
 export default class NewRoomMember extends ResponsePacket {

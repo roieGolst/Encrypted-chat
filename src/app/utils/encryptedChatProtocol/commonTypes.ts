@@ -18,6 +18,11 @@ export type AuthAttributs = {
     password: string
 };
 
+export type UserDetails = {
+    userId: string,
+    username: string
+};
+
 export type Tokens = {
     token: string,
     refreshToken?: string

@@ -3,17 +3,17 @@ import { AuthAttributs, PacketType } from "../commonTypes";
 import Packet from "../Packet";
 
 export default class LoginRequestPacket extends Packet {
-    readonly authAttributs: AuthAttributs;
+    readonly userAttributs: AuthAttributs;
 
     constructor(type: PacketType, authAttributs: AuthAttributs, packetId?: string) {
         super(type, packetId);
-        this.authAttributs = authAttributs;
+        this.userAttributs = authAttributs;
     }
 
     static Builder = class implements IBuilder<LoginRequestPacket> {
         private type: PacketType = PacketType.Login;
         private packetId?: string;
-        private authAttributs: AuthAttributs;
+        private userAttributs: AuthAttributs;
 
         setPacketId(packetId: string): this {
             this.packetId = packetId;
@@ -21,7 +21,7 @@ export default class LoginRequestPacket extends Packet {
         }
 
         setAuthAttributs(username: string, password: string): this {
-            this.authAttributs = {
+            this.userAttributs = {
                 username: username,
                 password: password
             }
@@ -33,11 +33,11 @@ export default class LoginRequestPacket extends Packet {
                 throw new Error("'Type' is required");
             }
 
-            else if(!this.authAttributs) {
+            else if(!this.userAttributs) {
                 throw new Error("'Authentication attributs' is required")
             }
 
-            return new LoginRequestPacket(this.type, this.authAttributs, this.packetId);
+            return new LoginRequestPacket(this.type, this.userAttributs, this.packetId);
         }
     }
 }

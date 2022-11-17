@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import env from "../../config/env.json";
-import { IResult } from "../../../common/IResult";
+import { IResult } from "../../../common/IResult"
 
 type UserSign = {
     userName: string
