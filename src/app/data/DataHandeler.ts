@@ -127,7 +127,7 @@ const rooms = new Map<String, ChatRoom>();
     }
 
     private createRoom(data: RequestPackets.CreateChatRequest): void {
-        const authResult = useCases.token.authValidate(data.token.token);
+        const authResult = useCases.token.authValidate(data.token);
 
         if(!authResult.isSuccess) {
             const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
@@ -156,7 +156,7 @@ const rooms = new Map<String, ChatRoom>();
 
     private joinChat(data: RequestPackets.JoinChatRequest): void {
         const roomId = data.roomId;
-        const token = data.token.token;
+        const token = data.token;
 
         const authResult = useCases.token.authValidate(token);
 
