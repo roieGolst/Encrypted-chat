@@ -37,17 +37,35 @@ export default class JoinChatPacket extends ResponsePacket {
         }
 
         build(): JoinChatPacket {
-            if(!this.packetId) {
-                throw new Error("'PacketId' is required");
+            if(this.status != Status.Succeeded) {
+                if(!this.packetId) {
+                    throw new Error("'PacketId' is required");
+                }
+    
+                else if(!this.status) {
+                    throw new Error("'Status' is required");
+                }
+    
+                else if(!this.type) {
+                    throw new Error("'Type' is required");
+                }
+            } else {
+                if(!this.packetId) {
+                    throw new Error("'PacketId' is required");
+                }
+    
+                else if(!this.status) {
+                    throw new Error("'Status' is required");
+                }
+    
+                else if(!this.type) {
+                    throw new Error("'Type' is required");
+                }
+                else if(!this.members) {
+                    throw new Error("'Members' is required");
+                }
             }
-
-            else if(!this.status) {
-                throw new Error("'Status' is required");
-            }
-
-            else if(!this.type) {
-                throw new Error("'Type' is required");
-            }
+            
 
             return new JoinChatPacket(this.packetId, this.status, this.type, this.members);
         }

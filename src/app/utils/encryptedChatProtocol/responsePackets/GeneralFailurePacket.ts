@@ -4,7 +4,7 @@ import ResponsePacket from "./ResponsePacket";
 
 export default class GeneralFailureResponsePacket extends ResponsePacket {
 
-    constructor(status: Status, type: PacketType, packetId?: string, ) {
+    constructor(status: Status, type: PacketType, packetId?: string) {
         super(type, status, packetId);
     }
 

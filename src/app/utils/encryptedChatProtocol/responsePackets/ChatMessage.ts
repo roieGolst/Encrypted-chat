@@ -4,12 +4,12 @@ import ResponsePacket from "./ResponsePacket";
 
 export default class ChatMessagePacket extends ResponsePacket {
 
-    constructor(status: Status, packetId?: string) {
+    constructor(status: Status, packetId: string) {
         super(PacketType.ChatMessage, status, packetId);
     }
 
     static Builder = class implements IBuilder<ChatMessagePacket> {
-        packetId?: string;
+        packetId: string;
         status: Status;
         type: PacketType;
 
@@ -29,6 +29,9 @@ export default class ChatMessagePacket extends ResponsePacket {
         }
 
         build(): ChatMessagePacket {
+            if(!this.packetId) {
+                throw new Error("'Packet id' is required");
+            }
             if(!this.status) {
                 throw new Error("'Status' is required");
             }

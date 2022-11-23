@@ -71,8 +71,10 @@ export  default class Parser {
 
         let result: Packet | ParserErrorResult;
 
-        if(packet["status"]) {
-            result = ResponseParser.parse(packetType, packetId, packet["status"], packet);
+        const packetStatus = this.statusCasting(packet.type);
+
+        if(packetStatus) {
+            result = ResponseParser.parse(packetType, packetId, packetStatus, packet);
         } else {
             result = RequestParser.parse(packetType, packetId, packet);
         }
@@ -99,11 +101,20 @@ export  default class Parser {
             }
         }
         catch(e) {
-            
+            return undefined;
         }
-
-        return undefined;
     }
 
-    
+    private static statusCasting(status: number): Status | undefined {
+        try {
+            let currentStatus: Status = status as Status;
+
+            if(currentStatus) {
+                return currentStatus;
+            }
+        }
+        catch(e) {
+            return undefined;
+        }
+    }
 }

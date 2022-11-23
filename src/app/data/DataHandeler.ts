@@ -36,7 +36,7 @@ const rooms = new Map<String, ChatRoom>();
 
     private async handelByType(packet: RequestPacket): Promise<void> {
         
-        switch(packet.getType()) {
+        switch(packet.type) {
             case PacketType.Register:
                 await this.registerLogic(packet as RequestPackets.RegisterRequest);
 
@@ -69,7 +69,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(!registerResult.isSuccess) {
             const responsePacket = new ResponsePackets.RegisterResponse.Builder()
-                .setPacketId(data.getPacketId())
+                .setPacketId(data.packetId)
                 .setType(PacketType.Register)
                 .setStatus(Status.GeneralFailure)
                 .build()
@@ -78,7 +78,7 @@ const rooms = new Map<String, ChatRoom>();
         }
 
         const responsePacket = new ResponsePackets.RegisterResponse.Builder()
-            .setPacketId(data.getPacketId())
+            .setPacketId(data.packetId)
             .setType(PacketType.Register)
             .setStatus(Status.Succeeded)
             .build()
@@ -91,7 +91,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(!loginResult.isSuccess) {
             const responsePacket = new ResponsePackets.LoginResponse.Builder()
-                .setPacketId(data.getPacketId())
+                .setPacketId(data.packetId)
                 .setType(PacketType.Login)
                 .setStatus(Status.AuthenticationError)
                 .build()
@@ -103,7 +103,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(this.connectedUserMap.isConnected(user.id)) {
             const responsePacket = new ResponsePackets.LoginResponse.Builder()
-                .setPacketId(data.getPacketId())
+                .setPacketId(data.packetId)
                 .setType(PacketType.Login)
                 .setStatus(Status.AuthenticationError)
                 .build()
@@ -116,7 +116,7 @@ const rooms = new Map<String, ChatRoom>();
         const tokens = useCases.token.getTokens(user);
 
         const responseData = new ResponsePackets.LoginResponse.Builder()
-            .setPacketId(data.getPacketId())
+            .setPacketId(data.packetId)
             .setType(PacketType.Login)
             .setStatus(Status.Succeeded)
             .setTokens(tokens)
@@ -131,7 +131,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(!authResult.isSuccess) {
             const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
-                .setPacketId(data.getPacketId())
+                .setPacketId(data.packetId)
                 .setType(PacketType.CreateChat)
                 .setStatus(Status.AuthenticationError)
                 .build()
@@ -145,7 +145,7 @@ const rooms = new Map<String, ChatRoom>();
         rooms.set(room.id, room);
 
         const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
-            .setPacketId(data.getPacketId())
+            .setPacketId(data.packetId)
             .setType(PacketType.CreateChat)
             .setStatus(Status.Succeeded)
             .setRoomId(room.id)
@@ -162,7 +162,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(!authResult.isSuccess) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
-                .setPacketId(data.getPacketId())
+                .setPacketId(data.packetId)
                 .setType(PacketType.JoinChat)
                 .setStatus(Status.AuthenticationError)
                 .build()
@@ -172,7 +172,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(this.connectedUserMap.isConnected(authResult.value.id)) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
-                .setPacketId(data.getPacketId())
+                .setPacketId(data.packetId)
                 .setType(PacketType.JoinChat)
                 .setStatus(Status.AuthenticationError)
                 .build()
@@ -184,7 +184,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(!room) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
-                .setPacketId(data.getPacketId())
+                .setPacketId(data.packetId)
                 .setType(PacketType.JoinChat)
                 .setStatus(Status.AuthenticationError)
                 .build()
@@ -209,7 +209,7 @@ const rooms = new Map<String, ChatRoom>();
         
 
         const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
-                .setPacketId(data.getPacketId())
+                .setPacketId(data.packetId)
                 .setType(PacketType.JoinChat)
                 .setStatus(Status.Succeeded)
                 .setMembers(mapMembers)
@@ -227,7 +227,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(!authResult.isSuccess) {
            const responsePacket = new ResponsePackets.ChatMessage.Builder()
-            .setPacketId(data.getPacketId())
+            .setPacketId(data.packetId)
             .setType(PacketType.ChatMessage)
             .setStatus(Status.AuthenticationError)
             .build()
@@ -239,7 +239,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(!room) {
             const responsePacket = new ResponsePackets.ChatMessage.Builder()
-            .setPacketId(data.getPacketId())
+            .setPacketId(data.packetId)
             .setType(PacketType.ChatMessage)
             .setStatus(Status.AuthenticationError)
             .build()
@@ -265,7 +265,7 @@ const rooms = new Map<String, ChatRoom>();
 
         if(!authResult.isSuccess) {
             const responsePacket = new ResponsePackets.ChatMessage.Builder()
-            .setPacketId(data.getPacketId())
+            .setPacketId(data.packetId)
             .setType(PacketType.ChatMessage)
             .setStatus(Status.AuthenticationError)
             .build()
@@ -274,7 +274,7 @@ const rooms = new Map<String, ChatRoom>();
         }
 
         const responsePacket = new ResponsePackets.ChatMessage.Builder()
-            .setPacketId(data.getPacketId())
+            .setPacketId(data.packetId)
             .setType(PacketType.ChatMessage)
             .setStatus(Status.Succeeded)
             .build()

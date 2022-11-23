@@ -10,13 +10,13 @@ export type SingleMember = {
 export default class NewRoomMember extends ResponsePacket {
     readonly members: SingleMember;
 
-    constructor(status: Status, members: SingleMember, packetId?: string) {
+    constructor(status: Status, members: SingleMember, packetId: string) {
         super(PacketType.NewRoomMember, status, packetId);
         this.members = members;
     }
 
     static Builder = class implements IBuilder<NewRoomMember> {
-        packetId?: string;
+        packetId: string;
         type: PacketType;
         status: Status;
         member: SingleMember;

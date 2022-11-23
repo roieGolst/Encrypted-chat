@@ -37,22 +37,35 @@ export default class NewToken extends ResponsePacket {
         }
 
         build(): NewToken {
-            if(!this.packetId) {
-                throw new Error("'Packet' id is required");
+            if(this.status != Status.Succeeded) {
+                if(!this.packetId) {
+                    throw new Error("'Packet' id is required");
+                }
+    
+                else if(!this.status) {
+                    throw new Error("'Status' id is required");
+                }
+    
+                else if(!this.type) {
+                    throw new Error("'Type' id is required");
+                }
+            } else {
+                if(!this.packetId) {
+                    throw new Error("'Packet' id is required");
+                }
+    
+                else if(!this.status) {
+                    throw new Error("'Status' id is required");
+                }
+    
+                else if(!this.type) {
+                    throw new Error("'Type' id is required");
+                }
+    
+                else if(!this.token) {
+                    throw new Error("'Token' is is required");
+                }
             }
-
-            else if(!this.status) {
-                throw new Error("'Status' id is required");
-            }
-
-            else if(!this.type) {
-                throw new Error("'Type' id is required");
-            }
-
-            else if(!this.token) {
-                throw new Error("'Token' is is required");
-            }
-
             return new NewToken(this.packetId, this.status, this.type, this.token);
         }
     }

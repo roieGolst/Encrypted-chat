@@ -8,8 +8,4 @@ export default abstract class ResponsePacket extends Packet {
         super(type, packetId);
         this.status = status;
     }
-
-    getStatus(): Status {
-        return this.status;
-    }
 };  
