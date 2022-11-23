@@ -13,7 +13,6 @@ export default Joi.object({
         .required(),
 
     status: Joi.string()
-        .valid("succeeded", "failed")
         .required(),
         
     token: Joi.string()
