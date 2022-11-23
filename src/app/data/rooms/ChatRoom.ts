@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 
-export interface RoomObserver {
+export interface IRoomObserver {
     onUserAdded(room: ChatRoom, userId: string): void;
     onUserRemoved(room: ChatRoom, userId: string): void;
     onMessageSent(room: ChatRoom, userId: string, message: string): void;
@@ -10,9 +10,9 @@ export class ChatRoom {
     readonly id: string = v4();
     private readonly onlineUsers: string[] = new Array(); // users Id
 
-    private listener: RoomObserver;
+    private listener: IRoomObserver;
 
-    constructor(listener: RoomObserver) {
+    constructor(listener: IRoomObserver) {
         this.listener = listener;
     }
 

@@ -1,6 +1,5 @@
 import { PacketType, Status } from "../utils/encryptedChatProtocol/commonTypes";
 import * as useCases from "../tasks";
-import { IResult } from "../../common/IResult";
 import connectedUserMap, { ConnectedUserMeneger } from "./ConnectedUserMap";
 import { ChatRoom } from "./rooms/ChatRoom";
 import parser, { ParserErrorResult } from "../utils/encryptedChatProtocol/parser";
@@ -10,6 +9,7 @@ import * as RequestPackets from "../utils/encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../utils/encryptedChatProtocol/responsePackets";
 import app from "../../server"
 import ResponsePacket from "../utils/encryptedChatProtocol/responsePackets/ResponsePacket";
+import RoomObserver from "./rooms/RoomObserver";
 
 
 const rooms = new Map<String, ChatRoom>();
@@ -139,25 +139,7 @@ const rooms = new Map<String, ChatRoom>();
             return this.send(responsePacket);
         }
 
-        const room = useCases.room.createRoomChat({
-            onUserAdded(room: ChatRoom, userId: string): void {
-                console.log(`Room : ${room.id}, user ${userId} is added`);
-            },
-
-            onUserRemoved(room: ChatRoom, userId: string): void {
-                console.log(`Room : ${room.id}, user ${userId} is left`);
-            },
-
-            onMessageSent(room: ChatRoom, fromUserId: string, message: string): void {
-                room.getUsers().forEach((userId: string) => {
-                    if(fromUserId == userId) {
-                        return;
-                    }
-
-                    connectedUserMap.sendTo(userId, message);
-                })
-            }
-        });
+        const room = useCases.room.createRoomChat(new RoomObserver());
 
         room.addUser(authResult.value.id);
         rooms.set(room.id, room);
