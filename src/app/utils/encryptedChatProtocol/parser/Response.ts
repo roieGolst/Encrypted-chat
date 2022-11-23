@@ -36,6 +36,10 @@ export default class ResponseParser {
                 return this.parseChatMessageResponse(type, packetId, status);
             }
 
+            case PacketType.GeneralFailure: {
+                return this.parseGeneralErrorResponse(packetId, status, type);
+            }
+
             default : {
                 return {
                     packetId,
@@ -199,6 +203,14 @@ export default class ResponseParser {
         return new ResponsePackets.ChatMessage.Builder()
             .setType(type)
             .setPacketId(packetId)
+            .setStatus(status)
+            .build()
+    }
+
+    private static parseGeneralErrorResponse(packetId: string, status: Status, type: PacketType): ResponsePackets.GeneralFailure {
+        return new ResponsePackets.GeneralFailure.Builder()
+            .setPacketId(packetId)
+            .setType(type)
             .setStatus(status)
             .build()
     }

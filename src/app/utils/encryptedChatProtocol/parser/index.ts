@@ -32,7 +32,6 @@ export  default class Parser {
 
     static parse(data: Buffer): IResult<Packet, ParserErrorResult> {
         const stringData = data.toString("utf-8");
-
         const parsedData = this.jsonParse(stringData);
 
         if(!parsedData.isSuccess) {
@@ -71,7 +70,7 @@ export  default class Parser {
 
         let result: Packet | ParserErrorResult;
 
-        const packetStatus = this.statusCasting(packet.type);
+        const packetStatus = this.statusCasting(packet.status);
 
         if(packetStatus) {
             result = ResponseParser.parse(packetType, packetId, packetStatus, packet);

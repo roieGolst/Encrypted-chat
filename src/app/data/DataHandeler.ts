@@ -38,25 +38,25 @@ const rooms = new Map<String, ChatRoom>();
         
         switch(packet.type) {
             case PacketType.Register:
-                await this.registerLogic(packet as RequestPackets.RegisterRequest);
+                return await this.registerLogic(packet as RequestPackets.RegisterRequest);
 
             case PacketType.Login:
-                await this.loginLogic(packet as RequestPackets.LoginRequest);
+                return await this.loginLogic(packet as RequestPackets.LoginRequest);
             
             case PacketType.CreateChat:
-                this.createRoom(packet as RequestPackets.CreateChatRequest);
+                return this.createRoom(packet as RequestPackets.CreateChatRequest);
                 
             case PacketType.JoinChat:
-                this.joinChat(packet as RequestPackets.JoinChatRequest);
+                return this.joinChat(packet as RequestPackets.JoinChatRequest);
                     
             case PacketType.ChatMessage:
-                await this.chatLogic(packet as RequestPackets.ChatMessageRequest);
+                return await this.chatLogic(packet as RequestPackets.ChatMessageRequest);
 
             case PacketType.NewToken:
-                this.sendNewToken(packet as RequestPackets.NewTokenRequest);
+                return this.sendNewToken(packet as RequestPackets.NewTokenRequest);
                         
             default : 
-                this.sendError({
+                return this.sendError({
                     packetId: packet.packetId,
                     type: PacketType.GeneralFailure,
                     statuse: Status.GeneralFailure

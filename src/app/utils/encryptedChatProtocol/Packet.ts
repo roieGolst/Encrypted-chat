@@ -9,4 +9,8 @@ export default abstract class Packet {
         this.packetId = packetId;
         this.type = type;
     }
+
+    toString(): string {
+        return JSON.stringify(this);
+    }
 };
