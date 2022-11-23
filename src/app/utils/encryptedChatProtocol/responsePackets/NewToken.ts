@@ -1,11 +1,11 @@
-import { PacketType, Statuses, Tokens } from "../commonTypes";
+import { PacketType, Status, Tokens } from "../commonTypes";
 import { IBuilder } from "../../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
 export default class NewToken extends ResponsePacket {
     readonly token: Tokens;
 
-    constructor(packetId: string, status: Statuses, type: PacketType, token: Tokens) {
+    constructor(packetId: string, status: Status, type: PacketType, token: Tokens) {
         super(type, status, packetId);
         this.token = token;
     }
@@ -13,7 +13,7 @@ export default class NewToken extends ResponsePacket {
     static Builder = class implements IBuilder<NewToken> {
         packetId: string;
         type: PacketType;
-        status: Statuses;
+        status: Status;
         token: Tokens;
 
         setPacketId(packetId: string): this {
@@ -26,7 +26,7 @@ export default class NewToken extends ResponsePacket {
             return this;
         }
 
-        setStatus(status: Statuses): this {
+        setStatus(status: Status): this {
             this.status = status;
             return this;
         }
