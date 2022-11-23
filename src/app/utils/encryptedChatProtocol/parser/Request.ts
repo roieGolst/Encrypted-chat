@@ -1,10 +1,11 @@
-import { PacketType } from "../commonTypes";
+import { PacketType, Status } from "../commonTypes";
 import RequestPacket from "../requestPackets/RequsetPacket";
 import * as RequestPackets from "../requestPackets";
 import * as vlidation from "../../../validations";
+import { ParserErrorResult } from ".";
 
 export default class RequestParser {
-    static parse(type: PacketType, packetId: string, payload: any): RequestPacket | undefined {
+    static parse(type: PacketType, packetId: string, payload: any): RequestPacket | ParserErrorResult {
         switch(type) {
             case PacketType.Register : {
                 return this.parseRegisterRequest(packetId, payload);
@@ -31,16 +32,24 @@ export default class RequestParser {
             }
 
             default : {
-                return undefined;
+                return {
+                    packetId,
+                    type,
+                    statuse: Status.VlidationError
+                };
             }
         }
     }
 
-    private static parseRegisterRequest(packetId: string, payload: any): RequestPackets.RegisterRequest | undefined {
+    private static parseRegisterRequest(packetId: string, payload: any): RequestPackets.RegisterRequest | ParserErrorResult {
         const validationResult = vlidation.packetValidation.request.registerPacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined;
+            return {
+                packetId,
+                type: PacketType.Register,
+                statuse: Status.AuthenticationError
+            }
         }
 
         const username = validationResult.value.userAttributs.username;
@@ -52,11 +61,15 @@ export default class RequestParser {
             .build()
     }
 
-    private static parseLoginRequest(packetId: string, payload: any): RequestPackets.LoginRequest | undefined {
+    private static parseLoginRequest(packetId: string, payload: any): RequestPackets.LoginRequest | ParserErrorResult {
         const validationResult = vlidation.packetValidation.request.loginPacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined;
+            return {
+                packetId,
+                type: PacketType.Login,
+                statuse: Status.VlidationError
+            }
         }
 
         const username = validationResult.value.userAttributs.username;
@@ -68,11 +81,15 @@ export default class RequestParser {
             .build()
     }
 
-    private static parseCreateChatRequest(packetId: string, payload: any): RequestPackets.CreateChatRequest | undefined {
+    private static parseCreateChatRequest(packetId: string, payload: any): RequestPackets.CreateChatRequest | ParserErrorResult {
         const validationResult = vlidation.packetValidation.request.createChatPacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined;
+            return {
+                packetId,
+                type: PacketType.ChatMessage,
+                statuse: Status.VlidationError
+            }
         }
 
         const token = validationResult.value.token;
@@ -83,11 +100,15 @@ export default class RequestParser {
             .build()
     }
 
-    private static parseJoinChatRequest(packetId: string, payload: any): RequestPackets.JoinChatRequest | undefined {
+    private static parseJoinChatRequest(packetId: string, payload: any): RequestPackets.JoinChatRequest | ParserErrorResult {
         const validationResult = vlidation.packetValidation.request.joinChatPacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined;
+            return {
+                packetId,
+                type: PacketType.JoinChat,
+                statuse: Status.VlidationError
+            };
         }
 
         const roomId = validationResult.value.roomId;
@@ -100,11 +121,15 @@ export default class RequestParser {
             .build()
     }
 
-    private static parseNewTokenRequest(packetId: string, payload: any): RequestPackets.NewTokenRequest | undefined {
+    private static parseNewTokenRequest(packetId: string, payload: any): RequestPackets.NewTokenRequest | ParserErrorResult {
         const validationResult = vlidation.packetValidation.request.newTokenPacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined;
+            return {
+                packetId,
+                type: PacketType.NewRoomMember,
+                statuse: Status.VlidationError
+            };
         }
 
         const refreshToken = validationResult.value.refreshToken;
@@ -115,11 +140,15 @@ export default class RequestParser {
             .build()
     }
 
-    private static parseChatMessageRequest(packetId: string, payload: any): RequestPackets.ChatMessageRequest | undefined {
+    private static parseChatMessageRequest(packetId: string, payload: any): RequestPackets.ChatMessageRequest | ParserErrorResult {
         const validationResult = vlidation.packetValidation.request.chatMessagePacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined;
+            return {
+                packetId,
+                type: PacketType.ChatMessage,
+                statuse: Status.VlidationError
+            };
         }
 
         const roomId = validationResult.value.roomId;

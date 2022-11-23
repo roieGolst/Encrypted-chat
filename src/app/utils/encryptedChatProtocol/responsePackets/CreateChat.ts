@@ -37,7 +37,7 @@ export default class CreateChatResponsePacket extends ResponsePacket {
         }
 
         build(): CreateChatResponsePacket {
-            if(this.status == Status.Failed) {
+            if(this.status != Status.Succeeded) {
                 if(!this.packetId) {
                     throw new Error("'Packet' id is required");
                 }

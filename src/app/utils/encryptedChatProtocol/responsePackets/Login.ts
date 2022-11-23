@@ -45,7 +45,7 @@ export default class LoginResponsePacket extends ResponsePacket {
         }
 
         build(): LoginResponsePacket {
-            if(this.status == Status.Failed) {
+            if(this.status != Status.Succeeded) {
                 if(!this.packetId) {
                     throw new Error("'PacketId' is required");
                 }
