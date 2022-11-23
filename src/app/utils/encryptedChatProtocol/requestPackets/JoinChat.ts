@@ -1,12 +1,12 @@
 import { IBuilder } from "../../../common/IBuilder";
-import { PacketType, Tokens } from "../commonTypes";
+import { PacketType } from "../commonTypes";
 import Packet from "../Packet";
 
 export default class JoinChatRequestPacket extends Packet {
-    readonly token: Tokens;
+    readonly token: string;
     readonly roomId: string;
 
-    constructor(token: Tokens, roomId: string, packetId?: string) {
+    constructor(token: string, roomId: string, packetId?: string) {
         super(PacketType.JoinChat, packetId);
         this.token = token;
         this.roomId = roomId;
@@ -14,7 +14,7 @@ export default class JoinChatRequestPacket extends Packet {
 
     static Builder = class implements IBuilder<JoinChatRequestPacket> {
         private packetId?: string;
-        private token: Tokens;
+        private token: string;
         private roomId: string
 
         setPacketId(packetId: string): this {
@@ -23,9 +23,7 @@ export default class JoinChatRequestPacket extends Packet {
         }
 
         setToken(token: string): this {
-            this.token = {
-                token: token
-            };
+            this.token = token
 
             return this;
         }

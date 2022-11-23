@@ -1,6 +1,6 @@
 import { IResult } from "../../../../common/IResult";
 import { PacketType, Status } from "../../../utils/encryptedChatProtocol/commonTypes";
-import { chatMessaegResponsePacketSchema } from "./schemas";
+import { chatMessaegResponsePacketSchema, createChatResponsePacketSchema } from "./schemas";
 
 type CreateChatResponsePacket = {
     packetId: string;
@@ -11,7 +11,7 @@ type CreateChatResponsePacket = {
 
 export default {
     validate: (data: any): IResult<CreateChatResponsePacket> => {
-        const result = chatMessaegResponsePacketSchema.validate(data);
+        const result = createChatResponsePacketSchema.validate(data);
 
         if(result.error) {
             return {

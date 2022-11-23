@@ -3,16 +3,16 @@ import { PacketType, Tokens } from "../commonTypes";
 import Packet from "../Packet";
 
 export default class CreateChatRequestPacket extends Packet {
-    readonly token: Tokens;
+    readonly token: string;
 
-    constructor(token: Tokens, packetId?: string) {
+    constructor(token: string, packetId?: string) {
         super(PacketType.CreateChat, packetId);
         this.token = token;
     }
 
     static Builder = class implements IBuilder<CreateChatRequestPacket> {
         private packetId?: string;
-        private token: Tokens;
+        private token: string;
 
         setPacketId(packetId: string): this {
             this.packetId = packetId;
@@ -20,9 +20,7 @@ export default class CreateChatRequestPacket extends Packet {
         }
 
         setToken(token: string): this {
-            this.token = {
-                token: token
-            };
+            this.token = token;
 
             return this;
         }
