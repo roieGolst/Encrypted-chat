@@ -11,6 +11,6 @@ export default Joi.object({
         .valid("chatMessage")
         .required(),
 
-    status: Joi.string()
+    status: Joi.number()
         .required()
 });

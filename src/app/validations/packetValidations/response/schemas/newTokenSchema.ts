@@ -12,7 +12,7 @@ export default Joi.object({
         .valid("newToken")
         .required(),
 
-    status: Joi.string()
+    status: Joi.number()
         .required(),
         
     token: Joi.string()

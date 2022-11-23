@@ -12,7 +12,7 @@ export default Joi.object({
         .valid("login")
         .required(),
 
-    status: Joi.string()
+    status: Joi.number()
         .required(),
         
     userAttributs: Joi.object({

@@ -11,6 +11,6 @@ export default  Joi.object({
         .valid("register")
         .required(),
 
-    status: Joi.string()
+    status: Joi.number()
         .required()
 });
