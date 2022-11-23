@@ -6,12 +6,17 @@ export enum PacketType {
     NewToken = "newToken",
     NewRoomMember = "newRoomMember",
     ChatMessage = "chatMessage",
+    GeneralFailure = "generalFailure"
 };
 
-export enum Statuses {
-    Succeeded = "succeeded",
-    Failed = "failed"
-};
+export enum Status {
+    Succeeded = 1,
+    InvalidPacket = 2,
+    VlidationError = 3,
+    AuthenticationError = 4,
+    TokenExpired = 5,
+    GeneralFailure = 6
+}
 
 export type AuthAttributs = {
     username: string,

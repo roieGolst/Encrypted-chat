@@ -12,8 +12,7 @@ export default Joi.object({
         .valid("joinChat")
         .required(),
         
-    status: Joi.string()
-        .valid("succeeded", "failed")
+    status: Joi.number()
         .required(),
 
     members: Joi.any()

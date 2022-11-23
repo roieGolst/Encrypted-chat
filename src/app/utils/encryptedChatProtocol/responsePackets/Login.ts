@@ -1,4 +1,4 @@
-import { UserDetails, PacketType, Statuses, Tokens } from "../commonTypes";
+import { UserDetails, PacketType, Status, Tokens } from "../commonTypes";
 import { IBuilder } from "../../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
@@ -6,7 +6,7 @@ export default class LoginResponsePacket extends ResponsePacket {
     readonly userAttributs: UserDetails;
     readonly tokens: Tokens;
 
-    constructor(packetId: string, status: Statuses, type: PacketType, userAttributs: UserDetails, tokens: Tokens) {
+    constructor(packetId: string, status: Status, type: PacketType, userAttributs: UserDetails, tokens: Tokens) {
         super(type, status, packetId)
         this.userAttributs = userAttributs;
         this.tokens = tokens;
@@ -14,7 +14,7 @@ export default class LoginResponsePacket extends ResponsePacket {
 
     static Builder = class implements IBuilder<LoginResponsePacket> {
         private packetId: string;
-        private status: Statuses;
+        private status: Status;
         private type: PacketType;
         private userAttributs: UserDetails;
         private tokens: Tokens;
@@ -24,7 +24,7 @@ export default class LoginResponsePacket extends ResponsePacket {
             return this;
         }
 
-        setStatus(status: Statuses): this {
+        setStatus(status: Status): this {
             this.status = status;
             return this;
         }
@@ -45,7 +45,7 @@ export default class LoginResponsePacket extends ResponsePacket {
         }
 
         build(): LoginResponsePacket {
-            if(this.status == Statuses.Failed) {
+            if(this.status != Status.Succeeded) {
                 if(!this.packetId) {
                     throw new Error("'PacketId' is required");
                 }

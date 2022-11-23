@@ -1,8 +1,14 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType } from "../commonTypes";
+import { PacketType, Status } from "../commonTypes";
 import Packet from "../Packet";
 import ResponseParser from "./Response";
 import RequestParser from "./Request";
+
+export type ParserErrorResult = {
+    packetId?: string,
+    type?: PacketType,
+    statuse: Status
+}
 
 export  default class Parser {
 
@@ -24,13 +30,17 @@ export  default class Parser {
         }
     }
 
-    static parse(data: Buffer): IResult<Packet> {
+    static parse(data: Buffer): IResult<Packet, ParserErrorResult> {
         const stringData = data.toString("utf-8");
-
         const parsedData = this.jsonParse(stringData);
 
         if(!parsedData.isSuccess) {
-            return parsedData;
+            return {
+                isSuccess: false,
+                error: {
+                    statuse: Status.InvalidPacket
+                }
+            };
         }
 
         const packet = parsedData.value;
@@ -38,7 +48,9 @@ export  default class Parser {
         if(!packet["type"] || !packet["packetId"]) {
             return {
                 isSuccess: false,
-                error: "Invalid packet"
+                error: {
+                    statuse: Status.InvalidPacket
+                }
             }
         }
 
@@ -49,22 +61,27 @@ export  default class Parser {
         if(!packetType) {
             return {
                 isSuccess: false,
-                error:  "Invalid type argument"
+                error:  {
+                    packetId,
+                    statuse: Status.InvalidPacket
+                }
             };
         }
 
-        let result: Packet | undefined;
+        let result: Packet | ParserErrorResult;
 
-        if(packet["status"]) {
-            result = ResponseParser.parse(packetType, packetId, packet["status"], packet);
+        const packetStatus = this.statusCasting(packet.status);
+
+        if(packetStatus) {
+            result = ResponseParser.parse(packetType, packetId, packetStatus, packet);
         } else {
             result = RequestParser.parse(packetType, packetId, packet);
         }
 
-        if(!result) {
+        if(! (result instanceof Packet)) {
             return {
                 isSuccess: false,
-                error: "Parser error: Faild to parse the data."
+                error: result
             };
         }
 
@@ -83,11 +100,20 @@ export  default class Parser {
             }
         }
         catch(e) {
-            
+            return undefined;
         }
-
-        return undefined;
     }
 
-    
+    private static statusCasting(status: number): Status | undefined {
+        try {
+            let currentStatus: Status = status as Status;
+
+            if(currentStatus) {
+                return currentStatus;
+            }
+        }
+        catch(e) {
+            return undefined;
+        }
+    }
 }

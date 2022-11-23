@@ -1,15 +1,11 @@
-import { PacketType, Statuses } from "../commonTypes";
+import { PacketType, Status } from "../commonTypes";
 import Packet from "../Packet";
 
 export default abstract class ResponsePacket extends Packet {
-    readonly status: Statuses;
+    readonly status: Status;
 
-    constructor(type: PacketType ,status: Statuses, packetId?: string) {
+    constructor(type: PacketType ,status: Status, packetId?: string) {
         super(type, packetId);
         this.status = status;
-    }
-
-    getStatus(): Statuses {
-        return this.status;
     }
 };  

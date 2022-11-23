@@ -1,10 +1,11 @@
-import { PacketType, Statuses } from "../commonTypes";
+import { PacketType, Status } from "../commonTypes";
 import ResponsePacket from "../responsePackets/ResponsePacket";
 import * as ResponsePackets from "../responsePackets";
 import * as validations from "../../../validations";
+import { ParserErrorResult } from ".";
 
 export default class ResponseParser {
-    static parse(type: PacketType, packetId: string, status: Statuses, payload: any): ResponsePacket | undefined {
+    static parse(type: PacketType, packetId: string, status: Status, payload: any): ResponsePacket | ParserErrorResult {
         switch(type) {
             case PacketType.Register : {
                 return this.parseRegisterResponse(type, packetId, status);
@@ -22,10 +23,10 @@ export default class ResponseParser {
                 return this.parseJoinChatResponse(type, packetId, status, payload);
             }
 
-            case PacketType.NewRoomMember : {
-                // return this.parseNewRoomMemberResponse(type, packetId, status, payload);
-                return;
-            }
+            // case PacketType.NewRoomMember : {
+            //     // return this.parseNewRoomMemberResponse(type, packetId, status, payload);
+            //     return;
+            // }
 
             case PacketType.NewToken : {
                 return this.parseNewTokenResponse(type, packetId, status, payload);
@@ -35,13 +36,21 @@ export default class ResponseParser {
                 return this.parseChatMessageResponse(type, packetId, status);
             }
 
+            case PacketType.GeneralFailure: {
+                return this.parseGeneralErrorResponse(packetId, status, type);
+            }
+
             default : {
-                return undefined;
+                return {
+                    packetId,
+                    type,
+                    statuse: Status.InvalidPacket
+                };
             }
         }
     }
 
-    private static parseRegisterResponse(type: PacketType, packetId: string, status: Statuses): ResponsePackets.RegisterResponse {
+    private static parseRegisterResponse(type: PacketType, packetId: string, status: Status): ResponsePackets.RegisterResponse {
         return new ResponsePackets.RegisterResponse.Builder()
             .setPacketId(packetId)
             .setType(type)
@@ -49,11 +58,15 @@ export default class ResponseParser {
             .build()
     }
 
-    private static parseLoginResponse(type: PacketType, packetId: string, status: Statuses, payload: any): ResponsePackets.LoginResponse | undefined {
+    private static parseLoginResponse(type: PacketType, packetId: string, status: Status, payload: any): ResponsePackets.LoginResponse | ParserErrorResult {
         const validationResult = validations.packetValidation.response.loginPacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined
+            return {
+                packetId,
+                type: PacketType.Login,
+                statuse: Status.VlidationError
+            }
         }
 
         const userAttributs = validationResult.value.userAttributs;
@@ -76,11 +89,15 @@ export default class ResponseParser {
             .build()
     }
 
-    private static parseCreateChatResponse(type: PacketType, packetId: string, status: Statuses, payload: any): ResponsePackets.CreateChatResponse | undefined {
+    private static parseCreateChatResponse(type: PacketType, packetId: string, status: Status, payload: any): ResponsePackets.CreateChatResponse | ParserErrorResult {
         const validationResult = validations.packetValidation.response.createChatPacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined
+            return {
+                packetId,
+                type: PacketType.CreateChat,
+                statuse: Status.VlidationError
+            }
         }
 
         const roomId = validationResult.value.roomId;
@@ -101,11 +118,15 @@ export default class ResponseParser {
             .build()
     }
 
-    private static parseJoinChatResponse(type: PacketType, packetId: string, status: Statuses, payload: any): ResponsePackets.JoinChatResponse | undefined {
+    private static parseJoinChatResponse(type: PacketType, packetId: string, status: Status, payload: any): ResponsePackets.JoinChatResponse | ParserErrorResult {
         const validationResult = validations.packetValidation.response.joinChatPacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined
+            return {
+                packetId,
+                type: PacketType.JoinChat,
+                statuse: Status.VlidationError
+            }
         }
 
         const members = validationResult.value.members;
@@ -132,7 +153,7 @@ export default class ResponseParser {
             .build()
     }
 
-    // private static parseNewRoomMemberResponse(type: PacketType, packetId: string, status: Statuses, payload: any): ResponsePackets.NewRoomMember | undefined {
+    // private static parseNewRoomMemberResponse(type: PacketType, packetId: string, status: Statuse, payload: any): ResponsePackets.NewRoomMember | ParserErrorResult {
     //     const validationResult = validations.packetValidation.response.N.validate(payload);
 
     //     if(!validationResult.isSuccess) {
@@ -149,11 +170,15 @@ export default class ResponseParser {
     //         .build()
     // }
 
-    private static parseNewTokenResponse(type: PacketType, packetId: string, status: Statuses, payload: any): ResponsePackets.NewToken | undefined {
+    private static parseNewTokenResponse(type: PacketType, packetId: string, status: Status, payload: any): ResponsePackets.NewToken | ParserErrorResult {
         const validationResult = validations.packetValidation.response.newTokenPacket.validate(payload);
 
         if(!validationResult.isSuccess) {
-            return undefined
+            return {
+                packetId,
+                type: PacketType.NewRoomMember,
+                statuse: Status.VlidationError
+            }
         }
 
         const token = validationResult.value.token;
@@ -174,10 +199,18 @@ export default class ResponseParser {
             .build()
     }
 
-    private static parseChatMessageResponse(type: PacketType, packetId: string, status: Statuses): ResponsePackets.ChatMessage {
+    private static parseChatMessageResponse(type: PacketType, packetId: string, status: Status): ResponsePackets.ChatMessage {
         return new ResponsePackets.ChatMessage.Builder()
             .setType(type)
             .setPacketId(packetId)
+            .setStatus(status)
+            .build()
+    }
+
+    private static parseGeneralErrorResponse(packetId: string, status: Status, type: PacketType): ResponsePackets.GeneralFailure {
+        return new ResponsePackets.GeneralFailure.Builder()
+            .setPacketId(packetId)
+            .setType(type)
             .setStatus(status)
             .build()
     }

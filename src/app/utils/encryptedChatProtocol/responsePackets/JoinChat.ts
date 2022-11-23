@@ -1,11 +1,11 @@
-import { PacketType, Statuses } from "../commonTypes";
+import { PacketType, Status } from "../commonTypes";
 import { IBuilder } from "../../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
 export default class JoinChatPacket extends ResponsePacket {
     readonly members?: Map<string, string> | undefined;
 
-    constructor(packetId: string, status: Statuses, type: PacketType, members: Map<string, string> | undefined = undefined) {
+    constructor(packetId: string, status: Status, type: PacketType, members: Map<string, string> | undefined = undefined) {
         super(type, status, packetId);
         this.members = members;
     }
@@ -13,7 +13,7 @@ export default class JoinChatPacket extends ResponsePacket {
     static Builder = class implements IBuilder<JoinChatPacket> {
         packetId: string;
         type: PacketType;
-        status: Statuses;
+        status: Status;
         members?: Map<string, string>;
 
         setPacketId(packetId: string): this {
@@ -26,7 +26,7 @@ export default class JoinChatPacket extends ResponsePacket {
             return this;
         }
 
-        setStatus(status: Statuses): this {
+        setStatus(status: Status): this {
             this.status = status;
             return this;
         }
@@ -37,17 +37,35 @@ export default class JoinChatPacket extends ResponsePacket {
         }
 
         build(): JoinChatPacket {
-            if(!this.packetId) {
-                throw new Error("'PacketId' is required");
+            if(this.status != Status.Succeeded) {
+                if(!this.packetId) {
+                    throw new Error("'PacketId' is required");
+                }
+    
+                else if(!this.status) {
+                    throw new Error("'Status' is required");
+                }
+    
+                else if(!this.type) {
+                    throw new Error("'Type' is required");
+                }
+            } else {
+                if(!this.packetId) {
+                    throw new Error("'PacketId' is required");
+                }
+    
+                else if(!this.status) {
+                    throw new Error("'Status' is required");
+                }
+    
+                else if(!this.type) {
+                    throw new Error("'Type' is required");
+                }
+                else if(!this.members) {
+                    throw new Error("'Members' is required");
+                }
             }
-
-            else if(!this.status) {
-                throw new Error("'Status' is required");
-            }
-
-            else if(!this.type) {
-                throw new Error("'Type' is required");
-            }
+            
 
             return new JoinChatPacket(this.packetId, this.status, this.type, this.members);
         }

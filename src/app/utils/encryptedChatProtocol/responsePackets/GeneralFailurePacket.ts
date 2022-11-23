@@ -1,19 +1,19 @@
-import { PacketType, Status } from "../commonTypes";
 import { IBuilder } from "../../../common/IBuilder";
+import { PacketType, Status } from "../commonTypes";
 import ResponsePacket from "./ResponsePacket";
 
-export default class RegisterResponsePacket extends ResponsePacket {
+export default class GeneralFailureResponsePacket extends ResponsePacket {
 
-    constructor(packetId: string, status: Status, type: PacketType) {
+    constructor(status: Status, type: PacketType, packetId?: string) {
         super(type, status, packetId);
     }
 
-    static Builder = class implements IBuilder<RegisterResponsePacket> {
-        packetId: string;
-        status: Status;
+    static Builder = class implements IBuilder<GeneralFailureResponsePacket> {
+        packetId?: string;
         type: PacketType;
+        status: Status;
 
-        setPacketId(packetId: string): this {
+        setPacketId(packetId?: string): this {
             this.packetId = packetId;
             return this;
         }
@@ -28,20 +28,15 @@ export default class RegisterResponsePacket extends ResponsePacket {
             return this;
         }
 
-        build(): RegisterResponsePacket {
-            if(!this.packetId) {
-                throw new Error("'Packet id is required");
-            }
-
-            else if(!this.status) {
+        build(): GeneralFailureResponsePacket {
+            if(!this.status) {
                 throw new Error("'Status' is required");
             }
-
             else if(!this.type) {
                 throw new Error("'Type' is required");
             }
 
-            return new RegisterResponsePacket(this.packetId, this.status, this.type);
+            return new GeneralFailureResponsePacket(this.status, this.type, this.packetId);
         }
     }
 }

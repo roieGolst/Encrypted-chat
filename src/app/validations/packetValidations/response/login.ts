@@ -1,11 +1,11 @@
 import { IResult } from "../../../../common/IResult";
-import { AuthAttributs, PacketType, Statuses, Tokens, UserDetails } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { AuthAttributs, PacketType, Status, Tokens, UserDetails } from "../../../utils/encryptedChatProtocol/commonTypes";
 import { loginResponsePacketSchema } from "./schemas";
 
 type LoginResponsePacket = {
     packetId: string;
     type: PacketType.Login;
-    status: Statuses,
+    status: Status,
     userAttributs?: UserDetails;
     tokens?: Tokens
 };

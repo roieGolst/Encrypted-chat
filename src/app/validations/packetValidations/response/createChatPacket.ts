@@ -1,11 +1,11 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType, Statuses } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType, Status } from "../../../utils/encryptedChatProtocol/commonTypes";
 import { chatMessaegResponsePacketSchema } from "./schemas";
 
 type CreateChatResponsePacket = {
     packetId: string;
     type: PacketType.CreateChat;
-    status: Statuses;
+    status: Status;
     roomId?: string;
 }
 

@@ -1,11 +1,11 @@
-import { PacketType, Statuses } from "../commonTypes";
+import { PacketType, Status } from "../commonTypes";
 import { IBuilder } from "../../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
 export default class CreateChatResponsePacket extends ResponsePacket {
     readonly roomId: string
 
-    constructor(packetId: string, status: Statuses, type: PacketType, roomId: string) {
+    constructor(packetId: string, status: Status, type: PacketType, roomId: string) {
         super(type, status, packetId);
         this.roomId = roomId;
     }
@@ -13,7 +13,7 @@ export default class CreateChatResponsePacket extends ResponsePacket {
     static Builder = class implements IBuilder<CreateChatResponsePacket> {
         packetId: string;
         type: PacketType;
-        status: Statuses;
+        status: Status;
         roomId: string;
 
         setPacketId(packetId: string): this {
@@ -26,7 +26,7 @@ export default class CreateChatResponsePacket extends ResponsePacket {
             return this;
         }
 
-        setStatus(status: Statuses): this {
+        setStatus(status: Status): this {
             this.status = status;
             return this;
         }
@@ -37,7 +37,7 @@ export default class CreateChatResponsePacket extends ResponsePacket {
         }
 
         build(): CreateChatResponsePacket {
-            if(this.status == Statuses.Failed) {
+            if(this.status != Status.Succeeded) {
                 if(!this.packetId) {
                     throw new Error("'Packet' id is required");
                 }

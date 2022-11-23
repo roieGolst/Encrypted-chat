@@ -21,9 +21,7 @@ export class UserSocket {
         });
 
         this.socket.on("data", async (data) => {
-            const response = await handler.handleOnData(data);
-
-            this.fetchResponse(response);
+            handler.handleOnData(data);
         });
     }
 
@@ -40,24 +38,6 @@ export class UserSocket {
             cb(this.socketId)
             this.destroy();
         });
-    }
-
-    private fetchResponse(response: IResult<string>): void {
-        if(!response.isSuccess) {
-            this.sendError(response.error!);
-            return;
-        }
-
-        return this.send(response.value);
-    }
-
-    private sendError(exception: Error | string) {
-        if(exception instanceof Error) {
-            this.send(`Error message: ${exception.message}`);
-        }
-        else{
-            this.send(`Error message: ${exception}`);
-        }
     }
 
     send(message: string) {

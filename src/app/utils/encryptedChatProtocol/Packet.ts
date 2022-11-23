@@ -2,7 +2,6 @@ import { PacketType } from "./commonTypes";
 import { v4 } from 'uuid';
 
 export default abstract class Packet {
-    //TODO: make these fields as public and readonly;
     readonly packetId: string;
     readonly type: PacketType;
 
@@ -10,17 +9,8 @@ export default abstract class Packet {
         this.packetId = packetId;
         this.type = type;
     }
-    
-    //TODO: remove these geters
-    getPacketId(): string {
-        return this.packetId;
-    }
-
-    getType(): PacketType {
-        return this.type;
-    }
 
     toString(): string {
         return JSON.stringify(this);
-    };
+    }
 };
