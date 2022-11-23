@@ -18,7 +18,7 @@ export declare module TcpServer {
     }
     
     interface IHandler {
-        handleOnData(data: Buffer): Promise<IResponse<string>>;
+        handleOnData(data: Buffer): void;
     }
 
     type HandlerFactory = (socketId: string) => IHandler;

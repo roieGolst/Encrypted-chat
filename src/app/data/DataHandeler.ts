@@ -1,13 +1,15 @@
-import { PacketType, Statuses } from "../utils/encryptedChatProtocol/commonTypes";
+import { PacketType, Status } from "../utils/encryptedChatProtocol/commonTypes";
 import * as useCases from "../tasks";
 import { IResult } from "../../common/IResult";
 import connectedUserMap, { ConnectedUserMeneger } from "./ConnectedUserMap";
 import { ChatRoom } from "./rooms/ChatRoom";
-import parser from "../utils/encryptedChatProtocol/parser";
+import parser, { ParserErrorResult } from "../utils/encryptedChatProtocol/parser";
 import { TcpServer } from "../../server/types";
 import RequestPacket from "../utils/encryptedChatProtocol/requestPackets/RequsetPacket";
 import * as RequestPackets from "../utils/encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../utils/encryptedChatProtocol/responsePackets";
+import app from "../../server"
+import ResponsePacket from "../utils/encryptedChatProtocol/responsePackets/ResponsePacket";
 
 
 const rooms = new Map<String, ChatRoom>();
@@ -21,7 +23,7 @@ const rooms = new Map<String, ChatRoom>();
         this.socketId = socketId;
     }
 
-    async handleOnData(data: Buffer): Promise<IResult<string>> {
+    async handleOnData(data: Buffer): Promise<void> {
 
         const parseResult = parser.parse(data);
 
@@ -29,88 +31,72 @@ const rooms = new Map<String, ChatRoom>();
             return this.sendError(parseResult.error);
         }
 
-        return await this.handelByType(parseResult.value);
+        this.handelByType(parseResult.value);
     }
 
-    private async handelByType(data: RequestPacket): Promise<IResult<string>> {
+    private async handelByType(packet: RequestPacket): Promise<void> {
         
-        switch(data.getType()) {
+        switch(packet.getType()) {
             case PacketType.Register:
-                return await this.registerLogic(data);
+                await this.registerLogic(packet as RequestPackets.RegisterRequest);
 
             case PacketType.Login:
-                return await this.loginLogic(data);
+                await this.loginLogic(packet as RequestPackets.LoginRequest);
             
             case PacketType.CreateChat:
-                return this.createRoom(data);
+                this.createRoom(packet as RequestPackets.CreateChatRequest);
                 
             case PacketType.JoinChat:
-                return this.joinChat(data);
+                this.joinChat(packet as RequestPackets.JoinChatRequest);
                     
             case PacketType.ChatMessage:
-                return await this.chatLogic(data);
+                await this.chatLogic(packet as RequestPackets.ChatMessageRequest);
 
             case PacketType.NewToken:
-                return this.sendNewToken(data);
+                this.sendNewToken(packet as RequestPackets.NewTokenRequest);
                         
             default : 
-                return this.sendError("Invalid 'Type'");
+                this.sendError({
+                    packetId: packet.packetId,
+                    type: PacketType.GeneralFailure,
+                    statuse: Status.GeneralFailure
+                });
         }
     }
 
-    private async registerLogic(data: RequestPacket): Promise<IResult<string>> {
-        if(! (data instanceof RequestPackets.RegisterRequest)) {
-            const responsePacket = new ResponsePackets.RegisterResponse.Builder()
-                .setPacketId(data.getPacketId())
-                .setType(PacketType.Register)
-                .setStatus(Statuses.Failed)
-                .build()
-
-            return this.send(responsePacket.toString())
-        }
-
+    private async registerLogic(data: RequestPackets.RegisterRequest): Promise<void> {
         const registerResult = await useCases.register.insertUser(data.userAttributs);
 
         if(!registerResult.isSuccess) {
             const responsePacket = new ResponsePackets.RegisterResponse.Builder()
                 .setPacketId(data.getPacketId())
                 .setType(PacketType.Register)
-                .setStatus(Statuses.Failed)
+                .setStatus(Status.GeneralFailure)
                 .build()
 
-            return this.send(responsePacket.toString())
+            return this.send(responsePacket);
         }
 
         const responsePacket = new ResponsePackets.RegisterResponse.Builder()
             .setPacketId(data.getPacketId())
             .setType(PacketType.Register)
-            .setStatus(Statuses.Succeeded)
+            .setStatus(Status.Succeeded)
             .build()
 
-        return this.send(responsePacket.toString());
+        return this.send(responsePacket);
     }
 
-    private async loginLogic(data: RequestPacket): Promise<IResult<string>> {
-        if(! (data instanceof RequestPackets.LoginRequest)) {
-            const responsePacket = new ResponsePackets.LoginResponse.Builder()
-                .setPacketId(data.getPacketId())
-                .setType(PacketType.Login)
-                .setStatus(Statuses.Failed)
-                .build()
-
-            return this.send(responsePacket.toString())
-        }
-
+    private async loginLogic(data: RequestPackets.LoginRequest): Promise<void> {
         const loginResult = await useCases.login.isValidLogin(data.userAttributs);
 
         if(!loginResult.isSuccess) {
             const responsePacket = new ResponsePackets.LoginResponse.Builder()
                 .setPacketId(data.getPacketId())
                 .setType(PacketType.Login)
-                .setStatus(Statuses.Failed)
+                .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket.toString())
+            return this.send(responsePacket);
         }
 
         const user = loginResult.value;
@@ -119,10 +105,10 @@ const rooms = new Map<String, ChatRoom>();
             const responsePacket = new ResponsePackets.LoginResponse.Builder()
                 .setPacketId(data.getPacketId())
                 .setType(PacketType.Login)
-                .setStatus(Statuses.Failed)
+                .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket.toString())
+            return this.send(responsePacket);
         }
         
         this.connectedUserMap.add(user.id, this.socketId);
@@ -132,35 +118,25 @@ const rooms = new Map<String, ChatRoom>();
         const responseData = new ResponsePackets.LoginResponse.Builder()
             .setPacketId(data.getPacketId())
             .setType(PacketType.Login)
-            .setStatus(Statuses.Succeeded)
+            .setStatus(Status.Succeeded)
             .setTokens(tokens)
             .setUserAttributs({userId: user.id, username: user.userName})
             .build();
 
-        return this.send(responseData.toString());
+        return this.send(responseData);
     }
 
-    private createRoom(data: RequestPacket): IResult<string> {
-        if(! (data instanceof RequestPackets.CreateChatRequest)) {
-            const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
-                .setPacketId(data.getPacketId())
-                .setType(PacketType.CreateChat)
-                .setStatus(Statuses.Failed)
-                .build()
-
-            return this.send(responsePacket.toString())
-        }
-
+    private createRoom(data: RequestPackets.CreateChatRequest): void {
         const authResult = useCases.token.authValidate(data.token.token);
 
         if(!authResult.isSuccess) {
             const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
                 .setPacketId(data.getPacketId())
                 .setType(PacketType.CreateChat)
-                .setStatus(Statuses.Failed)
+                .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket.toString())
+            return this.send(responsePacket);
         }
 
         const room = useCases.room.createRoomChat({
@@ -189,24 +165,14 @@ const rooms = new Map<String, ChatRoom>();
         const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
             .setPacketId(data.getPacketId())
             .setType(PacketType.CreateChat)
-            .setStatus(Statuses.Succeeded)
+            .setStatus(Status.Succeeded)
             .setRoomId(room.id)
             .build();
 
-        return this.send(responsePacket.toString());
+        return this.send(responsePacket);
     }
 
-    private joinChat(data: RequestPacket): IResult<string> {
-        if(! (data instanceof RequestPackets.JoinChatRequest)) {
-            const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
-                .setPacketId(data.getPacketId())
-                .setType(PacketType.JoinChat)
-                .setStatus(Statuses.Failed)
-                .build()
-
-            return this.send(responsePacket.toString())
-        }
-
+    private joinChat(data: RequestPackets.JoinChatRequest): void {
         const roomId = data.roomId;
         const token = data.token.token;
 
@@ -216,20 +182,20 @@ const rooms = new Map<String, ChatRoom>();
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.getPacketId())
                 .setType(PacketType.JoinChat)
-                .setStatus(Statuses.Failed)
+                .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket.toString())
+            return this.send(responsePacket);
         }
 
         if(this.connectedUserMap.isConnected(authResult.value.id)) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.getPacketId())
                 .setType(PacketType.JoinChat)
-                .setStatus(Statuses.Failed)
+                .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket.toString())
+            return this.send(responsePacket);
         }
 
         const room = rooms.get(roomId);
@@ -238,10 +204,10 @@ const rooms = new Map<String, ChatRoom>();
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.getPacketId())
                 .setType(PacketType.JoinChat)
-                .setStatus(Statuses.Failed)
+                .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket.toString())
+            return this.send(responsePacket);
         }
 
         room.addUser(authResult.value.id);
@@ -263,24 +229,14 @@ const rooms = new Map<String, ChatRoom>();
         const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.getPacketId())
                 .setType(PacketType.JoinChat)
-                .setStatus(Statuses.Succeeded)
+                .setStatus(Status.Succeeded)
                 .setMembers(mapMembers)
                 .build();
 
-        return this.send(responsePacket.toString())
+        return this.send(responsePacket);
     }
 
-    private async chatLogic(data: RequestPacket): Promise<IResult<string>> {
-        if(! (data instanceof RequestPackets.ChatMessageRequest)) {
-            const responsePacket = new ResponsePackets.ChatMessage.Builder()
-            .setPacketId(data.getPacketId())
-            .setType(PacketType.ChatMessage)
-            .setStatus(Statuses.Failed)
-            .build()
-
-            return this.send(responsePacket.toString());
-        }
-
+    private async chatLogic(data: RequestPackets.ChatMessageRequest): Promise<void> {
         const token = data.token.token;
         const roomId = data.roomId;
         const message = data.message;
@@ -291,10 +247,10 @@ const rooms = new Map<String, ChatRoom>();
            const responsePacket = new ResponsePackets.ChatMessage.Builder()
             .setPacketId(data.getPacketId())
             .setType(PacketType.ChatMessage)
-            .setStatus(Statuses.Failed)
+            .setStatus(Status.AuthenticationError)
             .build()
 
-            return this.send(responsePacket.toString());
+            return this.send(responsePacket);
         }
 
         const room = rooms.get(roomId);
@@ -303,39 +259,25 @@ const rooms = new Map<String, ChatRoom>();
             const responsePacket = new ResponsePackets.ChatMessage.Builder()
             .setPacketId(data.getPacketId())
             .setType(PacketType.ChatMessage)
-            .setStatus(Statuses.Failed)
+            .setStatus(Status.AuthenticationError)
             .build()
 
-            return this.send(responsePacket.toString());
+            return this.send(responsePacket);
         }
 
         room.sendMessage(authResult.value.id, message);
 
-        return this.send("Message sends");
+        const packet = new ResponsePackets.ChatMessage.Builder()
+            .setPacketId(data.packetId)
+            .setType(data.type)
+            .setStatus(Status.Succeeded)
+            .build();
+
+        return this.send(packet);
     }
 
-    private sendNewToken(data: RequestPacket): IResult<string> {
-        if(! (data instanceof RequestPackets.NewTokenRequest)) {
-            const responsePacket = new ResponsePackets.ChatMessage.Builder()
-            .setPacketId(data.getPacketId())
-            .setType(PacketType.ChatMessage)
-            .setStatus(Statuses.Failed)
-            .build()
-
-            return this.send(responsePacket.toString());
-        }
-
+    private sendNewToken(data: RequestPackets.NewTokenRequest): void {
         const refreshToken = data.refreshToken;
-
-        if(!refreshToken) {
-            const responsePacket = new ResponsePackets.ChatMessage.Builder()
-            .setPacketId(data.getPacketId())
-            .setType(PacketType.ChatMessage)
-            .setStatus(Statuses.Failed)
-            .build()
-
-            return this.send(responsePacket.toString());
-        }
 
         const authResult = useCases.token.authRefreshToken(refreshToken);
 
@@ -343,42 +285,44 @@ const rooms = new Map<String, ChatRoom>();
             const responsePacket = new ResponsePackets.ChatMessage.Builder()
             .setPacketId(data.getPacketId())
             .setType(PacketType.ChatMessage)
-            .setStatus(Statuses.Failed)
+            .setStatus(Status.AuthenticationError)
             .build()
 
-            return this.send(responsePacket.toString());
+            return this.send(responsePacket);
         }
 
         const responsePacket = new ResponsePackets.ChatMessage.Builder()
             .setPacketId(data.getPacketId())
             .setType(PacketType.ChatMessage)
-            .setStatus(Statuses.Succeeded)
+            .setStatus(Status.Succeeded)
             .build()
 
-        return this.send(responsePacket.toString());
+        return this.send(responsePacket);
     }
 
-    private send(message: string): IResult<string> {
-        return {
-            isSuccess: true,
-            value: message
-        };
+    private send(packet: ResponsePacket): void {
+        app.sendMessageTo(this.socketId, packet.toString());
     }
 
 
-    private sendError(exception: Error | string): IResult<string> {
-        if(exception instanceof Error) {
-            return {
-                isSuccess: false,
-                error: `${exception.message}`
-            };
+    private sendError(exception: ParserErrorResult): void {
+        if(!exception.type) {
+            const packet = new ResponsePackets.GeneralFailure.Builder()
+            .setPacketId(exception.packetId)
+            .setType(PacketType.GeneralFailure)
+            .setStatus(exception.statuse)
+            .build();
+
+            return this.send(packet);
         }
 
-        return {
-            isSuccess: false,
-            error: `${exception}`
-        };
-        
+        const packet = new ResponsePackets.GeneralFailure.Builder()
+            .setPacketId(exception.packetId)
+            .setType(exception.type)
+            .setStatus(exception.statuse)
+            .build();
+
+        return this.send(packet)
     }
 }
 
