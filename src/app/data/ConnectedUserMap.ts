@@ -1,52 +1,34 @@
+import BidirectionalMap from "../../common/BidirectionalMap";
 import { tcpServerInstance } from "../common/networkLayer/serverInstance";
 import { IConnectedUserMeneger } from "./IConnectedUserMeneger";
 
-
-
+type SocketId = string;
+type UserId = string;
 class ConnectedUserMap implements IConnectedUserMeneger {
-    private mapBySocketId: Map<string, string> = new Map<string, string>();
-    private mapByUserId: Map<string, string> = new Map<string, string>();
+    private readonly biMap = new BidirectionalMap<UserId, SocketId>();
 
     add(userId: string, socketId: string): void {
-        this.mapByUserId.set(userId, socketId);
-        this.mapBySocketId.set(socketId, userId);
+        this.biMap.set(userId, socketId);
     }
 
     getByUserId(userId: string): string | undefined {
-        return this.mapByUserId.get(userId);
+        return this.biMap.get(userId);
     }
 
     getBySocketId(socketId: string): string | undefined {
-        return this.mapBySocketId.get(socketId);
+        return this.biMap.getKey(socketId);
     }
 
     isConnected(userId: string): boolean {
-        return this.mapByUserId.has(userId);
+        return this.biMap.has(userId);
     }
 
-    delete(unknownId: string): boolean {
-        const resultBySocketId = this.mapBySocketId.get(unknownId);
-        const resultByUsertId = this.mapByUserId.get(unknownId);
-
-        if(resultBySocketId) {
-            this.mapByUserId.delete(resultBySocketId);
-            this.mapBySocketId.delete(unknownId);
-            
-            return true;
-        } 
-
-        else if(resultByUsertId) {
-            this.mapBySocketId.delete(resultByUsertId);
-            this.mapByUserId.delete(unknownId);
-            
-            return true;
-        }
-
-        return false;
+    delete(socketId: SocketId): boolean {
+        return this.biMap.deleteValue(socketId);
     }
 
     sendTo(userId: string, message: string): boolean {
-        const socketId = this.mapByUserId.get(userId);
+        const socketId = this.biMap.get(userId);
 
         if(!socketId) {
             return false;
