@@ -1,26 +1,11 @@
-import app from "../../server/";
-import { TcpServer } from "../../server/types";
+import { tcpServerInstance } from "../common/networkLayer/serverInstance";
+import { IConnectedUserMeneger } from "./IConnectedUserMeneger";
 
-export interface ConnectedUserMeneger {
-    add(userId: string, socketId: string): void;
-    getByUserId(userId: string): string | undefined;
-    getBySocketId(socketId: string): string | undefined
-    delete(userId: string): boolean;
-    isConnected(userId: string): boolean;
-}
 
-class ConnectedUserMap implements ConnectedUserMeneger, TcpServer.ISocketsManagerObserver{
+
+class ConnectedUserMap implements IConnectedUserMeneger {
     private mapBySocketId: Map<string, string> = new Map<string, string>();
     private mapByUserId: Map<string, string> = new Map<string, string>();
-
-    onSocketAdded(socketId: string): void {
-        return;
-        // console.log(`socket: ${socketId} is add from "ConnectedUserMap"`);
-    }
-
-    onSocketRemoved(socketId: string): void {
-        this.delete(socketId);
-    }
 
     add(userId: string, socketId: string): void {
         this.mapByUserId.set(userId, socketId);
@@ -67,7 +52,7 @@ class ConnectedUserMap implements ConnectedUserMeneger, TcpServer.ISocketsManage
             return false;
         }
 
-        return app.sendMessageTo(socketId, message);
+        return tcpServerInstance.sendMessageTo(socketId, message);
     }
 }
 

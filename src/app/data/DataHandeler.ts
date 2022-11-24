@@ -1,26 +1,27 @@
 import { PacketType, Status } from "../utils/encryptedChatProtocol/commonTypes";
 import * as useCases from "../tasks";
-import connectedUserMap, { ConnectedUserMeneger } from "./ConnectedUserMap";
 import { ChatRoom } from "./rooms/ChatRoom";
 import parser, { ParserErrorResult } from "../utils/encryptedChatProtocol/parser";
 import { TcpServer } from "../../server/types";
 import RequestPacket from "../utils/encryptedChatProtocol/requestPackets/RequsetPacket";
 import * as RequestPackets from "../utils/encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../utils/encryptedChatProtocol/responsePackets";
-import app from "../../server"
 import ResponsePacket from "../utils/encryptedChatProtocol/responsePackets/ResponsePacket";
 import RoomObserver from "./rooms/RoomObserver";
+import { tcpServerInstance } from "../common/networkLayer/serverInstance";
+import { IConnectedUserMeneger } from "./IConnectedUserMeneger";
 
 
 const rooms = new Map<String, ChatRoom>();
 
- class DataHandeler implements TcpServer.IHandler {
+ export class DataHandeler implements TcpServer.IDataHandler {
 
-    private readonly connectedUserMap: ConnectedUserMeneger = connectedUserMap;
+    private readonly connectedUserMap: IConnectedUserMeneger;
     private socketId: string;
 
-    constructor(socketId: string) {
+    constructor(socketId: string, connectedUserMeneger: IConnectedUserMeneger) {
         this.socketId = socketId;
+        this.connectedUserMap = connectedUserMeneger;
     }
 
     async handleOnData(data: Buffer): Promise<void> {
@@ -283,7 +284,7 @@ const rooms = new Map<String, ChatRoom>();
     }
 
     private send(packet: ResponsePacket): void {
-        app.sendMessageTo(this.socketId, packet.toString());
+        tcpServerInstance.sendMessageTo(this.socketId, packet.toString());
     }
 
 
@@ -306,8 +307,8 @@ const rooms = new Map<String, ChatRoom>();
 
         return this.send(packet)
     }
-}
 
-export default function(socketId: string): TcpServer.IHandler {
-    return new DataHandeler(socketId);
+    static factory(socketId: string, ConnectedUserMeneger: IConnectedUserMeneger) {
+        return new DataHandeler(socketId, ConnectedUserMeneger);
+    }
 }

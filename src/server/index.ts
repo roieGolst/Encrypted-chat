@@ -1,26 +1,20 @@
 import { Server, Socket } from "net";
-import { HandlerFactory } from "./common/IHandler";
+import { DataHandlerFactory } from "./common/IDataHandler";
 import LiveSockets from "./socketManager";
 import serverInitializer from "./serverInitializer";
 import { ISocketsManager } from "./socketManager/ISocketsManager";
 import { UserSocket } from "./UserSocket";
 import ISocketsManagerObserver from "./socketManager/ISocketsManagerObserver";
-
-const SOCKET_INACTIVE_TIMEOUT = 1000 * 60 * 10;
+import { ITcpServer } from "./common/ITcpServer";
 
 export type ServerArgs = {
-    readonly port: number,
-    readonly onServerInitializer: () => void,
-    readonly handler: HandlerFactory,
+    readonly port: number;
+    readonly inactiveTimeout: number;
+    readonly OnServerInitialized: () => void;
+    readonly dataHandlerFactory: DataHandlerFactory;
 };
 
-interface TcpServer {
-    setListener(listener: ISocketsManagerObserver): void;
-    start(args: ServerArgs): void;
-    sendMessageTo(fromId: string, socketId: string, content:string): boolean;
-}
-
-export default new class implements TcpServer {
+export default class TcpServer implements ITcpServer {
 
     private server: Server;
     private readonly liveSockets: ISocketsManager = new LiveSockets();
@@ -39,7 +33,7 @@ export default new class implements TcpServer {
         try {
             this.server = serverInitializer((socket: Socket): void => {
                 const userSocket = new UserSocket(socket);
-                const dataHandler = args.handler(userSocket.socketId);
+                const dataHandler = args.dataHandlerFactory(userSocket.socketId);
     
                 userSocket.init(dataHandler);
     
@@ -49,13 +43,13 @@ export default new class implements TcpServer {
                     this.liveSockets.remove(userSocket.socketId);
                 });
     
-                userSocket.setTimeout(SOCKET_INACTIVE_TIMEOUT, (socketId: string) => {
+                userSocket.setInactiveTimeout(args.inactiveTimeout, (socketId: string) => {
                     this.liveSockets.remove(socketId);
                     console.log("userTime out");
                 })
             });
 
-            this.server.listen(args.port, args.onServerInitializer);
+            this.server.listen(args.port, args.OnServerInitialized);
         } 
         catch(err) {
             console.error(err);

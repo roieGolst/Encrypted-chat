@@ -1,6 +1,6 @@
 export declare module TcpServer {
     
-    interface Server {
+    interface IServer {
         setListener(listener: ISocketsManagerObserver): void;
         start(args: ServerArgs): void
         sendMessageTo(fromId: string, socketId: string, content:string): boolean;
@@ -12,14 +12,15 @@ export declare module TcpServer {
     }
 
     type ServerArgs = {
-        port: number,
-        onServerInitializer: () => void,
-        handler: HandlerFactory,
-    }
+        readonly port: number;
+        readonly inactiveTimeout: number;
+        readonly OnServerInitialized: () => void;
+        readonly dataHandlerFactory: DataHandlerFactory;
+    };
     
-    interface IHandler {
+    interface IDataHandler {
         handleOnData(data: Buffer): void;
     }
 
-    type HandlerFactory = (socketId: string) => IHandler;
+    type DataHandlerFactory = (socketId: string) => IDataHandler;
 };

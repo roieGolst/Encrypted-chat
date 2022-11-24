@@ -13,7 +13,7 @@ export class UserSocket {
     }
     
 
-    init(handler: TcpServer.IHandler) {
+    init(handler: TcpServer.IDataHandler) {
 
         this.socket.on("error", (err) => {
 
@@ -31,7 +31,7 @@ export class UserSocket {
         this.socket.on("end", cb);
     }
 
-    setTimeout(interval: number, cb: (socketId: string) => void) {
+    setInactiveTimeout(interval: number, cb: (socketId: string) => void) {
         this.socket.setTimeout(interval);
 
         this.socket.on("timeout", () => {
