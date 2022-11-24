@@ -1,10 +1,10 @@
-import { TcpServer } from "../../../server/types";
-import { IConnectedUserMeneger } from "../../data/IConnectedUserMeneger";
+import { ISocketsManagerObserver } from "../../../server";
+import { IConnectedUserManeger } from "../../data/IConnectedUserMeneger";
 
-export class SocketsManagerObserver implements TcpServer.ISocketsManagerObserver {
-    private readonly connectedUserMeneger: IConnectedUserMeneger;
+export class SocketsManagerObserver implements ISocketsManagerObserver {
+    private readonly connectedUserMeneger: IConnectedUserManeger;
 
-    constructor(connectedUserMeneger: IConnectedUserMeneger) {
+    constructor(connectedUserMeneger: IConnectedUserManeger) {
         this.connectedUserMeneger = connectedUserMeneger;
     }
 
@@ -12,7 +12,7 @@ export class SocketsManagerObserver implements TcpServer.ISocketsManagerObserver
         return;
     }
     onSocketRemoved(socketId: string): void {
-        this.connectedUserMeneger.delete(socketId);
+        this.connectedUserMeneger.deleteBySocketId(socketId);
     }
 
 }

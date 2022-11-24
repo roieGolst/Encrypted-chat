@@ -1,11 +1,19 @@
 import BidirectionalMap from "../../common/BidirectionalMap";
-import { tcpServerInstance } from "../common/networkLayer/serverInstance";
-import { IConnectedUserMeneger } from "./IConnectedUserMeneger";
+import { IConnectedUserManeger } from "./IConnectedUserMeneger";
 
 type SocketId = string;
 type UserId = string;
-class ConnectedUserMap implements IConnectedUserMeneger {
+
+type MessageSender = (socketId: SocketId, message: string) => Promise<boolean>;
+
+export default class ConnectedUserMap implements IConnectedUserManeger {
+    private readonly messageSender: MessageSender;
     private readonly biMap = new BidirectionalMap<UserId, SocketId>();
+
+
+    constructor(messageSender: MessageSender) {
+        this.messageSender = messageSender;
+    }
 
     add(userId: string, socketId: string): void {
         this.biMap.set(userId, socketId);
@@ -23,19 +31,17 @@ class ConnectedUserMap implements IConnectedUserMeneger {
         return this.biMap.has(userId);
     }
 
-    delete(socketId: SocketId): boolean {
+    deleteBySocketId(socketId: SocketId): boolean {
         return this.biMap.deleteValue(socketId);
     }
 
-    sendTo(userId: string, message: string): boolean {
+    async sendTo(userId: string, message: string): Promise<boolean> {
         const socketId = this.biMap.get(userId);
 
         if(!socketId) {
             return false;
         }
 
-        return tcpServerInstance.sendMessageTo(socketId, message);
+        return this.messageSender(socketId, message);
     }
 }
-
-export default new ConnectedUserMap();

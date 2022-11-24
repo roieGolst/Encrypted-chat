@@ -3,7 +3,6 @@ import { UniqueConstraintError } from "sequelize";
 import bcrypt from "bcrypt";
 import User from "../models/User";
 import { IResult } from "../../../common/IResult";
-import { UserAttributs } from "../../common/UserAttributs";
 import { AuthAttributs } from "../../utils/encryptedChatProtocol/commonTypes";
 
 const SALT_ROUNDS = 10;

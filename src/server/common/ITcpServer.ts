@@ -1,8 +1,8 @@
 import { ServerArgs } from "..";
 import ISocketsManagerObserver from "../socketManager/ISocketsManagerObserver";
 
-export interface ITcpServer {
+export default interface ITcpServer {
     setListener(listener: ISocketsManagerObserver): void;
     start(args: ServerArgs): void;
-    sendMessageTo(fromId: string, socketId: string, content:string): boolean;
+    sendMessageTo(socketId: string, content:string): Promise<boolean>;
 }

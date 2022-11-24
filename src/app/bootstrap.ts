@@ -1,21 +1,37 @@
-import { TcpServer } from "../server/types"
+import NetworkLayer from "./common/networkLayer";
+import { SocketsManagerObserver } from "./common/networkLayer/SocketMenegerObserver";
+import ConnectedUserMap from "./data/ConnectedUserMap";
+import { DataHandeler } from "./data/DataHandeler";
+
+type BootstrapServerArgs = {
+    readonly port: number;
+    readonly inactiveTimeout: number;
+};
 
 export type BootstrapArgs = {
     database: {
         driverInitializer: () => Promise<boolean>
     },
 
-    server : {
-        instance: TcpServer.IServer,
-        serverArgs: TcpServer.ServerArgs,
-        socketMenegerObserver: TcpServer.ISocketsManagerObserver
-    }
+    server: BootstrapServerArgs
 }
 
-export async function bootstrap(args: BootstrapArgs, cb?: () => void) {
+export async function bootstrap(args: BootstrapArgs) {
     await args.database.driverInitializer();
     console.log("database is ready");
 
-    args.server.instance.setListener(args.server.socketMenegerObserver);
-    args.server.instance.start(args.server.serverArgs);
+    const networkLayer = new NetworkLayer();
+    const connectedUserMap = new ConnectedUserMap(networkLayer.sendMessageTo);
+
+    networkLayer.setListener(new SocketsManagerObserver(connectedUserMap));
+
+    networkLayer.start({
+        port: args.server.port,
+        inactiveTimeout: args.server.inactiveTimeout,
+        dataHandlerFactory: (socketId: string) => {
+            return DataHandeler.factory(socketId, connectedUserMap)
+        },
+        onServerInitialized: () => console.log("server bound"),
+
+    });
 }

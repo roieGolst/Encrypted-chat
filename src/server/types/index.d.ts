@@ -3,7 +3,7 @@ export declare module TcpServer {
     interface IServer {
         setListener(listener: ISocketsManagerObserver): void;
         start(args: ServerArgs): void
-        sendMessageTo(fromId: string, socketId: string, content:string): boolean;
+        sendMessageTo(socketId: string, content:string): boolean;
     }
 
     interface ISocketsManagerObserver {
@@ -14,7 +14,7 @@ export declare module TcpServer {
     type ServerArgs = {
         readonly port: number;
         readonly inactiveTimeout: number;
-        readonly OnServerInitialized: () => void;
+        readonly onServerInitialized: () => void;
         readonly dataHandlerFactory: DataHandlerFactory;
     };
     

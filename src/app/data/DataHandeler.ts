@@ -8,18 +8,17 @@ import * as RequestPackets from "../utils/encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../utils/encryptedChatProtocol/responsePackets";
 import ResponsePacket from "../utils/encryptedChatProtocol/responsePackets/ResponsePacket";
 import RoomObserver from "./rooms/RoomObserver";
-import { tcpServerInstance } from "../common/networkLayer/serverInstance";
-import { IConnectedUserMeneger } from "./IConnectedUserMeneger";
+import { IConnectedUserManeger } from "./IConnectedUserMeneger";
 
 
 const rooms = new Map<String, ChatRoom>();
 
  export class DataHandeler implements TcpServer.IDataHandler {
 
-    private readonly connectedUserMap: IConnectedUserMeneger;
+    private readonly connectedUserMap: IConnectedUserManeger;
     private socketId: string;
 
-    constructor(socketId: string, connectedUserMeneger: IConnectedUserMeneger) {
+    constructor(socketId: string, connectedUserMeneger: IConnectedUserManeger) {
         this.socketId = socketId;
         this.connectedUserMap = connectedUserMeneger;
     }
@@ -140,7 +139,7 @@ const rooms = new Map<String, ChatRoom>();
             return this.send(responsePacket);
         }
 
-        const room = useCases.room.createRoomChat(new RoomObserver());
+        const room = useCases.room.createRoomChat(new RoomObserver(this.connectedUserMap.sendTo));
 
         room.addUser(authResult.value.id);
         rooms.set(room.id, room);
@@ -284,7 +283,7 @@ const rooms = new Map<String, ChatRoom>();
     }
 
     private send(packet: ResponsePacket): void {
-        tcpServerInstance.sendMessageTo(this.socketId, packet.toString());
+        this.connectedUserMap.sendTo(this.socketId, packet.toString());
     }
 
 
@@ -308,7 +307,7 @@ const rooms = new Map<String, ChatRoom>();
         return this.send(packet)
     }
 
-    static factory(socketId: string, ConnectedUserMeneger: IConnectedUserMeneger) {
+    static factory(socketId: string, ConnectedUserMeneger: IConnectedUserManeger) {
         return new DataHandeler(socketId, ConnectedUserMeneger);
     }
 }

@@ -1,8 +1,14 @@
-import ConnectedUserMap from "../ConnectedUserMap";
 import { ChatRoom, IRoomObserver } from "./ChatRoom";
 
+type RoomMessageSender = (socketId: string, messgae: string) => Promise<boolean>;
 
 export default class RoomObserver implements IRoomObserver {
+    private readonly roomMessageSender: RoomMessageSender;
+
+    constructor(roomMessageSender: RoomMessageSender) {
+        this.roomMessageSender = roomMessageSender;
+    }
+
     onUserAdded(room: ChatRoom, userId: string): void {
         console.log(`Room : ${room.id}, user ${userId} is added`);
     }
@@ -16,8 +22,8 @@ export default class RoomObserver implements IRoomObserver {
             if(fromUserId == userId) {
                 return;
             }
-
-            ConnectedUserMap.sendTo(userId, message);
+            //TODO: this is async function
+            this.roomMessageSender(userId, message);
         })
     }
 }
