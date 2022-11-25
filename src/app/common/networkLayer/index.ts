@@ -1,7 +1,7 @@
 import TcpServer, { ISocketsManagerObserver, ServerArgs } from "../../../server";
 import { ITcpServer } from "../../../server";
 
-export default class NetworkLayer implements ITcpServer{
+export default class NetworkLayer implements ITcpServer {
     private readonly tcpServer: ITcpServer;
 
     constructor(tcpServer: ITcpServer = new TcpServer()) {

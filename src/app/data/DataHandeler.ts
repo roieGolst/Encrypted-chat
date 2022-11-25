@@ -74,7 +74,7 @@ const rooms = new Map<String, ChatRoom>();
                 .setStatus(Status.GeneralFailure)
                 .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
 
         const responsePacket = new ResponsePackets.RegisterResponse.Builder()
@@ -83,7 +83,7 @@ const rooms = new Map<String, ChatRoom>();
             .setStatus(Status.Succeeded)
             .build()
 
-        return this.send(responsePacket);
+        return this.sendBySocketId(responsePacket);
     }
 
     private async loginLogic(data: RequestPackets.LoginRequest): Promise<void> {
@@ -96,7 +96,7 @@ const rooms = new Map<String, ChatRoom>();
                 .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
 
         const user = loginResult.value;
@@ -108,7 +108,7 @@ const rooms = new Map<String, ChatRoom>();
                 .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
         
         this.connectedUserMap.add(user.id, this.socketId);
@@ -123,7 +123,7 @@ const rooms = new Map<String, ChatRoom>();
             .setUserAttributs({userId: user.id, username: user.userName})
             .build();
 
-        return this.send(responseData);
+        return this.sendBySocketId(responseData);
     }
 
     private createRoom(data: RequestPackets.CreateChatRequest): void {
@@ -136,10 +136,10 @@ const rooms = new Map<String, ChatRoom>();
                 .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
 
-        const room = useCases.room.createRoomChat(new RoomObserver(this.connectedUserMap.sendTo));
+        const room = useCases.room.createRoomChat(new RoomObserver(this.connectedUserMap));
 
         room.addUser(authResult.value.id);
         rooms.set(room.id, room);
@@ -151,7 +151,7 @@ const rooms = new Map<String, ChatRoom>();
             .setRoomId(room.id)
             .build();
 
-        return this.send(responsePacket);
+        return this.sendBySocketId(responsePacket);
     }
 
     private joinChat(data: RequestPackets.JoinChatRequest): void {
@@ -167,7 +167,7 @@ const rooms = new Map<String, ChatRoom>();
                 .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
 
         if(this.connectedUserMap.isConnected(authResult.value.id)) {
@@ -177,7 +177,7 @@ const rooms = new Map<String, ChatRoom>();
                 .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
 
         const room = rooms.get(roomId);
@@ -189,7 +189,7 @@ const rooms = new Map<String, ChatRoom>();
                 .setStatus(Status.AuthenticationError)
                 .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
 
         room.addUser(authResult.value.id);
@@ -215,7 +215,7 @@ const rooms = new Map<String, ChatRoom>();
                 .setMembers(mapMembers)
                 .build();
 
-        return this.send(responsePacket);
+        return this.sendBySocketId(responsePacket);
     }
 
     private async chatLogic(data: RequestPackets.ChatMessageRequest): Promise<void> {
@@ -232,7 +232,7 @@ const rooms = new Map<String, ChatRoom>();
             .setStatus(Status.AuthenticationError)
             .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
 
         const room = rooms.get(roomId);
@@ -244,7 +244,7 @@ const rooms = new Map<String, ChatRoom>();
             .setStatus(Status.AuthenticationError)
             .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
 
         room.sendMessage(authResult.value.id, message);
@@ -255,7 +255,7 @@ const rooms = new Map<String, ChatRoom>();
             .setStatus(Status.Succeeded)
             .build();
 
-        return this.send(packet);
+        return this.sendBySocketId(packet);
     }
 
     private sendNewToken(data: RequestPackets.NewTokenRequest): void {
@@ -270,7 +270,7 @@ const rooms = new Map<String, ChatRoom>();
             .setStatus(Status.AuthenticationError)
             .build()
 
-            return this.send(responsePacket);
+            return this.sendBySocketId(responsePacket);
         }
 
         const responsePacket = new ResponsePackets.ChatMessage.Builder()
@@ -279,11 +279,11 @@ const rooms = new Map<String, ChatRoom>();
             .setStatus(Status.Succeeded)
             .build()
 
-        return this.send(responsePacket);
+        return this.sendBySocketId(responsePacket);
     }
 
-    private send(packet: ResponsePacket): void {
-        this.connectedUserMap.sendTo(this.socketId, packet.toString());
+    private sendBySocketId(packet: ResponsePacket, socketId: string = this.socketId): void {
+        this.connectedUserMap.sendMessageBySocketId(socketId, packet.toString());
     }
 
 
@@ -295,7 +295,7 @@ const rooms = new Map<String, ChatRoom>();
             .setStatus(exception.statuse)
             .build();
 
-            return this.send(packet);
+            return this.sendBySocketId(packet);
         }
 
         const packet = new ResponsePackets.GeneralFailure.Builder()
@@ -304,7 +304,7 @@ const rooms = new Map<String, ChatRoom>();
             .setStatus(exception.statuse)
             .build();
 
-        return this.send(packet)
+        return this.sendBySocketId(packet)
     }
 
     static factory(socketId: string, ConnectedUserMeneger: IConnectedUserManeger) {

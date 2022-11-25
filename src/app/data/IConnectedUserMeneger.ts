@@ -4,5 +4,6 @@ export interface IConnectedUserManeger {
     getBySocketId(socketId: string): string | undefined
     deleteBySocketId(userId: string): boolean;
     isConnected(userId: string): boolean;
-    sendTo(userId: string, message: string): Promise<boolean>;
+    sendMessageByUserId(userId: string, message: string): Promise<boolean>;
+    sendMessageBySocketId(socketId: string, message: string): Promise<boolean>;
 }

@@ -4,14 +4,18 @@ import { IConnectedUserManeger } from "./IConnectedUserMeneger";
 type SocketId = string;
 type UserId = string;
 
-type MessageSender = (socketId: SocketId, message: string) => Promise<boolean>;
+interface IMessageSender {
+    sendMessageTo(socketId: SocketId, message: string): Promise<boolean>;
+}
+
+// type MessageSender = (socketId: SocketId, message: string) => Promise<boolean>;
 
 export default class ConnectedUserMap implements IConnectedUserManeger {
-    private readonly messageSender: MessageSender;
+    private readonly messageSender: IMessageSender;
     private readonly biMap = new BidirectionalMap<UserId, SocketId>();
 
 
-    constructor(messageSender: MessageSender) {
+    constructor(messageSender: IMessageSender) {
         this.messageSender = messageSender;
     }
 
@@ -35,13 +39,17 @@ export default class ConnectedUserMap implements IConnectedUserManeger {
         return this.biMap.deleteValue(socketId);
     }
 
-    async sendTo(userId: string, message: string): Promise<boolean> {
+    async sendMessageByUserId(userId: string, message: string): Promise<boolean> {
         const socketId = this.biMap.get(userId);
 
         if(!socketId) {
             return false;
         }
 
-        return this.messageSender(socketId, message);
+        return this.messageSender.sendMessageTo(socketId, message);
+    }
+
+    async sendMessageBySocketId(socketId: string, message: string): Promise<boolean> {
+        return this.messageSender.sendMessageTo(socketId, message);
     }
 }

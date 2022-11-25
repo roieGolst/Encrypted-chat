@@ -1,3 +1,4 @@
+import TcpServer from "../server";
 import NetworkLayer from "./common/networkLayer";
 import { SocketsManagerObserver } from "./common/networkLayer/SocketMenegerObserver";
 import ConnectedUserMap from "./data/ConnectedUserMap";
@@ -20,8 +21,8 @@ export async function bootstrap(args: BootstrapArgs) {
     await args.database.driverInitializer();
     console.log("database is ready");
 
-    const networkLayer = new NetworkLayer();
-    const connectedUserMap = new ConnectedUserMap(networkLayer.sendMessageTo);
+    const networkLayer = new NetworkLayer(new TcpServer());
+    const connectedUserMap = new ConnectedUserMap(networkLayer);
 
     networkLayer.setListener(new SocketsManagerObserver(connectedUserMap));
 

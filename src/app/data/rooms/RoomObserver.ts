@@ -1,11 +1,13 @@
 import { ChatRoom, IRoomObserver } from "./ChatRoom";
 
-type RoomMessageSender = (socketId: string, messgae: string) => Promise<boolean>;
+interface IRoomMessageSender {
+    sendMessageByUserId(socketId: string, message: string): Promise<boolean>;
+}
 
 export default class RoomObserver implements IRoomObserver {
-    private readonly roomMessageSender: RoomMessageSender;
+    private readonly roomMessageSender: IRoomMessageSender;
 
-    constructor(roomMessageSender: RoomMessageSender) {
+    constructor(roomMessageSender: IRoomMessageSender) {
         this.roomMessageSender = roomMessageSender;
     }
 
@@ -23,7 +25,7 @@ export default class RoomObserver implements IRoomObserver {
                 return;
             }
             //TODO: this is async function
-            this.roomMessageSender(userId, message);
+            this.roomMessageSender.sendMessageByUserId(userId, message);
         })
     }
 }
