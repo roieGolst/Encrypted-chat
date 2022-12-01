@@ -1,6 +1,10 @@
 import jwt from "jsonwebtoken";
 import env from "../../config/env.json";
-import { IResult } from "../../../common/IResult"
+import { IResult } from "../../../common/IResult";
+import { PacketType, Status } from "../../utils/encryptedChatProtocol/commonTypes";
+import * as RequestPackets from "../../utils/encryptedChatProtocol/requestPackets";
+import * as ResponsePackets from "../../utils/encryptedChatProtocol/responsePackets";
+import { IConnectedUserManeger } from "../../data/IConnectedUserMeneger";
 
 type UserSign = {
     userName: string
@@ -12,35 +16,63 @@ export type Tokens = {
     refreshToken: string
 }
 
-class TokensManeger {
+export default class TokensManeger {
 
-    private readonly refreshTokensMap: Map<string, Date> = new Map();
+    private static readonly refreshTokensMap: Map<string, Date> = new Map();
 
-    private genereteToken(user: UserSign): string {
+    static async sendNewToken(data: RequestPackets.NewTokenRequest, socketId: string, connectedUserMap: IConnectedUserManeger): Promise<boolean> {
+        const refreshToken = data.refreshToken;
 
-        return jwt.sign({userName: user.userName, id: user.id}, env.SECRETE_TOKEN, { expiresIn: "10m" });
-    
+        const authResult = this.authRefreshToken(refreshToken);
+
+        if(!authResult.isSuccess) {
+            const responsePacket = new ResponsePackets.NewToken.Builder()
+                .setPacketId(data.packetId)
+                .setType(PacketType.NewToken)
+                .setStatus(Status.AuthenticationError)
+                .build()
+                .toString()
+            ;    
+
+            return await connectedUserMap.sendMessageBySocketId(socketId, responsePacket);
+        }
+
+        const userSign = this.getUserSing(refreshToken);
+
+        if(!userSign.isSuccess) {
+            const responsePacket = new ResponsePackets.NewToken.Builder()
+                .setPacketId(data.packetId)
+                .setType(PacketType.NewToken)
+                .setStatus(Status.AuthenticationError)
+                .build()
+                .toString()
+            ;    
+
+            return await connectedUserMap.sendMessageBySocketId(socketId, responsePacket);
+        }
+
+        const newToken = this.genereteToken(userSign.value);
+
+        const responsePacket = new ResponsePackets.NewToken.Builder()
+            .setPacketId(data.packetId)
+            .setType(PacketType.ChatMessage)
+            .setStatus(Status.Succeeded)
+            .setToken(newToken)
+            .build()
+            .toString()
+        ;
+
+        return await connectedUserMap.sendMessageBySocketId(socketId, responsePacket);
     }
 
-    private genereteRefreshToken(user: UserSign): string {
-        const refreshToken =  jwt.sign({userName: user.userName, id: user.id}, env.REFRESH_TOKEN);
-
-        let nowTime = new Date();
-        nowTime.setMonth(nowTime.getMonth() + 6);
-    
-        this.refreshTokensMap.set(refreshToken, nowTime);
-    
-        return refreshToken;
-    }
-
-    getTokens(user: UserSign): Tokens {
+    static getTokens(user: UserSign): Tokens {
         return {
             token: this.genereteToken(user),
             refreshToken: this.genereteRefreshToken(user)
         }
     }
 
-    authValidate(token: string): IResult<UserSign> {
+    static authValidate(token: string): IResult<UserSign> {
         let result: Object | string;
     
         try {
@@ -67,7 +99,7 @@ class TokensManeger {
         
     }
 
-    authRefreshToken(refreshToken: string): IResult<string> {
+    static authRefreshToken(refreshToken: string): IResult<string> {
         const isExist = this.refreshTokensMap.get(refreshToken);
 
         if(!isExist) {
@@ -84,11 +116,32 @@ class TokensManeger {
                 isSuccess: false,
                 error: "Refresh token expired please logged in."
             }
-        } 
+        }
 
-        let user: Object | string;
+        const userSign = this.getUserSing(refreshToken);
+
+        if(!userSign.isSuccess) {
+            return userSign;
+        }
+
+        const newToken = this.genereteToken(userSign.value);
+
+        return {
+            isSuccess: true,
+            value: newToken
+        }
+    }
+
+    static deleteRefreshToken(refreshToken: string): boolean {
+        return this.refreshTokensMap.delete(refreshToken);
+    }
+
+    private static getUserSing(token: string): IResult<UserSign> {
         try {
-            user = jwt.verify(refreshToken, env.REFRESH_TOKEN);
+            return  {
+                isSuccess: true,
+                value: jwt.verify(token, env.REFRESH_TOKEN) as UserSign
+            }
         }
         catch(err) {
             return {
@@ -96,17 +149,26 @@ class TokensManeger {
                 error: `${err}`
             }
         }
+    }
 
-        const newToken = this.genereteToken(user as UserSign);
+    private static genereteToken(user: UserSign): string {
 
-        return {
-            isSuccess: true,
-            value: newToken
-        }
+        return jwt.sign({userName: user.userName, id: user.id}, env.SECRETE_TOKEN, { expiresIn: "10m" });
+    
+    }
+
+    private static genereteRefreshToken(user: UserSign): string {
+        const refreshToken =  jwt.sign({userName: user.userName, id: user.id}, env.REFRESH_TOKEN);
+
+        let nowTime = new Date();
+        nowTime.setMonth(nowTime.getMonth() + 6);
+    
+        this.refreshTokensMap.set(refreshToken, nowTime);
+    
+        return refreshToken;
     }
     
-    
-    private authExpiration(refreshToken: string): boolean {
+    private static authExpiration(refreshToken: string): boolean {
         const exp = this.refreshTokensMap.get(refreshToken);
 
         if(!exp) {
@@ -121,9 +183,4 @@ class TokensManeger {
 
         return true;
     }
-    
-    deleteRefreshToken(refreshToken: string): boolean {
-        return this.refreshTokensMap.delete(refreshToken);
-    }
 }
-export default new TokensManeger(); 

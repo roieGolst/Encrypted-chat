@@ -21,7 +21,7 @@ export async function bootstrap(args: BootstrapArgs) {
     await args.database.driverInitializer();
     console.log("database is ready");
 
-    const networkLayer = new NetworkLayer(new TcpServer());
+    const networkLayer = new NetworkLayer();
     const connectedUserMap = new ConnectedUserMap(networkLayer);
 
     networkLayer.setListener(new SocketsManagerObserver(connectedUserMap));

@@ -1,13 +1,10 @@
+import { IMessageSender } from "../../common/IMessageSender";
 import { ChatRoom, IRoomObserver } from "./ChatRoom";
 
-interface IRoomMessageSender {
-    sendMessageByUserId(socketId: string, message: string): Promise<boolean>;
-}
-
 export default class RoomObserver implements IRoomObserver {
-    private readonly roomMessageSender: IRoomMessageSender;
+    private readonly roomMessageSender: IMessageSender;
 
-    constructor(roomMessageSender: IRoomMessageSender) {
+    constructor(roomMessageSender: IMessageSender) {
         this.roomMessageSender = roomMessageSender;
     }
 
