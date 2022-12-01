@@ -170,7 +170,7 @@ const rooms = new Map<String, ChatRoom>();
             return this.sendBySocketId(responsePacket);
         }
 
-        if(this.connectedUserMap.isConnected(authResult.value.id)) {
+        if(!this.connectedUserMap.isConnected(authResult.value.id)) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.packetId)
                 .setType(PacketType.JoinChat)
