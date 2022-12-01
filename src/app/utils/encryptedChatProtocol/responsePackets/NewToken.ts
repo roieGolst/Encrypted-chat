@@ -3,9 +3,9 @@ import { IBuilder } from "../../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
 export default class NewToken extends ResponsePacket {
-    readonly token: Tokens;
+    readonly token: string;
 
-    constructor(packetId: string, status: Status, type: PacketType, token: Tokens) {
+    constructor(packetId: string, status: Status, type: PacketType, token: string) {
         super(type, status, packetId);
         this.token = token;
     }
@@ -14,7 +14,7 @@ export default class NewToken extends ResponsePacket {
         packetId: string;
         type: PacketType;
         status: Status;
-        token: Tokens;
+        token: string;
 
         setPacketId(packetId: string): this {
             this.packetId = packetId;
@@ -31,7 +31,7 @@ export default class NewToken extends ResponsePacket {
             return this;
         }
 
-        setToken(token: Tokens): this {
+        setToken(token: string): this {
             this.token = token;
             return this;
         }

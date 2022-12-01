@@ -127,7 +127,7 @@ export default class RequestParser {
         if(!validationResult.isSuccess) {
             return {
                 packetId,
-                type: PacketType.NewRoomMember,
+                type: PacketType.NewToken,
                 statuse: Status.VlidationError
             };
         }

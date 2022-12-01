@@ -195,7 +195,7 @@ export default class ResponseParser {
             .setType(type)
             .setPacketId(packetId)
             .setStatus(status)
-            .setToken({token})
+            .setToken(token)
             .build()
     }
 
