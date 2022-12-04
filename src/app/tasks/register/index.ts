@@ -1,22 +1,17 @@
-import { utils } from "../../db";
-import { IResult } from "../../../common/IResult";
-import { AuthAttributs, PacketType, Status } from "../../utils/encryptedChatProtocol/commonTypes";
-import User from "../../db/models/User";
+import { PacketType, Status } from "../../utils/encryptedChatProtocol/commonTypes";
 import * as RequestPackets from "../../utils/encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../../utils/encryptedChatProtocol/responsePackets";
-
-interface IRegisterMessageSender {
-    sendMessageBySocketId(socketId: string, message: string): Promise<boolean>;
-}
+import { IMessageSender } from "../../data/IMessageSender";
+import AuthRepository from "../authentication/AuthRepository";
 
 export default class RegisterUseCase {
 
-    static async registerLogic(data: RequestPackets.RegisterRequest, socketId: string, messageSender: IRegisterMessageSender): Promise<boolean> {
-        const registerResult = await this.insertUser(data.userAttributs);
-
+    static async registerLogic(packet: RequestPackets.RegisterRequest, socketId: string, messageSender: IMessageSender): Promise<boolean> {
+        const registerResult = await AuthRepository.register(packet.userAttributs);
+        
         if(!registerResult.isSuccess) {
             const responsePacket = new ResponsePackets.RegisterResponse.Builder()
-                .setPacketId(data.packetId)
+                .setPacketId(packet.packetId)
                 .setType(PacketType.Register)
                 .setStatus(Status.GeneralFailure)
                 .build()
@@ -27,7 +22,7 @@ export default class RegisterUseCase {
         }
 
         const responsePacket = new ResponsePackets.RegisterResponse.Builder()
-            .setPacketId(data.packetId)
+            .setPacketId(packet.packetId)
             .setType(PacketType.Register)
             .setStatus(Status.Succeeded)
             .build()
@@ -36,11 +31,4 @@ export default class RegisterUseCase {
 
         return messageSender.sendMessageBySocketId(socketId, responsePacket);
     }
-
-    private static async insertUser(data: AuthAttributs): Promise<IResult<User>> {
-    
-        const user = await utils.user.insertUser(data);
-    
-        return user;
-    };
 }
