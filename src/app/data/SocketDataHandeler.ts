@@ -121,6 +121,7 @@ import { IConnectedUserManeger } from "./IConnectedUserMeneger";
         const packet = new ResponsePackets.GeneralFailure.Builder()
             .setPacketId(exception.packetId)
             .setStatus(exception.statuse)
+            .setType(PacketType.GeneralFailure)
             .build();
 
         return await this.send(packet)
