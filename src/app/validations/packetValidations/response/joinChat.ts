@@ -3,10 +3,10 @@ import { PacketType, Status } from "../../../utils/encryptedChatProtocol/commonT
 import { joinChatResponsePacketSchema } from "./schemas";
 
 type JoinChatResponsePacket = {
-    packetId: string;
-    type: PacketType.JoinChat;
-    status: Status;
-    members?: any;
+    readonly packetId: string;
+    readonly type: PacketType.JoinChat;
+    readonly status: Status;
+    readonly members?: any;
 }
 
 export default {

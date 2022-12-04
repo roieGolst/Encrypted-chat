@@ -10,11 +10,11 @@ type BootstrapServerArgs = {
 };
 
 export type BootstrapArgs = {
-    database: {
+    readonly database: {
         driverInitializer: () => Promise<boolean>
     },
 
-    server: BootstrapServerArgs
+    readonly server: BootstrapServerArgs
 }
 
 export async function bootstrap(args: BootstrapArgs) {

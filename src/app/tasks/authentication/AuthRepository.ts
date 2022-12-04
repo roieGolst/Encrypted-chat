@@ -8,9 +8,9 @@ import userAttributsSchema from "../../validations/packetValidations/schemas/use
 const SALT_ROUNDS = 10;
 
 export type LoginResultModel = {
-    id: string;
-    username: string;
-    password: string;
+    readonly id: string;
+    readonly username: string;
+    readonly password: string;
 }
 
 class AuthRepository implements IAuthRepository {

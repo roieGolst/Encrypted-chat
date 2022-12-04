@@ -3,9 +3,9 @@ import { PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
 import { chatMessaegRequestPacketSchema, createChatRequestPacketSchema } from "./schemas";
 
 type CreateChatRequestPacket = {
-    packetId: string;
-    type: PacketType.CreateChat;
-    token: string;
+    readonly packetId: string;
+    readonly type: PacketType.CreateChat;
+    readonly token: string;
 }
 
 export default {

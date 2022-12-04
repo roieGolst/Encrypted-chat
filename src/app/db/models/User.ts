@@ -2,9 +2,9 @@ import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOpt
 import userConfigs from "../../config/userConfigs.json";
 import dbInstance from "../dbInstance";
 export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-    declare id: CreationOptional<string>;
-    declare username: string;
-    declare password: string;
+    readonly declare id: CreationOptional<string>;
+    readonly declare username: string;
+    readonly declare password: string;
 };
 
 User.init(

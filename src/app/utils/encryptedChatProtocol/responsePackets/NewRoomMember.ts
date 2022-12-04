@@ -3,8 +3,8 @@ import { IBuilder } from "../../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
 export type SingleMember = {
-    socketId: string,
-    username: string
+    readonly socketId: string,
+    readonly username: string
 };
 
 export default class NewRoomMember extends ResponsePacket {

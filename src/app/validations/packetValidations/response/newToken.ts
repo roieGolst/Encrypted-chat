@@ -4,10 +4,10 @@ import { newTokenResponsePacketSchema } from "../response/schemas";
 
 
 type newTokenResponsePacket = {
-    packetId: string;
-    type: PacketType.NewToken;
-    status: Status,
-    token?: string;
+    readonly packetId: string;
+    readonly type: PacketType.NewToken;
+    readonly status: Status,
+    readonly token?: string;
 }
 
 export default {

@@ -5,9 +5,9 @@ import ResponseParser from "./Response";
 import RequestParser from "./Request";
 
 export type ParserErrorResult = {
-    packetId?: string,
-    type?: PacketType,
-    statuse: Status
+    readonly packetId?: string,
+    readonly type: PacketType,
+    readonly statuse: Status
 }
 
 export  default class Parser {
@@ -38,6 +38,7 @@ export  default class Parser {
             return {
                 isSuccess: false,
                 error: {
+                    type: PacketType.GeneralFailure,
                     statuse: Status.InvalidPacket
                 }
             };
@@ -49,6 +50,7 @@ export  default class Parser {
             return {
                 isSuccess: false,
                 error: {
+                    type: PacketType.GeneralFailure,
                     statuse: Status.InvalidPacket
                 }
             }
@@ -56,13 +58,14 @@ export  default class Parser {
 
         const packetId = packet.packetId;
 
-        const packetType = this.typeCasting(packet.type)
+        const packetType = this.typeCasting(packet.type);
 
         if(!packetType) {
             return {
                 isSuccess: false,
                 error:  {
                     packetId,
+                    type: PacketType.GeneralFailure,
                     statuse: Status.InvalidPacket
                 }
             };

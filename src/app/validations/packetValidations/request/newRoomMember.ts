@@ -4,9 +4,9 @@ import { SingleMember } from "../../../utils/encryptedChatProtocol/responsePacke
 import { newRoomMemberRequestPacketSchema } from "./schemas";
 
 type NewRoomMemberRequestPacket = {
-    packetId: string
-    type: PacketType.Register;
-    member: SingleMember;
+    readonly packetId: string
+    readonly type: PacketType.Register;
+    readonly member: SingleMember;
 }
 
 export default {

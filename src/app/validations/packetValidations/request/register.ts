@@ -3,9 +3,9 @@ import { IResult } from "../../../../common/IResult";
 import { registerRequestPacketSchema } from "./schemas";
 
 type RegisterRequestPacket = {
-    packetId: string
-    type: PacketType.Register;
-    userAttributs: AuthAttributs;
+    readonly packetId: string
+    readonly type: PacketType.Register;
+    readonly userAttributs: AuthAttributs;
 }
 
 export default {

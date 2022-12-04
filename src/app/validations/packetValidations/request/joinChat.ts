@@ -3,10 +3,10 @@ import { PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
 import { joinChatRequestPacketSchema } from "./schemas";
 
 type JoinChatRequestPacket = {
-    packetId: string;
-    type: PacketType.JoinChat;
-    token: string;
-    roomId: string;
+    readonly packetId: string;
+    readonly type: PacketType.JoinChat;
+    readonly token: string;
+    readonly roomId: string;
 }
 
 export default {

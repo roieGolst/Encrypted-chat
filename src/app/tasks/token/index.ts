@@ -7,8 +7,8 @@ import * as ResponsePackets from "../../utils/encryptedChatProtocol/responsePack
 import { IConnectedUserManeger } from "../../data/IConnectedUserMeneger";
 
 type UserSign = {
-    userName: string
-    id: string
+    readonly userName: string
+    readonly id: string
 }
 
 export type Tokens = {

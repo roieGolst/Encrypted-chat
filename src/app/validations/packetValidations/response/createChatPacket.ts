@@ -3,10 +3,10 @@ import { PacketType, Status } from "../../../utils/encryptedChatProtocol/commonT
 import { chatMessaegResponsePacketSchema, createChatResponsePacketSchema } from "./schemas";
 
 type CreateChatResponsePacket = {
-    packetId: string;
-    type: PacketType.CreateChat;
-    status: Status;
-    roomId?: string;
+    readonly packetId: string;
+    readonly type: PacketType.CreateChat;
+    readonly status: Status;
+    readonly roomId?: string;
 }
 
 export default {

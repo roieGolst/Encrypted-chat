@@ -19,16 +19,16 @@ export enum Status {
 }
 
 export type AuthAttributs = {
-    username: string,
-    password: string
+    readonly username: string,
+    readonly password: string
 };
 
 export type UserDetails = {
-    userId: string,
-    username: string
+    readonly userId: string,
+    readonly username: string
 };
 
 export type Tokens = {
-    token: string,
-    refreshToken?: string
+    readonly token: string,
+    readonly refreshToken?: string
 };
