@@ -12,27 +12,8 @@ export type ParserErrorResult = {
 
 export  default class Parser {
 
-    private static jsonParse(data: string): IResult<any> {
-        try {
-            let packet = JSON.parse(data);
-
-            return {
-                isSuccess: true,
-                value: packet
-            };
-
-        }
-        catch(err) {
-            return {
-                isSuccess: false,
-                error: `Parser error: Invalid JSON format`
-            };
-        }
-    }
-
     static parse(data: Buffer): IResult<Packet, ParserErrorResult> {
-        const stringData = data.toString("utf-8");
-        const parsedData = this.jsonParse(stringData);
+        const parsedData = this.jsonParse(data.toString("utf-8"));
 
         if(!parsedData.isSuccess) {
             return {
@@ -43,10 +24,11 @@ export  default class Parser {
                 }
             };
         }
+        
 
-        const packet = parsedData.value;
+        const isValidPacket = this.isValidPacket(parsedData.value);
 
-        if(!packet["type"] || !packet["packetId"]) {
+        if(!isValidPacket) {
             return {
                 isSuccess: false,
                 error: {
@@ -56,9 +38,10 @@ export  default class Parser {
             }
         }
 
+        const packet = parsedData.value;
         const packetId = packet.packetId;
-
         const packetType = this.typeCasting(packet.type);
+        const packetStatus = this.statusCasting(packet.status);
 
         if(!packetType) {
             return {
@@ -73,7 +56,6 @@ export  default class Parser {
 
         let result: Packet | ParserErrorResult;
 
-        const packetStatus = this.statusCasting(packet.status);
 
         if(packetStatus) {
             result = ResponseParser.parse(packetType, packetId, packetStatus, packet);
@@ -92,6 +74,32 @@ export  default class Parser {
             isSuccess: true,
             value: result
         };
+    }
+
+    private static jsonParse(data: string): IResult<any> {
+        try {
+            let packet = JSON.parse(data);
+
+            return {
+                isSuccess: true,
+                value: packet
+            };
+
+        }
+        catch(err) {
+            return {
+                isSuccess: false,
+                error: `Parser error: Invalid JSON format`
+            };
+        }
+    }
+
+    private static isValidPacket(packet: any): boolean {
+        if(!packet["type"] || !packet["packetId"]) {
+            return false;
+        }
+
+        return true;
     }
 
     private static typeCasting(type: string): PacketType | undefined {
