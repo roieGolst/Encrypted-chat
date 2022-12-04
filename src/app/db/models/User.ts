@@ -1,10 +1,9 @@
 import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
 import userConfigs from "../../config/userConfigs.json";
 import dbInstance from "../dbInstance";
-
 export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-    declare id: CreationOptional<string>
-    declare userName: string
+    declare id: CreationOptional<string>;
+    declare username: string;
     declare password: string;
 };
 
@@ -17,7 +16,7 @@ User.init(
             allowNull: false
         },
         
-        userName: {
+        username: {
             type: DataTypes.STRING(userConfigs.MAX_USER_NAME_LENGTH),
             primaryKey: true,
             allowNull: false,
