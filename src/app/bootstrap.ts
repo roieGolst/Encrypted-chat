@@ -1,12 +1,12 @@
-import TcpServer from "../server";
 import NetworkLayer from "./common/networkLayer";
 import { SocketsManagerObserver } from "./common/networkLayer/SocketMenegerObserver";
 import ConnectedUserMap from "./data/ConnectedUserMap";
-import { DataHandeler } from "./data/DataHandeler";
+import { SocketDataHandeler } from "./data/SocketDataHandeler";
 
 type BootstrapServerArgs = {
     readonly port: number;
     readonly inactiveTimeout: number;
+    readonly onServerInitialized: () => void;
 };
 
 export type BootstrapArgs = {
@@ -26,13 +26,11 @@ export async function bootstrap(args: BootstrapArgs) {
 
     networkLayer.setListener(new SocketsManagerObserver(connectedUserMap));
 
-    networkLayer.start({
+    await networkLayer.startPromisify({
         port: args.server.port,
         inactiveTimeout: args.server.inactiveTimeout,
         dataHandlerFactory: (socketId: string) => {
-            return DataHandeler.factory(socketId, connectedUserMap)
-        },
-        onServerInitialized: () => console.log("server bound"),
-
+            return SocketDataHandeler.factory(socketId, connectedUserMap)
+        }
     });
 }

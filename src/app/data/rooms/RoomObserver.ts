@@ -1,4 +1,4 @@
-import { IMessageSender } from "../../common/IMessageSender";
+import { IMessageSender } from "../IMessageSender";
 import { ChatRoom, IRoomObserver } from "./ChatRoom";
 
 export default class RoomObserver implements IRoomObserver {

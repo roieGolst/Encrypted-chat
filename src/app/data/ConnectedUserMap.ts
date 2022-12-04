@@ -1,21 +1,19 @@
 import BidirectionalMap from "../../common/BidirectionalMap";
+import { INetworkLayer } from "../common/networkLayer/INetworkLayerMessageSender";
 import { IConnectedUserManeger } from "./IConnectedUserMeneger";
+import { IMessageSender } from "./IMessageSender";
 
 type SocketId = string;
 type UserId = string;
 
-interface IMessageSender {
-    sendMessageTo(socketId: SocketId, message: string): Promise<boolean>;
-}
 
-// type MessageSender = (socketId: SocketId, message: string) => Promise<boolean>;
 
 export default class ConnectedUserMap implements IConnectedUserManeger {
-    private readonly messageSender: IMessageSender;
+    private readonly messageSender: INetworkLayer;
     private readonly biMap = new BidirectionalMap<UserId, SocketId>();
 
 
-    constructor(messageSender: IMessageSender) {
+    constructor(messageSender: INetworkLayer) {
         this.messageSender = messageSender;
     }
 

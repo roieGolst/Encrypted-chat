@@ -4,7 +4,7 @@ import LiveSockets from "./socketManager";
 import { ISocketsManager } from "./socketManager/ISocketsManager";
 import { UserSocket } from "./UserSocket";
 import ISocketsManagerObserver from "./socketManager/ISocketsManagerObserver";
-import ITcpServer from "./common/ITcpServer";
+import ITcpServer, { TcpInitializedCb } from "./common/ITcpServer";
 
 export { default as ISocketsManagerObserver } from "./socketManager/ISocketsManagerObserver";
 export { default as ITcpServer } from "./common/ITcpServer";
@@ -12,7 +12,6 @@ export { default as ITcpServer } from "./common/ITcpServer";
 export type ServerArgs = {
     readonly port: number;
     readonly inactiveTimeout: number;
-    readonly onServerInitialized: () => void;
     readonly dataHandlerFactory: DataHandlerFactory;
 };
 
@@ -27,7 +26,7 @@ export default class TcpServer implements ITcpServer {
     }
     
 
-    start(args: ServerArgs): void {
+    start(args: ServerArgs, initializedCb: TcpInitializedCb ): void {
         if(this.server) {
             throw new Error("The server is already running!!");
             
@@ -43,11 +42,22 @@ export default class TcpServer implements ITcpServer {
                 this.handleNewConnetion(userSocket, args.inactiveTimeout);
             });
 
-            this.server.listen(args.port, args.onServerInitialized);
+            this.server.listen(args.port, initializedCb);
         } 
         catch(err) {
             console.error(err);
         }
+    }
+
+    startPromisify(args: ServerArgs): Promise<void> {
+        return new Promise((resolve) => {
+            this.start(
+                args,
+                () => {
+                    resolve()
+                }
+            );
+        });
     }
 
     private handleNewConnetion(userSocket: UserSocket, inactiveTimeout: number): void {
