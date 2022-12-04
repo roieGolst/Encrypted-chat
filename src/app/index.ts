@@ -13,4 +13,6 @@ bootstrap(
             inactiveTimeout: networkConfigs.INACTIVATE_TIMEOUT
         }
     }
-);
+).then(() => {
+    console.log("app is started");
+});

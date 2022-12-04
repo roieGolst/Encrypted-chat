@@ -6,7 +6,6 @@ import { SocketDataHandeler } from "./data/SocketDataHandeler";
 type BootstrapServerArgs = {
     readonly port: number;
     readonly inactiveTimeout: number;
-    readonly onServerInitialized: () => void;
 };
 
 export type BootstrapArgs = {
