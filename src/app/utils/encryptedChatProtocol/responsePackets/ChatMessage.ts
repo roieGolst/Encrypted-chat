@@ -11,7 +11,6 @@ export default class ChatMessagePacket extends ResponsePacket {
     static Builder = class implements IBuilder<ChatMessagePacket> {
         packetId: string;
         status: Status;
-        type: PacketType;
 
         setPacketId(packetId: string): this {
             this.packetId = packetId;
@@ -23,11 +22,6 @@ export default class ChatMessagePacket extends ResponsePacket {
             return this;
         }
 
-        setType(type: PacketType): this {
-            this.type = type;
-            return this;
-        }
-
         build(): ChatMessagePacket {
             if(!this.packetId) {
                 throw new Error("'Packet id' is required");
@@ -35,11 +29,7 @@ export default class ChatMessagePacket extends ResponsePacket {
             if(!this.status) {
                 throw new Error("'Status' is required");
             }
-
-            else if(!this.type) {
-                throw new Error("'Type' is required");
-            }
-
+            
             return new ChatMessagePacket(this.status, this.packetId);
         }
     }

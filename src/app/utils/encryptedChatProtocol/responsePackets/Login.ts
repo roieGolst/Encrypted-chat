@@ -6,8 +6,8 @@ export default class LoginResponsePacket extends ResponsePacket {
     readonly userAttributs: UserDetails;
     readonly tokens: Tokens;
 
-    constructor(packetId: string, status: Status, type: PacketType, userAttributs: UserDetails, tokens: Tokens) {
-        super(type, status, packetId)
+    constructor(packetId: string, status: Status, userAttributs: UserDetails, tokens: Tokens) {
+        super(PacketType.Login, status, packetId)
         this.userAttributs = userAttributs;
         this.tokens = tokens;
     }
@@ -15,7 +15,6 @@ export default class LoginResponsePacket extends ResponsePacket {
     static Builder = class implements IBuilder<LoginResponsePacket> {
         private packetId: string;
         private status: Status;
-        private type: PacketType;
         private userAttributs: UserDetails;
         private tokens: Tokens;
 
@@ -26,11 +25,6 @@ export default class LoginResponsePacket extends ResponsePacket {
 
         setStatus(status: Status): this {
             this.status = status;
-            return this;
-        }
-
-        setType(type: PacketType): this {
-            this.type = type;
             return this;
         }
 
@@ -53,10 +47,6 @@ export default class LoginResponsePacket extends ResponsePacket {
                 else if(!this.status) {
                     throw new Error("'Status' is required");
                 }
-    
-                else if(!this.type) {
-                    throw new Error("'Type' is required");
-                }
                 
             } else {
                 if(!this.packetId) {
@@ -65,10 +55,6 @@ export default class LoginResponsePacket extends ResponsePacket {
     
                 else if(!this.status) {
                     throw new Error("'Status' is required");
-                }
-    
-                else if(!this.type) {
-                    throw new Error("'Type' is required");
                 }
     
                 else if(!this.userAttributs) {
@@ -80,7 +66,7 @@ export default class LoginResponsePacket extends ResponsePacket {
                 }
             }
 
-            return new LoginResponsePacket(requireNotNull(this.packetId), this.status, this.type, this.userAttributs, this.tokens);
+            return new LoginResponsePacket(requireNotNull(this.packetId), this.status, this.userAttributs, this.tokens);
         }
     }
 }

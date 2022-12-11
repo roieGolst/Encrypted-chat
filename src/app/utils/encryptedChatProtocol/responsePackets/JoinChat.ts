@@ -5,24 +5,18 @@ import ResponsePacket from "./ResponsePacket";
 export default class JoinChatPacket extends ResponsePacket {
     readonly members?: Map<string, string> | undefined;
 
-    constructor(packetId: string, status: Status, type: PacketType, members: Map<string, string> | undefined = undefined) {
-        super(type, status, packetId);
+    constructor(packetId: string, status: Status,members: Map<string, string> | undefined = undefined) {
+        super(PacketType.JoinChat, status, packetId);
         this.members = members;
     }
 
     static Builder = class implements IBuilder<JoinChatPacket> {
         packetId: string;
-        type: PacketType;
         status: Status;
         members?: Map<string, string>;
 
         setPacketId(packetId: string): this {
             this.packetId = packetId;
-            return this;
-        }
-        
-        setType(type: PacketType): this {
-            this.type = type;
             return this;
         }
 
@@ -45,10 +39,6 @@ export default class JoinChatPacket extends ResponsePacket {
                 else if(!this.status) {
                     throw new Error("'Status' is required");
                 }
-    
-                else if(!this.type) {
-                    throw new Error("'Type' is required");
-                }
             } else {
                 if(!this.packetId) {
                     throw new Error("'PacketId' is required");
@@ -57,17 +47,14 @@ export default class JoinChatPacket extends ResponsePacket {
                 else if(!this.status) {
                     throw new Error("'Status' is required");
                 }
-    
-                else if(!this.type) {
-                    throw new Error("'Type' is required");
-                }
+
                 else if(!this.members) {
                     throw new Error("'Members' is required");
                 }
             }
             
 
-            return new JoinChatPacket(this.packetId, this.status, this.type, this.members);
+            return new JoinChatPacket(this.packetId, this.status, this.members);
         }
     }
 }

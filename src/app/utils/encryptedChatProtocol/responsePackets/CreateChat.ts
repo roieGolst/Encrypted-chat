@@ -5,24 +5,18 @@ import ResponsePacket from "./ResponsePacket";
 export default class CreateChatResponsePacket extends ResponsePacket {
     readonly roomId: string
 
-    constructor(packetId: string, status: Status, type: PacketType, roomId: string) {
-        super(type, status, packetId);
+    constructor(packetId: string, status: Status, roomId: string) {
+        super(PacketType.CreateChat, status, packetId);
         this.roomId = roomId;
     }
 
     static Builder = class implements IBuilder<CreateChatResponsePacket> {
         packetId: string;
-        type: PacketType;
         status: Status;
         roomId: string;
 
         setPacketId(packetId: string): this {
             this.packetId = packetId;
-            return this;
-        }
-        
-        setType(type: PacketType): this {
-            this.type = type;
             return this;
         }
 
@@ -45,10 +39,6 @@ export default class CreateChatResponsePacket extends ResponsePacket {
                 else if(!this.status) {
                     throw new Error("'Status' is required");
                 }
-    
-                else if(!this.type) {
-                    throw new Error("'Type' is required");
-                }
             } else {
                 if(!this.packetId) {
                     throw new Error("'Packet' id is required");
@@ -58,16 +48,12 @@ export default class CreateChatResponsePacket extends ResponsePacket {
                     throw new Error("'Status' is required");
                 }
     
-                else if(!this.type) {
-                    throw new Error("'Type' is required");
-                }
-    
                 else if(!this.roomId) {
                     throw new Error("'Room' id id is required");
                 }
             }
 
-            return new CreateChatResponsePacket(this.packetId, this.status, this.type, this.roomId);
+            return new CreateChatResponsePacket(this.packetId, this.status, this.roomId);
         }
     }
 }

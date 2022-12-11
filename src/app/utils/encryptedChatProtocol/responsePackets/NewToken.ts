@@ -1,28 +1,22 @@
-import { PacketType, Status, Tokens } from "../commonTypes";
+import { PacketType, Status } from "../commonTypes";
 import { IBuilder } from "../../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
 export default class NewToken extends ResponsePacket {
     readonly token: string;
 
-    constructor(packetId: string, status: Status, type: PacketType, token: string) {
-        super(type, status, packetId);
+    constructor(packetId: string, status: Status, token: string) {
+        super(PacketType.NewToken, status, packetId);
         this.token = token;
     }
 
     static Builder = class implements IBuilder<NewToken> {
         packetId: string;
-        type: PacketType;
         status: Status;
         token: string;
 
         setPacketId(packetId: string): this {
             this.packetId = packetId;
-            return this;
-        }
-        
-        setType(type: PacketType): this {
-            this.type = type;
             return this;
         }
 
@@ -45,10 +39,7 @@ export default class NewToken extends ResponsePacket {
                 else if(!this.status) {
                     throw new Error("'Status' id is required");
                 }
-    
-                else if(!this.type) {
-                    throw new Error("'Type' id is required");
-                }
+
             } else {
                 if(!this.packetId) {
                     throw new Error("'Packet' id is required");
@@ -58,15 +49,11 @@ export default class NewToken extends ResponsePacket {
                     throw new Error("'Status' id is required");
                 }
     
-                else if(!this.type) {
-                    throw new Error("'Type' id is required");
-                }
-    
                 else if(!this.token) {
                     throw new Error("'Token' is is required");
                 }
             }
-            return new NewToken(this.packetId, this.status, this.type, this.token);
+            return new NewToken(this.packetId, this.status, this.token);
         }
     }
 }
