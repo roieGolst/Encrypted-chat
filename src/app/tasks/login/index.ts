@@ -15,7 +15,6 @@ export default class LoginUseCase {
         if(!loginResult.isSuccess) {
             const responsePacket = new ResponsePackets.LoginResponse.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.Login)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -29,7 +28,6 @@ export default class LoginUseCase {
         if(connectedUserMap.isConnected(user.id)) {
             const responsePacket = new ResponsePackets.LoginResponse.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.Login)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -47,7 +45,6 @@ export default class LoginUseCase {
 
         const responseData = new ResponsePackets.LoginResponse.Builder()
             .setPacketId(data.packetId)
-            .setType(PacketType.Login)
             .setStatus(Status.Succeeded)
             .setTokens(tokens)
             .setUserAttributs({userId: user.id, username: user.username})

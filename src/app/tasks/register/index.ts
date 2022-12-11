@@ -12,7 +12,6 @@ export default class RegisterUseCase {
         if(!registerResult.isSuccess) {
             const responsePacket = new ResponsePackets.RegisterResponse.Builder()
                 .setPacketId(packet.packetId)
-                .setType(PacketType.Register)
                 .setStatus(Status.GeneralFailure)
                 .build()
                 .toString()
@@ -23,7 +22,6 @@ export default class RegisterUseCase {
 
         const responsePacket = new ResponsePackets.RegisterResponse.Builder()
             .setPacketId(packet.packetId)
-            .setType(PacketType.Register)
             .setStatus(Status.Succeeded)
             .build()
             .toString()

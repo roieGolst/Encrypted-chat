@@ -28,7 +28,6 @@ export default class TokensManeger {
         if(!authResult.isSuccess) {
             const responsePacket = new ResponsePackets.NewToken.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.NewToken)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -42,7 +41,6 @@ export default class TokensManeger {
         if(!userSign.isSuccess) {
             const responsePacket = new ResponsePackets.NewToken.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.NewToken)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -55,7 +53,6 @@ export default class TokensManeger {
 
         const responsePacket = new ResponsePackets.NewToken.Builder()
             .setPacketId(data.packetId)
-            .setType(PacketType.ChatMessage)
             .setStatus(Status.Succeeded)
             .setToken(newToken)
             .build()

@@ -15,7 +15,6 @@ export default class RoomsUseCase {
         if(!authResult.isSuccess) {
             const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.CreateChat)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -31,7 +30,6 @@ export default class RoomsUseCase {
 
         const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
             .setPacketId(data.packetId)
-            .setType(PacketType.CreateChat)
             .setStatus(Status.Succeeded)
             .setRoomId(room.id)
             .build()
@@ -50,7 +48,6 @@ export default class RoomsUseCase {
         if(!authResult.isSuccess) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.JoinChat)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -62,7 +59,6 @@ export default class RoomsUseCase {
         if(!connectedUserMap.isConnected(authResult.value.id)) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.JoinChat)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -76,7 +72,6 @@ export default class RoomsUseCase {
         if(!room) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.JoinChat)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -103,7 +98,6 @@ export default class RoomsUseCase {
 
         const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.JoinChat)
                 .setStatus(Status.Succeeded)
                 .setMembers(mapMembers)
                 .build()
@@ -123,7 +117,6 @@ export default class RoomsUseCase {
         if(!authResult.isSuccess) {
            const responsePacket = new ResponsePackets.ChatMessage.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.ChatMessage)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -137,7 +130,6 @@ export default class RoomsUseCase {
         if(!room) {
             const responsePacket = new ResponsePackets.ChatMessage.Builder()
                 .setPacketId(data.packetId)
-                .setType(PacketType.ChatMessage)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -150,7 +142,6 @@ export default class RoomsUseCase {
 
         const responsePacket = new ResponsePackets.ChatMessage.Builder()
             .setPacketId(data.packetId)
-            .setType(data.type)
             .setStatus(Status.Succeeded)
             .build()
             .toString()
