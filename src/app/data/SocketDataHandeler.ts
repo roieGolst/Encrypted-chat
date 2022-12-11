@@ -7,6 +7,7 @@ import * as RequestPackets from "../utils/encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../utils/encryptedChatProtocol/responsePackets";
 import ResponsePacket from "../utils/encryptedChatProtocol/responsePackets/ResponsePacket";
 import { IConnectedUserManeger } from "./IConnectedUserMeneger";
+import Packet from "../utils/encryptedChatProtocol/Packet";
 
  export class SocketDataHandeler implements TcpServer.IDataHandler {
 
@@ -19,23 +20,34 @@ import { IConnectedUserManeger } from "./IConnectedUserMeneger";
     }
 
     async handleOnData(data: Buffer): Promise<void> {
+        let parseResult: Packet;
 
-        const parseResult = parser.parse(data);
+        try {
+            parseResult = parser.parse(data);
+        }
+        catch(err: unknown) {
+            if(err instanceof ParserErrorResult) {
+                await this.sendError(err);
+                return;
+            }
 
-        if(!parseResult.isSuccess) {
-            await this.sendError(parseResult.error);
+            await this.sendError(new ParserErrorResult({
+                type: PacketType.GeneralFailure,
+                status: Status.GeneralFailure
+            }));
             return;
         }
 
         try {
-            return await this.handelByType(parseResult.value);
+            return await this.handelByType(parseResult);
         }
         catch(err) {
-            this.sendError({
-                packetId: parseResult.value.packetId,
-                type: parseResult.value.type,
-                statuse: Status.GeneralFailure,
-            })
+            await this.sendError(new ParserErrorResult({
+                packetId: parseResult.packetId,
+                type: parseResult.type,
+                status: Status.GeneralFailure
+            }));
+            return;
         }
     }
 
@@ -103,11 +115,11 @@ import { IConnectedUserManeger } from "./IConnectedUserMeneger";
             }
 
             default : 
-                await this.sendError({
+                await this.sendError(new ParserErrorResult({
                     packetId: packet.packetId,
                     type: PacketType.GeneralFailure,
-                    statuse: Status.GeneralFailure
-                })
+                    status: Status.GeneralFailure
+                }));
                 return;;
         }
     }
@@ -120,7 +132,7 @@ import { IConnectedUserManeger } from "./IConnectedUserMeneger";
     private async sendError(exception: ParserErrorResult): Promise<boolean> {
         const packet = new ResponsePackets.GeneralFailure.Builder()
             .setPacketId(exception.packetId)
-            .setStatus(exception.statuse)
+            .setStatus(exception.status)
             .setType(PacketType.GeneralFailure)
             .build();
 
