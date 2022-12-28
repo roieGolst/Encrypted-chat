@@ -63,11 +63,10 @@ export default class ResponseParser {
             }));
         }
 
-        const userAttributs = validationResult.value.userAttributs;
-        const tokens = validationResult.value.tokens;
+        const userDetails= validationResult.value.userDetails;
 
         //TODO: Make all response packet fileds to be required! 
-        if(!userAttributs || !tokens) {
+        if(!userDetails) {
             return new ResponsePackets.LoginResponse.Builder()
             .setPacketId(packetId)
             .setStatus(status)
@@ -77,8 +76,7 @@ export default class ResponseParser {
         return new ResponsePackets.LoginResponse.Builder()
             .setPacketId(packetId)
             .setStatus(status)
-            .setUserAttributs(userAttributs)
-            .setTokens(payload.tokens)
+            .setUserDetails(userDetails)
             .build()
     }
 

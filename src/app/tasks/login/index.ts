@@ -46,8 +46,7 @@ export default class LoginUseCase {
         const responseData = new ResponsePackets.LoginResponse.Builder()
             .setPacketId(data.packetId)
             .setStatus(Status.Succeeded)
-            .setTokens(tokens)
-            .setUserAttributs({userId: user.id, username: user.username})
+            .setUserDetails({userId: user.id, username: user.username, tokens})
             .build()
             .toString()
         ;

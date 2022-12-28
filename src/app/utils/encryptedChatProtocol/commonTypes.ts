@@ -26,6 +26,7 @@ export type AuthAttributs = {
 export type UserDetails = {
     readonly userId: string,
     readonly username: string
+    readonly tokens: Tokens;
 };
 
 export type Tokens = {

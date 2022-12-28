@@ -3,20 +3,17 @@ import { IBuilder } from "../../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
 export default class LoginResponsePacket extends ResponsePacket {
-    readonly userAttributs: UserDetails;
-    readonly tokens: Tokens;
+    readonly userDetails: UserDetails;
 
-    constructor(packetId: string, status: Status, userAttributs: UserDetails, tokens: Tokens) {
+    constructor(packetId: string, status: Status, userDetails: UserDetails) {
         super(PacketType.Login, status, packetId)
-        this.userAttributs = userAttributs;
-        this.tokens = tokens;
+        this.userDetails = userDetails;
     }
 
     static Builder = class implements IBuilder<LoginResponsePacket> {
         private packetId: string;
         private status: Status;
-        private userAttributs: UserDetails;
-        private tokens: Tokens;
+        private userDetails: UserDetails;
 
         setPacketId(packetId: string): this {
             this.packetId = packetId;
@@ -28,13 +25,8 @@ export default class LoginResponsePacket extends ResponsePacket {
             return this;
         }
 
-        setUserAttributs(userAttributs: UserDetails): this {
-            this.userAttributs = userAttributs;
-            return this;
-        }
-
-        setTokens(tokens: Tokens): this {
-            this.tokens = tokens;
+        setUserDetails(userDetails: UserDetails): this {
+            this.userDetails = userDetails;
             return this;
         }
 
@@ -57,16 +49,12 @@ export default class LoginResponsePacket extends ResponsePacket {
                     throw new Error("'Status' is required");
                 }
     
-                else if(!this.userAttributs) {
-                    throw new Error("'UserAttributs' is required");
-                }
-    
-                else if(!this.tokens) {
-                    throw new Error("'Tokens' is required");
+                else if(!this.userDetails) {
+                    throw new Error("'UserDetails' is required");
                 }
             }
 
-            return new LoginResponsePacket(requireNotNull(this.packetId), this.status, this.userAttributs, this.tokens);
+            return new LoginResponsePacket(requireNotNull(this.packetId), this.status, this.userDetails);
         }
     }
 }
