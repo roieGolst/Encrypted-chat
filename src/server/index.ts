@@ -1,5 +1,5 @@
 import net, { Server, Socket } from "net";
-import { DataHandlerFactory } from "./common/IDataHandler";
+import { DataHandlerFactory, IDataHandler } from "./common/IDataHandler";
 import LiveSockets from "./socketManager";
 import { ISocketsManager } from "./socketManager/ISocketsManager";
 import { UserSocket } from "./UserSocket";
@@ -12,7 +12,7 @@ export { default as ITcpServer } from "./common/ITcpServer";
 export type ServerArgs = {
     readonly port: number;
     readonly inactiveTimeout: number;
-    readonly dataHandlerFactory: DataHandlerFactory;
+    readonly dataHandlerFactory: IDataHandler;
 };
 
 
@@ -72,18 +72,4 @@ export default class TcpServer implements ITcpServer {
             console.log("userTime out");
         })
     };
-
-    async sendMessageTo(socketId: string, content:string): Promise<boolean> {
-        if(!this.server) {
-            throw new Error("The server is not initialized yet");
-            
-        }
-        const socket = this.liveSockets.get(socketId);
-
-        if(!socket) {
-            return false;
-        }
-
-        return await socket.send(content);
-    }
 };

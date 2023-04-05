@@ -1,16 +1,17 @@
 import { Socket } from "net";
 import { v4 } from 'uuid';
 import { DataHandlerFactory, IDataHandler } from "./common/IDataHandler";
+import { Response } from "./common/IDataHandler"
 
-export class UserSocket {
+export class UserSocket implements Response {
     private readonly socket: Socket;
     private readonly dataHandler: IDataHandler;
     readonly socketId: string = v4();
 
 
-    constructor(socket: Socket, dataHandlerFactory: DataHandlerFactory) {
+    constructor(socket: Socket, dataHandler: IDataHandler) {
         this.socket = socket;
-        this.dataHandler = dataHandlerFactory(this.socketId);
+        this.dataHandler = dataHandler;
 
         this.init();
     }
@@ -22,7 +23,7 @@ export class UserSocket {
         });
 
         this.socket.on("data", (data) => {
-            this.dataHandler.handleOnData(data);
+            this.dataHandler.handleOnData(data, this);
         });
     }
 
@@ -41,7 +42,7 @@ export class UserSocket {
         });
     }
 
-    send(message: string): Promise<boolean> {
+    send(message: string, destroy: boolean = false): Promise<boolean> {
         return new Promise((resolve) => {
             if(!this.isWritable()) {
               resolve(false);  
@@ -50,18 +51,26 @@ export class UserSocket {
             this.socket.write(message, (err?: Error | undefined) => {
                 if(err) {
                     resolve(false);
+
+                    if(destroy) {
+                        return this.destroy();
+                    }
                 }
 
                 resolve(true);
+
+                if(destroy) {
+                    return this.destroy();
+                }
             });
         });
     }
 
-    private isWritable(): boolean {
+    isWritable(): boolean {
         return this.socket.writable;
     }
 
-    private destroy() {
+    private destroy(): void {
         this.socket.destroy();
     }
 }

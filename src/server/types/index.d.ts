@@ -1,4 +1,8 @@
+import { Response } from "../common/IDataHandler";
+
 export declare module TcpServer {
+
+    type IResponse = Response;
     
     interface IServer {
         setListener(listener: ISocketsManagerObserver): void;
@@ -19,7 +23,7 @@ export declare module TcpServer {
     };
     
     interface IDataHandler {
-        handleOnData(data: Buffer): void;
+        handleOnData(data: Buffer, res: Response): void;
     }
 
     type DataHandlerFactory = (socketId: string) => IDataHandler;

@@ -1,5 +1,10 @@
-export interface IDataHandler {
-    handleOnData(data: Buffer): void;
+export interface Response {
+    send(message: string): Promise<boolean>;
+    isWritable(): boolean;
 }
 
-export type DataHandlerFactory = (socketId: string) => IDataHandler;
+export interface IDataHandler {
+    handleOnData(data: Buffer, res: Response): void;
+}
+
+export type DataHandlerFactory = (socketId?: string) => IDataHandler;
