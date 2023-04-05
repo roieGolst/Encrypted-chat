@@ -1,5 +1,5 @@
 import { PacketType, Status } from "../commonTypes";
-import Packet from "../Packet";
+import Packet from "../../utils/parser/Packet";
 
 export default abstract class ResponsePacket extends Packet {
     readonly status: Status;

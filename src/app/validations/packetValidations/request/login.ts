@@ -1,5 +1,5 @@
 import { IResult } from "../../../../common/IResult";
-import { AuthAttributs, PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { AuthAttributs, PacketType } from "../../../encryptedChatProtocol/commonTypes";
 import { loginRequestPacketSchema } from "./schemas";
 
 

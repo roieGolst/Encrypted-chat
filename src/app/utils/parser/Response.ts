@@ -1,7 +1,7 @@
-import { PacketType, Status } from "../commonTypes";
-import ResponsePacket from "../responsePackets/ResponsePacket";
-import * as ResponsePackets from "../responsePackets";
-import * as validations from "../../../validations";
+import { PacketType, Status } from "../../encryptedChatProtocol/commonTypes";
+import ResponsePacket from "../../encryptedChatProtocol/responsePackets/ResponsePacket";
+import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
+import * as validations from "../../validations";
 import { ParserErrorResult } from ".";
 
 export default class ResponseParser {

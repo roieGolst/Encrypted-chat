@@ -9,7 +9,8 @@
     "prebuild": "rimraf ./dist",
     "start": "node ./dist/app",
     "build": "npx tsc",
-    "buildAndStart": "yarn run build && yarn start"
+    "buildAndStart": "yarn run build && yarn start",
+    "bas" : "yarn run buildAndStart"
   },
   "dependencies": {
     "joi": "^17.6.0",

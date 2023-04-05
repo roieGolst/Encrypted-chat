@@ -1,6 +1,6 @@
-import { PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType } from "../../../encryptedChatProtocol/commonTypes";
 import { IResult } from "../../../../common/IResult";
-import { SingleMember } from "../../../utils/encryptedChatProtocol/responsePackets/NewRoomMember";
+import { SingleMember } from "../../../encryptedChatProtocol/responsePackets/NewRoomMember";
 import { newRoomMemberRequestPacketSchema } from "./schemas";
 
 type NewRoomMemberRequestPacket = {

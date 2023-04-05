@@ -1,7 +1,7 @@
-import { PacketType, Status } from "../commonTypes";
-import RequestPacket from "../requestPackets/RequsetPacket";
-import * as RequestPackets from "../requestPackets";
-import * as vlidation from "../../../validations";
+import { PacketType, Status } from "../../encryptedChatProtocol/commonTypes";
+import RequestPacket from "../../encryptedChatProtocol/requestPackets/RequsetPacket";
+import * as RequestPackets from "../../encryptedChatProtocol/requestPackets";
+import * as vlidation from "../../validations";
 import { ParserErrorResult } from ".";
 
 export default class RequestParser {

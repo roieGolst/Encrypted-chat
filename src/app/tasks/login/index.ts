@@ -1,7 +1,7 @@
 
-import { PacketType, Status } from "../../utils/encryptedChatProtocol/commonTypes";
-import * as RequestPackets from "../../utils/encryptedChatProtocol/requestPackets";
-import * as ResponsePackets from "../../utils/encryptedChatProtocol/responsePackets";
+import { Status } from "../../encryptedChatProtocol/commonTypes";
+import * as RequestPackets from "../../encryptedChatProtocol/requestPackets";
+import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import { IConnectedUserManeger } from "../../data/IConnectedUserMeneger";
 import * as useCases from "../index";
 import AuthRepository from "../authentication/AuthRepository";

@@ -1,14 +1,9 @@
-import { PacketType, Status } from "../utils/encryptedChatProtocol/commonTypes";
-import * as useCases from "../tasks";
-import parser, { ParserErrorResult } from "../utils/encryptedChatProtocol/parser";
+import { PacketType, Status } from "../encryptedChatProtocol/commonTypes";
+import parser, { ParserErrorResult } from "../utils/parser";
 import { TcpServer } from "../../server/types";
-import RequestPacket from "../utils/encryptedChatProtocol/requestPackets/RequsetPacket";
-import * as RequestPackets from "../utils/encryptedChatProtocol/requestPackets";
-import * as ResponsePackets from "../utils/encryptedChatProtocol/responsePackets";
-import ResponsePacket from "../utils/encryptedChatProtocol/responsePackets/ResponsePacket";
+import * as ResponsePackets from "../encryptedChatProtocol/responsePackets";
+import ResponsePacket from "../encryptedChatProtocol/responsePackets/ResponsePacket";
 import { IConnectedUserManeger } from "./IConnectedUserMeneger";
-import Packet from "../utils/encryptedChatProtocol/Packet";
-
  export class SocketDataHandeler implements TcpServer.IDataHandler {
 
     private readonly connectedUserMap: IConnectedUserManeger;
@@ -20,10 +15,9 @@ import Packet from "../utils/encryptedChatProtocol/Packet";
     }
 
     async handleOnData(data: Buffer): Promise<void> {
-        let parseResult: Packet;
-
         try {
-            parseResult = parser.parse(data);
+            const packet = parser.parse(data);
+            console.log(packet.toString());
         }
         catch(err: unknown) {
             if(err instanceof ParserErrorResult) {
@@ -38,91 +32,91 @@ import Packet from "../utils/encryptedChatProtocol/Packet";
             return;
         }
 
-        try {
-            return await this.handelByType(parseResult);
-        }
-        catch(err) {
-            await this.sendError(new ParserErrorResult({
-                packetId: parseResult.packetId,
-                type: parseResult.type,
-                status: Status.GeneralFailure
-            }));
-            return;
-        }
+        // try {
+        //     return await this.handelByType(parseResult);
+        // }
+        // catch(err) {
+        //     await this.sendError(new ParserErrorResult({
+        //         packetId: parseResult.packetId,
+        //         type: parseResult.type,
+        //         status: Status.GeneralFailure
+        //     }));
+        //     return;
+        // }
     }
 
-    private async handelByType(packet: RequestPacket): Promise<void> {
-        switch(packet.constructor) {
-            case RequestPackets.RegisterRequest: {
-                await useCases.Register.registerLogic(
-                    packet as RequestPackets.RegisterRequest, 
-                    this.socketId, 
-                    this.connectedUserMap
-                );
+    // private async handelByType(packet: RequestPacket): Promise<void> {
+    //     switch(packet.constructor) {
+    //         case RequestPackets.RegisterRequest: {
+    //             await useCases.Register.registerLogic(
+    //                 packet as RequestPackets.RegisterRequest, 
+    //                 this.socketId, 
+    //                 this.connectedUserMap
+    //             );
 
-                return;
-            }
+    //             return;
+    //         }
                 
 
-            case RequestPackets.LoginRequest: {
-                await useCases.Login.loginLogic(
-                    packet as RequestPackets.LoginRequest,
-                    this.socketId,
-                    this.connectedUserMap
-                );
+    //         case RequestPackets.LoginRequest: {
+    //             await useCases.Login.loginLogic(
+    //                 packet as RequestPackets.LoginRequest,
+    //                 this.socketId,
+    //                 this.connectedUserMap
+    //             );
 
-                return;
-            }
+    //             return;
+    //         }
             
-            case RequestPackets.CreateChatRequest: {
-                await useCases.Room.createRoom(
-                    packet as RequestPackets.CreateChatRequest,
-                    this.socketId,
-                    this.connectedUserMap
-                );
+    //         case RequestPackets.CreateChatRequest: {
+    //             await useCases.Room.createRoom(
+    //                 packet as RequestPackets.CreateChatRequest,
+    //                 this.socketId,
+    //                 this.connectedUserMap
+    //             );
 
-                return;
-            }
+    //             return;
+    //         }
 
-            case RequestPackets.JoinChatRequest: {
-                await useCases.Room.joinChat(
-                    packet as RequestPackets.JoinChatRequest,
-                    this.socketId,
-                    this.connectedUserMap
-                );
+    //         case RequestPackets.JoinChatRequest: {
+    //             await useCases.Room.joinChat(
+    //                 packet as RequestPackets.JoinChatRequest,
+    //                 this.socketId,
+    //                 this.connectedUserMap
+    //             );
 
-                return;
-            }
+    //             return;
+    //         }
 
-            case RequestPackets.ChatMessageRequest: {
-                await useCases.Room.chatLogic(
-                    packet as RequestPackets.ChatMessageRequest,
-                    this.socketId,
-                    this.connectedUserMap
-                );
+    //         case RequestPackets.ChatMessageRequest: {
+    //             await useCases.Room.chatLogic(
+    //                 packet as RequestPackets.ChatMessageRequest,
+    //                 this.socketId,
+    //                 this.connectedUserMap
+    //             );
 
-                return;
-            }
+    //             return;
+    //         }
 
-            case RequestPackets.NewTokenRequest: {
-                await useCases.Token.sendNewToken(
-                    packet as RequestPackets.NewTokenRequest,
-                    this.socketId,
-                    this.connectedUserMap
-                );
+    //         case RequestPackets.NewTokenRequest: {
+    //             await useCases.Token.sendNewToken(
+    //                 packet as RequestPackets.NewTokenRequest,
+    //                 this.socketId,
+    //                 this.connectedUserMap
+    //             );
 
-                return;
-            }
+    //             return;
+    //         }
 
-            default : 
-                await this.sendError(new ParserErrorResult({
-                    packetId: packet.packetId,
-                    type: PacketType.GeneralFailure,
-                    status: Status.GeneralFailure
-                }));
-                return;;
-        }
-    }
+    //         default : 
+    //             await this.sendError(new ParserErrorResult({
+    //                 packetId: packet.packetId,
+    //                 type: PacketType.GeneralFailure,
+    //                 status: Status.GeneralFailure
+    //             }));
+    //             return;;
+    //     }
+    // }
 
     private async send(packet: ResponsePacket, socketId: string = this.socketId): Promise<boolean> {
         return await this.connectedUserMap.sendMessageBySocketId(socketId, packet.toString());

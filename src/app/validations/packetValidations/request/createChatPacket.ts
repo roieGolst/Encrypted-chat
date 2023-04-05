@@ -1,5 +1,5 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType } from "../../../encryptedChatProtocol/commonTypes";
 import { chatMessaegRequestPacketSchema, createChatRequestPacketSchema } from "./schemas";
 
 type CreateChatRequestPacket = {

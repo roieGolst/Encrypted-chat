@@ -1,6 +1,6 @@
-import { IBuilder } from "../../../common/IBuilder";
+import { IBuilder } from "../../common/IBuilder";
 import { AuthAttributs, PacketType } from "../commonTypes";
-import Packet from "../Packet";
+import Packet from "../../utils/parser/Packet";
 
 export default class LoginRequestPacket extends Packet {
     readonly userAttributs: AuthAttributs;

@@ -1,5 +1,5 @@
 import { PacketType, Status } from "../commonTypes";
-import { IBuilder } from "../../../common/IBuilder";
+import { IBuilder } from "../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
 export default class JoinChatPacket extends ResponsePacket {

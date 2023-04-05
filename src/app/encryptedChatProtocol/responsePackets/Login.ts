@@ -1,5 +1,5 @@
 import { UserDetails, PacketType, Status, Tokens } from "../commonTypes";
-import { IBuilder } from "../../../common/IBuilder";
+import { IBuilder } from "../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
 export default class LoginResponsePacket extends ResponsePacket {

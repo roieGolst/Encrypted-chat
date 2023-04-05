@@ -1,9 +1,9 @@
-import { PacketType, Status } from "../commonTypes";
-import Packet from "../Packet";
+import { PacketType, Status } from "../../encryptedChatProtocol/commonTypes";
+import Packet from "./Packet";
 import ResponseParser from "./Response";
 import RequestParser from "./Request";
-import ResponsePacket from "../responsePackets/ResponsePacket";
-import * as ResponsePackets from "../responsePackets";
+import ResponsePacket from "../../encryptedChatProtocol/responsePackets/ResponsePacket";
+import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 
 export class ParserErrorResult extends Error {
     readonly packetId?: string;
