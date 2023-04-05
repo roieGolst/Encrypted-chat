@@ -2,33 +2,38 @@ import { PacketType, Status } from "../encryptedChatProtocol/commonTypes";
 import parser, { ParserErrorResult } from "../utils/parser";
 import { TcpServer } from "../../server/types";
 import * as ResponsePackets from "../encryptedChatProtocol/responsePackets";
-import ResponsePacket from "../encryptedChatProtocol/responsePackets/ResponsePacket";
-import { IConnectedUserManeger } from "./IConnectedUserMeneger";
- export class SocketDataHandeler implements TcpServer.IDataHandler {
+import LoginUseCase from "../tasks/login";
+import RegisterUseCase from "../tasks/register";
+import { HandlerCb } from "./IHandler";
 
-    private readonly connectedUserMap: IConnectedUserManeger;
-    private socketId: string;
+class SocketDataHandeler implements TcpServer.IDataHandler {
+    private readonly handlerMap: Map<PacketType, HandlerCb> = new Map();
 
-    constructor(socketId: string, connectedUserMeneger: IConnectedUserManeger) {
-        this.socketId = socketId;
-        this.connectedUserMap = connectedUserMeneger;
+    setHandler(type: PacketType, cb: HandlerCb): void {
+        this.handlerMap.set(type, cb);
     }
 
-    async handleOnData(data: Buffer): Promise<void> {
+    async handleOnData(data: Buffer, res: TcpServer.IResponse): Promise<void> {
         try {
             const packet = parser.parse(data);
-            console.log(packet.toString());
+            const handler = this.handlerMap.get(packet.type);
+
+            if(!handler) {
+                return;
+            }
+
+            handler(packet, res);
         }
         catch(err: unknown) {
             if(err instanceof ParserErrorResult) {
-                await this.sendError(err);
+                await this.sendError(err, res);
                 return;
             }
 
             await this.sendError(new ParserErrorResult({
                 type: PacketType.GeneralFailure,
                 status: Status.GeneralFailure
-            }));
+            }), res);
             return;
         }
 
@@ -118,22 +123,21 @@ import { IConnectedUserManeger } from "./IConnectedUserMeneger";
     //     }
     // }
 
-    private async send(packet: ResponsePacket, socketId: string = this.socketId): Promise<boolean> {
-        return await this.connectedUserMap.sendMessageBySocketId(socketId, packet.toString());
-    }
 
-
-    private async sendError(exception: ParserErrorResult): Promise<boolean> {
+    private async sendError(exception: ParserErrorResult, res: TcpServer.IResponse): Promise<boolean> {
         const packet = new ResponsePackets.GeneralFailure.Builder()
             .setPacketId(exception.packetId)
             .setStatus(exception.status)
             .setType(PacketType.GeneralFailure)
             .build();
 
-        return await this.send(packet)
-    }
-
-    static factory(socketId: string, ConnectedUserMeneger: IConnectedUserManeger) {
-        return new SocketDataHandeler(socketId, ConnectedUserMeneger);
+        return await res.send(packet.toString());
     }
 }
+
+const app = new SocketDataHandeler();
+
+app.setHandler(PacketType.Login, LoginUseCase.loginLogic);
+app.setHandler(PacketType.Register, RegisterUseCase.registerLogic);
+
+export default app;

@@ -22,12 +22,12 @@ export default class NetworkLayer implements INetworkLayer {
         return await this.tcpServer.startPromisify(args);
     }
 
-    async sendMessageTo(socketId: string, conntent: string): Promise<boolean> {
-        try{
-            return await this.tcpServer.sendMessageTo(socketId, conntent);
-        }
-        catch(err) {
-            return false;
-        }
-    }
+    // async sendMessageTo(socketId: string, conntent: string): Promise<boolean> {
+    //     try{
+    //         return await this.tcpServer.sendMessageTo(socketId, conntent);
+    //     }
+    //     catch(err) {
+    //         return false;
+    //     }
+    // }
 }

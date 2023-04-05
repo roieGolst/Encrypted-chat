@@ -1,14 +1,9 @@
 import { v4 } from 'uuid';
-
-export interface IRoomObserver {
-    onUserAdded(room: ChatRoom, userId: string): void;
-    onUserRemoved(room: ChatRoom, userId: string): void;
-    onMessageSent(room: ChatRoom, userId: string, message: string): void;
-};
+import { IRoomObserver } from './domain/IRoomObserver';
 
 export class ChatRoom {
     readonly id: string = v4();
-    private readonly onlineUsers: string[] = new Array(); // users Id
+    private readonly onlineUsers: string[] = new Array(); // users Id // TODO: Object {userId: string, publicKey: string};
 
     private listener: IRoomObserver;
 

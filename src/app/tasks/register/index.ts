@@ -1,12 +1,29 @@
 import { Status } from "../../encryptedChatProtocol/commonTypes";
-import * as RequestPackets from "../../encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
-import { IMessageSender } from "../../data/IMessageSender";
 import AuthRepository from "../authentication/AuthRepository";
+import Packet from "../../utils/parser/Packet";
+import { TcpServer } from "../../../server/types";
+import RegisterRequstPacket from "../../encryptedChatProtocol/requestPackets/Register";
 
 export default class RegisterUseCase {
 
-    static async registerLogic(packet: RequestPackets.RegisterRequest, socketId: string, messageSender: IMessageSender): Promise<boolean> {
+    static async registerLogic(req: Packet, res: TcpServer.IResponse): Promise<boolean> {
+        let packet: RegisterRequstPacket;
+
+        try {
+            packet = req as RegisterRequstPacket
+        }
+        catch(err: unknown) {
+            const responsePacket = new ResponsePackets.RegisterResponse.Builder()
+                .setPacketId(req.packetId)
+                .setStatus(Status.AuthenticationError)
+                .build()
+                .toString()
+            ;
+
+            return await res.send(responsePacket);
+        }
+
         const registerResult = await AuthRepository.register(packet.userAttributs);
         
         if(!registerResult.isSuccess) {
@@ -17,7 +34,7 @@ export default class RegisterUseCase {
                 .toString()
             ;
 
-            return await messageSender.sendMessageBySocketId(socketId, responsePacket);
+            return await res.send(responsePacket);
         }
 
         const responsePacket = new ResponsePackets.RegisterResponse.Builder()
@@ -27,6 +44,6 @@ export default class RegisterUseCase {
             .toString()
         ;
 
-        return messageSender.sendMessageBySocketId(socketId, responsePacket);
+        return await res.send(responsePacket);
     }
 }

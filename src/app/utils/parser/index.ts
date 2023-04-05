@@ -70,11 +70,16 @@ export  default class Parser {
                 result = ResponseParser.parse(packetType, packetId, packetStatus, packet);
             }
             catch(err: unknown) {
-                throw new ParserErrorResult({
-                    packetId,
-                    type: packetType,
-                    status: Status.GeneralFailure
-                })
+                if(err instanceof ParserErrorResult) {
+                    throw err;
+                } else {
+                    throw new ParserErrorResult({
+                        packetId,
+                        type: packetType,
+                        status: Status.GeneralFailure
+                    });    
+                }
+                
             }
 
         } else {
@@ -83,7 +88,7 @@ export  default class Parser {
             }
             catch(err: unknown) {
                 if(err instanceof ParserErrorResult) {
-                    return this.generalPacketGenerator(err);
+                    throw err;
                 }
                 else {
                     throw new ParserErrorResult({
@@ -132,7 +137,8 @@ export  default class Parser {
         }
     }
 
-    private static generalPacketGenerator(error: ParserErrorResult): ResponsePacket {
+    private static 
+    generalPacketGenerator(error: ParserErrorResult): ResponsePacket {
         return new ResponsePackets.GeneralFailure.Builder()
             .setPacketId(error.packetId)
             .setType(error.type)

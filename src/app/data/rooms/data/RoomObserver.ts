@@ -1,12 +1,7 @@
-import { IMessageSender } from "../IMessageSender";
-import { ChatRoom, IRoomObserver } from "./ChatRoom";
+import { ChatRoom } from "../ChatRoom";
+import { IRoomObserver } from "../domain/IRoomObserver";
 
 export default class RoomObserver implements IRoomObserver {
-    private readonly roomMessageSender: IMessageSender;
-
-    constructor(roomMessageSender: IMessageSender) {
-        this.roomMessageSender = roomMessageSender;
-    }
 
     onUserAdded(room: ChatRoom, userId: string): void {
         console.log(`Room : ${room.id}, user ${userId} is added`);

@@ -1,7 +1,5 @@
 import NetworkLayer from "./common/networkLayer";
-import { SocketsManagerObserver } from "./common/networkLayer/SocketMenegerObserver";
-import ConnectedUserMap from "./data/ConnectedUserMap";
-import { SocketDataHandeler } from "./data/SocketDataHandeler";
+import SocketDataHandeler from "./data/SocketDataHandeler";
 
 type BootstrapServerArgs = {
     readonly port: number;
@@ -21,15 +19,10 @@ export async function bootstrap(args: BootstrapArgs) {
     console.log("database is ready");
 
     const networkLayer = new NetworkLayer();
-    const connectedUserMap = new ConnectedUserMap(networkLayer);
-
-    networkLayer.setListener(new SocketsManagerObserver(connectedUserMap));
 
     await networkLayer.startPromisify({
         port: args.server.port,
         inactiveTimeout: args.server.inactiveTimeout,
-        dataHandlerFactory: (socketId: string) => {
-            return SocketDataHandeler.factory(socketId, connectedUserMap)
-        }
+        dataHandlerFactory: SocketDataHandeler
     });
 }
