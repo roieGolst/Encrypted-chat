@@ -2,8 +2,8 @@ import { PacketType, Status } from "../encryptedChatProtocol/commonTypes";
 import parser, { ParserErrorResult } from "../utils/parser";
 import { TcpServer } from "../../server/types";
 import * as ResponsePackets from "../encryptedChatProtocol/responsePackets";
-import LoginUseCase from "../tasks/login";
-import RegisterUseCase from "../tasks/register";
+import LoginUseCase from "../routers/login";
+import RegisterUseCase from "../routers/register";
 import { HandlerCb } from "./IHandler";
 
 class SocketDataHandeler implements TcpServer.IDataHandler {

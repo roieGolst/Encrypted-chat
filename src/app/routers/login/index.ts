@@ -2,7 +2,7 @@
 import { Status } from "../../encryptedChatProtocol/commonTypes";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import * as useCases from "../index";
-import AuthRepository from "../authentication/AuthRepository";
+import AuthRepository from "../../utils/authentication/AuthRepository";
 import { TcpServer } from "../../../server/types";
 import Packet from "../../utils/parser/Packet";
 import LoginRequestPacket from "../../encryptedChatProtocol/requestPackets/Login";

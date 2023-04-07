@@ -1,6 +1,6 @@
 import { Status } from "../../encryptedChatProtocol/commonTypes";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
-import AuthRepository from "../authentication/AuthRepository";
+import AuthRepository from "../../utils/authentication/AuthRepository";
 import Packet from "../../utils/parser/Packet";
 import { TcpServer } from "../../../server/types";
 import RegisterRequstPacket from "../../encryptedChatProtocol/requestPackets/Register";

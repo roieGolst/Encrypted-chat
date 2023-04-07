@@ -4,7 +4,7 @@ import { IResult } from "../../../common/IResult";
 import { Status } from "../../encryptedChatProtocol/commonTypes";
 import * as RequestPackets from "../../encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
-import { IConnectedUserManeger } from "../../data/IConnectedUserMeneger";
+import { TcpServer } from "../../../server/types";
 
 type UserSign = {
     readonly userName: string
@@ -20,7 +20,7 @@ export default class TokensManeger {
 
     private static readonly refreshTokensMap: Map<string, Date> = new Map();
 
-    static async sendNewToken(data: RequestPackets.NewTokenRequest, socketId: string, connectedUserMap: IConnectedUserManeger): Promise<boolean> {
+    static async sendNewToken(data: RequestPackets.NewTokenRequest, res: TcpServer.IResponse): Promise<boolean> {
         const refreshToken = data.refreshToken;
 
         const authResult = this.authRefreshToken(refreshToken);
@@ -33,7 +33,7 @@ export default class TokensManeger {
                 .toString()
             ;    
 
-            return await connectedUserMap.sendMessageBySocketId(socketId, responsePacket);
+            return await res.send(responsePacket);
         }
 
         const userSign = this.getUserSing(refreshToken);
@@ -46,7 +46,7 @@ export default class TokensManeger {
                 .toString()
             ;    
 
-            return await connectedUserMap.sendMessageBySocketId(socketId, responsePacket);
+            return await res.send(responsePacket);
         }
 
         const newToken = this.genereteToken(userSign.value);
@@ -59,7 +59,7 @@ export default class TokensManeger {
             .toString()
         ;
 
-        return await connectedUserMap.sendMessageBySocketId(socketId, responsePacket);
+        return await res.send(responsePacket);
     }
 
     static getTokens(user: UserSign): Tokens {
