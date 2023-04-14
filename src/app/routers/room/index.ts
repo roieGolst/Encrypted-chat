@@ -6,11 +6,13 @@ import * as useCases from "../index";
 import RoomObserver from "../../data/rooms/data/RoomObserver";
 import { TcpServer } from "../../../server/types";
 import { IRoomObserver } from "../../data/rooms/domain/IRoomObserver";
+import CreateChatRequestPacket from "../../encryptedChatProtocol/requestPackets/CreateChat";
+import JoinChatRequestPacket from "../../encryptedChatProtocol/requestPackets/JoinChat";
 export default class RoomsUseCase {
 
     private static readonly rooms = new Map<String, ChatRoom>();
 
-    static async createRoom(data: RequestPackets.CreateChatRequest, res: TcpServer.IResponse): Promise<boolean> {
+    static async createRoom(data: CreateChatRequestPacket, res: TcpServer.IResponse): Promise<boolean> {
         const authResult = useCases.Token.authValidate(data.token);
 
         if(!authResult.isSuccess) {
@@ -24,7 +26,7 @@ export default class RoomsUseCase {
             return await res.send(responsePacket);
         }
 
-        const room = this.createRoomChat(new RoomObserver(connectedUserMap));
+        const room = this.createRoomChat(new RoomObserver());
 
         room.addUser(authResult.value.id);
         this.rooms.set(room.id, room);
@@ -40,7 +42,7 @@ export default class RoomsUseCase {
         return await res.send(responsePacket);
     }
 
-    static async joinChat(data: RequestPackets.JoinChatRequest, res: TcpServer.IResponse): Promise<boolean> {
+    static async joinChat(data: JoinChatRequestPacket, res: TcpServer.IResponse): Promise<boolean> {
         const roomId = data.roomId;
         const token = data.token;
 
@@ -83,7 +85,7 @@ export default class RoomsUseCase {
 
         room.addUser(authResult.value.id);
 
-        const members: string[] = room.getUsers();
+        const members: Room[] = room.getUsers();
     
         const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
                 .setPacketId(data.packetId)

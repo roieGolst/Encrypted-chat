@@ -4,35 +4,17 @@ import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import * as useCases from "../index";
 import AuthRepository from "../../utils/authentication/AuthRepository";
 import { TcpServer } from "../../../server/types";
-import Packet from "../../utils/parser/Packet";
 import LoginRequestPacket from "../../encryptedChatProtocol/requestPackets/Login";
 
 
 export default class LoginUseCase {
 
-    static async loginLogic(data: Packet, res: TcpServer.IResponse): Promise<boolean> {
-        let packet: LoginRequestPacket;
-
-        try {
-            packet = data as LoginRequestPacket
-        }
-
-        catch(err: unknown) {
-            const responsePacket = new ResponsePackets.LoginResponse.Builder()
-                .setPacketId(data.packetId)
-                .setStatus(Status.AuthenticationError)
-                .build()
-                .toString()
-            ;
-
-            return await res.send(responsePacket);
-        }
-
-        const loginResult = await AuthRepository.login(packet.userAttributs);
+    static async loginLogic(req: LoginRequestPacket, res: TcpServer.IResponse): Promise<boolean> {
+        const loginResult = await AuthRepository.login(req.userAttributs);
 
         if(!loginResult.isSuccess) {
             const responsePacket = new ResponsePackets.LoginResponse.Builder()
-                .setPacketId(data.packetId)
+                .setPacketId(req.packetId)
                 .setStatus(Status.AuthenticationError)
                 .build()
                 .toString()
@@ -63,7 +45,7 @@ export default class LoginUseCase {
         });
 
         const responseData = new ResponsePackets.LoginResponse.Builder()
-            .setPacketId(data.packetId)
+            .setPacketId(req.packetId)
             .setStatus(Status.Succeeded)
             .setUserDetails({userId: user.id, username: user.username, tokens})
             .build()

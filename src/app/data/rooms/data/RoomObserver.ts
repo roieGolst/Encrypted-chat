@@ -1,4 +1,5 @@
 import { ChatRoom } from "../ChatRoom";
+import { RoomUser } from "../common/RoomUser";
 import { IRoomObserver } from "../domain/IRoomObserver";
 
 export default class RoomObserver implements IRoomObserver {
@@ -12,12 +13,13 @@ export default class RoomObserver implements IRoomObserver {
     }
 
     onMessageSent(room: ChatRoom, fromUserId: string, message: string): void {
-        room.getUsers().forEach((userId: string) => {
-            if(fromUserId == userId) {
+        room.getUsers().forEach((roomUser: RoomUser) => {
+            if(fromUserId == roomUser.userId) {
                 return;
             }
-            //TODO: this is async function
-            this.roomMessageSender.sendMessageByUserId(userId, message);
+
+            //TODO: this is async function && triger the roo, polling class;
+            // this.roomMessageSender.sendMessageByUserId(userId, message);
         })
     }
 }

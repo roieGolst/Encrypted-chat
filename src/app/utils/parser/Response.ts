@@ -129,16 +129,10 @@ export default class ResponseParser {
             .build();
         }
 
-        const membersMap = new Map<string, string>;
-
-        for(let memberId in members) {
-            membersMap.set(memberId, payload["members"][memberId]);
-        }
-
         return new ResponsePackets.JoinChatResponse.Builder()
             .setPacketId(packetId)
             .setStatus(status)
-            .setMembers(membersMap)
+            .setMembers(members)
             .build()
     }
 

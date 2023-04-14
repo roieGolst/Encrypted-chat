@@ -1,9 +1,10 @@
 import { v4 } from 'uuid';
 import { IRoomObserver } from './domain/IRoomObserver';
+import { RoomUser } from './common/RoomUser';
 
 export class ChatRoom {
     readonly id: string = v4();
-    private readonly onlineUsers: string[] = new Array(); // users Id // TODO: Object {userId: string, publicKey: string};
+    private readonly onlineUsers: Map<string, string> = new Map();//TODO: Object {userId: string, publicKey: string};
 
     private listener: IRoomObserver;
 
@@ -11,30 +12,27 @@ export class ChatRoom {
         this.listener = listener;
     }
 
-    addUser(userId: string): void {
-        this.onlineUsers.push(userId);
+    addUser(userId: string, publicKey: string): void {
+        this.onlineUsers.set(userId, publicKey);
 
         this.listener.onUserAdded(this, userId);
     }
 
     deleteUser(userId: string): boolean {
-        const userIndex = this.onlineUsers.indexOf(userId);
-
-        if(userIndex < 0) {
-            return false;
-        }
-
-        this.onlineUsers.splice(userIndex, 1);
-        this.listener.onUserRemoved(this, userId);
-
-        return true;
+        return this.onlineUsers.delete(userId);
     }
 
     sendMessage(userId: string,  message: string): void {
         this.listener.onMessageSent(this, userId, message);
     }
 
-    getUsers(): string[] {
-        return this.onlineUsers;
+    getUsers(): RoomUser[] {
+        const users: RoomUser[] = new Array<RoomUser>(this.onlineUsers.size);
+
+        this.onlineUsers.forEach((value: string, key: string) => {
+            users.push({userId: key, publicKey: value});
+        });
+
+        return users;
     }
 };
