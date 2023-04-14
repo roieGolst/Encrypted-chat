@@ -5,13 +5,19 @@ import * as ResponsePackets from "../encryptedChatProtocol/responsePackets";
 import LoginUseCase from "../routers/login";
 import RegisterUseCase from "../routers/register";
 import { HandlerCb } from "./IHandler";
+import Packet from "../utils/parser/Packet"
 
 class SocketDataHandeler implements TcpServer.IDataHandler {
-    private readonly handlerMap: Map<PacketType, HandlerCb> = new Map();
+    private readonly handlerMap: Map<PacketType, HandlerCb<any>> = new Map();
 
-    setHandler(type: PacketType, cb: HandlerCb): void {
+    setHandler<T extends Packet>(type: PacketType, cb: HandlerCb<T>): void {
         this.handlerMap.set(type, cb);
     }
+    
+    private runCb<T extends Packet>(callback: HandlerCb<T>, req: T, res: TcpServer.IResponse) {
+        callback(req, res);
+    }
+
 
     async handleOnData(data: Buffer, res: TcpServer.IResponse): Promise<void> {
         try {
@@ -22,7 +28,7 @@ class SocketDataHandeler implements TcpServer.IDataHandler {
                 return;
             }
 
-            handler(packet, res);
+            this.runCb(handler, packet, res)
         }
         catch(err: unknown) {
             if(err instanceof ParserErrorResult) {
@@ -36,6 +42,7 @@ class SocketDataHandeler implements TcpServer.IDataHandler {
             }), res);
             return;
         }
+        
 
         // try {
         //     return await this.handelByType(parseResult);
