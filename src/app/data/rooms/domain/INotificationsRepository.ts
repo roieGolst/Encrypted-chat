@@ -1,4 +1,6 @@
+import { RoomNotify } from "../common/RoomNotify";
+
 export interface INotificationsRepository {
-    registerNotification(toUser: string, conntent: string/*RoomNotification*/): void;
-    fetchDataByUserId(userId: string): string[];
+    registerNotification(toUser: string, notify: RoomNotify): void;
+    fetchDataByUserId(userId: string): RoomNotify[];
 }

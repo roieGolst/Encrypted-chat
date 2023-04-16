@@ -15,7 +15,7 @@ export class ChatRoom {
     addUser(userId: string, publicKey: string): void {
         this.onlineUsers.set(userId, publicKey);
 
-        this.listener.onUserAdded(this, userId);
+        this.listener.onUserAdded(this, {userId, publicKey});
     }
 
     deleteUser(userId: string): boolean {

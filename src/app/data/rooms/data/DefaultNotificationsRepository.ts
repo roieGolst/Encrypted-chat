@@ -1,15 +1,16 @@
+import { RoomNotify } from "../common/RoomNotify";
 import { INotificationsRepository } from "../domain/INotificationsRepository";
 
 class NotificationsRepository implements INotificationsRepository {
-    private notifications: Map<string, string[]> = new Map();
+    private notifications: Map<string, RoomNotify[]> = new Map();
 
-    registerNotification(toUser: string, conntent: string): void {
+    registerNotification(toUser: string, notify: RoomNotify): void {
         let user = this.getUserQueue(toUser);
 
-        user.push(conntent);
+        user.push(notify);
     }
 
-    private getUserQueue(userId: string): string[] {
+    private getUserQueue(userId: string): RoomNotify[] {
         let userOueue = this.notifications.get(userId);
 
         if(!userOueue) {
@@ -20,7 +21,7 @@ class NotificationsRepository implements INotificationsRepository {
         return userOueue;
     }
     
-    fetchDataByUserId(userId: string): string[] {
+    fetchDataByUserId(userId: string): RoomNotify[] {
         return this.getUserQueue(userId);
     }
 }
