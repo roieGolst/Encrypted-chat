@@ -1,6 +1,6 @@
 import { IBuilder } from "../../common/IBuilder";
 import { PacketType } from "../commonTypes";
-import Packet from "../../utils/parser/Packet";
+import Packet from "../Packet";
 
 export default class JoinChatRequestPacket extends Packet {
     readonly token: string;

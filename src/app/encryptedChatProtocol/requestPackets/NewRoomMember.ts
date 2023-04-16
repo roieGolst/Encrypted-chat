@@ -1,6 +1,6 @@
 import { IBuilder } from "../../common/IBuilder";
 import { PacketType } from "../commonTypes";
-import Packet from "../../utils/parser/Packet";
+import Packet from "../Packet";
 import { SingleMember } from "../responsePackets/NewRoomMember";
 
 export default class NewRoonMemberRequestPacket extends Packet {

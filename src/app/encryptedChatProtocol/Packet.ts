@@ -1,4 +1,4 @@
-import { PacketType } from "../../encryptedChatProtocol/commonTypes";
+import { PacketType } from "./commonTypes";
 import { v4 } from 'uuid';
 
 export default abstract class Packet {

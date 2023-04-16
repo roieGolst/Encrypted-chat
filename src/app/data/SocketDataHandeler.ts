@@ -3,7 +3,7 @@ import parser, { ParserErrorResult } from "../utils/parser";
 import { TcpServer } from "../../server/types";
 import * as ResponsePackets from "../encryptedChatProtocol/responsePackets";
 import { HandlerCb } from "./IHandler";
-import Packet from "../utils/parser/Packet";
+import Packet from "../encryptedChatProtocol/Packet";
 import * as routers from "../routers/index";
 
 class SocketDataHandeler implements TcpServer.IDataHandler {
