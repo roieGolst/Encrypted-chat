@@ -1,5 +1,5 @@
 import { IResult } from "../../../common/IResult";
-import UserRepository from "../../db/utils/UserRepository";
+import UserRepository from "../../data/db/utils/UserRepository";
 import { AuthAttributs } from "../../encryptedChatProtocol/commonTypes";
 import { IAuthRepository } from "./IAuthRepository";
 import bcrypt from "bcrypt";

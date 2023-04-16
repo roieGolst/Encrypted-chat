@@ -1,4 +1,4 @@
-import { IResult } from "../../../common/IResult";
+import { IResult } from "../../../../common/IResult";
 import User from "./User";
 
 export type UserModel = {

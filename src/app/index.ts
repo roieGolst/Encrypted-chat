@@ -1,6 +1,6 @@
 import { bootstrap } from "./bootstrap";
 import networkConfigs from "./config/networkConfigs.json";
-import driverInitializer from "./db";
+import driverInitializer from "./data/db";
 
 bootstrap(
     {

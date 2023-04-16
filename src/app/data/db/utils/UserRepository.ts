@@ -1,7 +1,7 @@
 
 import { UniqueConstraintError } from "sequelize";
 import User from "../models/User";
-import { IResult } from "../../../common/IResult";
+import { IResult } from "../../../../common/IResult";
 import { IUserRepository, UserModel } from "../models/IUserRepository";
 
 const SALT_ROUNDS = 10;
