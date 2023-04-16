@@ -1,4 +1,5 @@
 import { ChatRoom } from "../ChatRoom";
+import { NotifyTypes, RoomNotify } from "../common/RoomNotify";
 import { RoomUser } from "../common/RoomUser";
 import { INotificationsRepository } from "../domain/INotificationsRepository";
 import { IRoomObserver } from "../domain/IRoomObserver";
@@ -10,22 +11,45 @@ export default class RoomObserver implements IRoomObserver {
         this.notifier = notifier;
     }
 
-    onUserAdded(room: ChatRoom, userId: string): void {
-        console.log(`Room : ${room.id}, user ${userId} is added`);
+    onUserAdded(room: ChatRoom, roomUser: RoomUser): void {
+        const notify: RoomNotify = {
+            roomId: room.id,
+            type: NotifyTypes.UserAdded,
+            userId: roomUser.userId,
+            cottent: roomUser.publicKey
+        };
+
+        return this.sendRoomNotify(room, notify);
     }
 
-    onUserRemoved(room: ChatRoom, userId: string): void {
-        console.log(`Room : ${room.id}, user ${userId} is left`);
+    onUserRemoved(room: ChatRoom, removedUser: string): void {
+        const notify: RoomNotify = {
+            roomId: room.id,
+            type: NotifyTypes.UserAdded,
+            userId: removedUser
+        };
+
+        return this.sendRoomNotify(room, notify);
     }
 
     onMessageSent(room: ChatRoom, fromUserId: string, message: string): void {
+        const notify: RoomNotify = {
+            roomId: room.id,
+            type: NotifyTypes.Message,
+            fromUserId,
+            cottent: message
+        };
+
+        return this.sendRoomNotify(room, notify);
+    }
+
+    private sendRoomNotify(room: ChatRoom, notify: RoomNotify): void {
         room.getUsers().forEach((roomUser: RoomUser) => {
-            if(fromUserId == roomUser.userId) {
+            if(notify.fromUserId == roomUser.userId) {
                 return;
             }
 
-            this.notifier.registerNotification(roomUser.userId, message);
-            //TODO: this is async function && triger the roo, polling class;
-        });
+            this.notifier.registerNotification(roomUser.userId, notify);
+        })
     }
 }
