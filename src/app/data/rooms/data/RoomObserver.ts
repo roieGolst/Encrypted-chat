@@ -16,7 +16,7 @@ export default class RoomObserver implements IRoomObserver {
             roomId: room.id,
             type: NotifyTypes.UserAdded,
             userId: roomUser.userId,
-            cottent: roomUser.publicKey
+            content: roomUser.publicKey
         };
 
         return this.sendRoomNotify(room, notify);
@@ -37,7 +37,7 @@ export default class RoomObserver implements IRoomObserver {
             roomId: room.id,
             type: NotifyTypes.Message,
             fromUserId,
-            cottent: message
+            content: message
         };
 
         return this.sendRoomNotify(room, notify);

@@ -9,5 +9,5 @@ export type RoomNotify = {
     type: NotifyTypes,
     userId?: string,
     fromUserId?: string, 
-    cottent?: string
+    content?: string
 };
