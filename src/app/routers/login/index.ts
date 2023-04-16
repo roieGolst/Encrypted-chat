@@ -9,7 +9,7 @@ import LoginRequestPacket from "../../encryptedChatProtocol/requestPackets/Login
 
 export default class LoginUseCase {
 
-    static async loginLogic(req: LoginRequestPacket, res: TcpServer.IResponse): Promise<boolean> {
+    static async login(req: LoginRequestPacket, res: TcpServer.IResponse): Promise<boolean> {
         const loginResult = await AuthRepository.login(req.userAttributs);
 
         if(!loginResult.isSuccess) {

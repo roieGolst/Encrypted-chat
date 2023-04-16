@@ -2,10 +2,9 @@ import { PacketType, Status } from "../encryptedChatProtocol/commonTypes";
 import parser, { ParserErrorResult } from "../utils/parser";
 import { TcpServer } from "../../server/types";
 import * as ResponsePackets from "../encryptedChatProtocol/responsePackets";
-import LoginUseCase from "../routers/login";
-import RegisterUseCase from "../routers/register";
 import { HandlerCb } from "./IHandler";
-import Packet from "../utils/parser/Packet"
+import Packet from "../utils/parser/Packet";
+import * as routers from "../routers/index";
 
 class SocketDataHandeler implements TcpServer.IDataHandler {
     private readonly handlerMap: Map<PacketType, HandlerCb<any>> = new Map();
@@ -42,19 +41,6 @@ class SocketDataHandeler implements TcpServer.IDataHandler {
             }), res);
             return;
         }
-        
-
-        // try {
-        //     return await this.handelByType(parseResult);
-        // }
-        // catch(err) {
-        //     await this.sendError(new ParserErrorResult({
-        //         packetId: parseResult.packetId,
-        //         type: parseResult.type,
-        //         status: Status.GeneralFailure
-        //     }));
-        //     return;
-        // }
     }
 
     // private async handelByType(packet: RequestPacket): Promise<void> {
@@ -130,7 +116,6 @@ class SocketDataHandeler implements TcpServer.IDataHandler {
     //     }
     // }
 
-
     private async sendError(exception: ParserErrorResult, res: TcpServer.IResponse): Promise<boolean> {
         const packet = new ResponsePackets.GeneralFailure.Builder()
             .setPacketId(exception.packetId)
@@ -144,7 +129,11 @@ class SocketDataHandeler implements TcpServer.IDataHandler {
 
 const app = new SocketDataHandeler();
 
-app.setHandler(PacketType.Login, LoginUseCase.loginLogic);
-app.setHandler(PacketType.Register, RegisterUseCase.registerLogic);
+app.setHandler(PacketType.Login, routers.Login.login);
+app.setHandler(PacketType.Register, routers.Register.register);
+app.setHandler(PacketType.CreateChat, routers.Room.createRoom);
+app.setHandler(PacketType.JoinChat, routers.Room.joinChat);
+app.setHandler(PacketType.ChatMessage, routers.Room.sendMessage);
+app.setHandler(PacketType.NewToken, routers.Token.sendNewToken);
 
 export default app;

@@ -6,7 +6,7 @@ import RegisterRequstPacket from "../../encryptedChatProtocol/requestPackets/Reg
 
 export default class RegisterUseCase {
 
-    static async registerLogic(req: RegisterRequstPacket, res: TcpServer.IResponse): Promise<boolean> {
+    static async register(req: RegisterRequstPacket, res: TcpServer.IResponse): Promise<boolean> {
         const registerResult = await AuthRepository.register(req.userAttributs);
         
         if(!registerResult.isSuccess) {

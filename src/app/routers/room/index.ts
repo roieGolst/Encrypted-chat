@@ -1,17 +1,19 @@
-import { ChatRoom } from "../../data/rooms/ChatRoom";
 import { Status } from "../../encryptedChatProtocol/commonTypes";
 import * as RequestPackets from "../../encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import * as useCases from "../index";
 import RoomObserver from "../../data/rooms/data/RoomObserver";
 import { TcpServer } from "../../../server/types";
-import { IRoomObserver } from "../../data/rooms/domain/IRoomObserver";
 import CreateChatRequestPacket from "../../encryptedChatProtocol/requestPackets/CreateChat";
 import JoinChatRequestPacket from "../../encryptedChatProtocol/requestPackets/JoinChat";
 import { RoomUser } from "../../data/rooms/common/RoomUser";
+import notificationsRepository from "../../data/rooms/data/DefaultNotificationsRepository";
+import roomsRepository from "../../data/rooms/data/DefaultRoomsRepository";
+
 export default class RoomsUseCase {
 
-    private static readonly rooms = new Map<String, ChatRoom>();
+    private static readonly notificationsRepository = notificationsRepository;
+    private static readonly roomsRepository = roomsRepository;
 
     static async createRoom(req: CreateChatRequestPacket, res: TcpServer.IResponse): Promise<boolean> {
         const authResult = useCases.Token.authValidate(req.token);
@@ -27,10 +29,10 @@ export default class RoomsUseCase {
             return await res.send(responsePacket);
         }
 
-        const room = this.createRoomChat(new RoomObserver());
-
-        room.addUser(authResult.value.id, req.publicKey);
-        this.rooms.set(room.id, room);
+        const room = this.roomsRepository.createRoom(
+            new RoomObserver(notificationsRepository),
+            { userId: authResult.value.id, publicKey: req.publicKey }
+        );
 
         const responsePacket = new ResponsePackets.CreateChatResponse.Builder()
             .setPacketId(req.packetId)
@@ -71,7 +73,7 @@ export default class RoomsUseCase {
         //     return await res.send(responsePacket);
         // }
 
-        const room = this.rooms.get(roomId);
+        const room = this.roomsRepository.getRoom(roomId);
 
         if(!room) {
             const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
@@ -99,7 +101,7 @@ export default class RoomsUseCase {
         return await res.send(responsePacket);
     }
 
-    static async chatLogic(data: RequestPackets.ChatMessageRequest, res: TcpServer.IResponse): Promise<boolean> {
+    static async sendMessage(data: RequestPackets.ChatMessageRequest, res: TcpServer.IResponse): Promise<boolean> {
         const token = data.token;
         const roomId = data.roomId;
         const message = data.message;
@@ -117,7 +119,7 @@ export default class RoomsUseCase {
             return await res.send(responsePacket);
         }
 
-        const room = this.rooms.get(roomId);
+        const room = this.roomsRepository.getRoom(roomId);
 
         if(!room) {
             const responsePacket = new ResponsePackets.ChatMessage.Builder()
@@ -140,9 +142,5 @@ export default class RoomsUseCase {
         ;
 
         return await res.send(responsePacket);
-    }
-
-    private static createRoomChat(listener: IRoomObserver): ChatRoom {
-        return new ChatRoom(listener);
     }
 }
