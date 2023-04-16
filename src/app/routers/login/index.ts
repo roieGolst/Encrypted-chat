@@ -1,5 +1,5 @@
 
-import { Status } from "../../encryptedChatProtocol/commonTypes";
+import { Status } from "../../encryptedChatProtocol/common/commonTypes";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import * as useCases from "../index";
 import AuthRepository from "../../utils/authentication/AuthRepository";

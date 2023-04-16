@@ -1,4 +1,4 @@
-import { AuthAttributs, PacketType, Status } from "../../../encryptedChatProtocol/commonTypes";
+import { AuthAttributs, PacketType, Status } from "../../../encryptedChatProtocol/common/commonTypes";
 import { IResult } from "../../../../common/IResult";
 import { registerResponsePacketSchema } from "./schemas";
 

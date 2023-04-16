@@ -1,4 +1,4 @@
-import { Status } from "../../encryptedChatProtocol/commonTypes";
+import { Status } from "../../encryptedChatProtocol/common/commonTypes";
 import * as RequestPackets from "../../encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import * as useCases from "../index";

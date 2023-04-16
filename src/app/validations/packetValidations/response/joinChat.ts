@@ -1,5 +1,5 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType, Status } from "../../../encryptedChatProtocol/commonTypes";
+import { PacketType, Status } from "../../../encryptedChatProtocol/common/commonTypes";
 import { joinChatResponsePacketSchema } from "./schemas";
 
 type JoinChatResponsePacket = {

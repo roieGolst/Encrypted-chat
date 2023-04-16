@@ -1,5 +1,5 @@
 import { IBuilder } from "../../common/IBuilder";
-import { PacketType, Status } from "../commonTypes";
+import { PacketType, Status } from "../common/commonTypes";
 import ResponsePacket from "./ResponsePacket";
 
 export default class GeneralFailureResponsePacket extends ResponsePacket {

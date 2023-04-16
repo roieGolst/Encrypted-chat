@@ -1,5 +1,5 @@
 import { IBuilder } from "../../common/IBuilder";
-import { AuthAttributs, PacketType } from "../commonTypes";
+import { AuthAttributs, PacketType } from "../common/commonTypes";
 import Packet from "../Packet";
 
 export default class RegisterRequstPacket extends Packet {

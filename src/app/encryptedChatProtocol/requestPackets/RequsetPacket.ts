@@ -1,4 +1,4 @@
-import { PacketType } from "../commonTypes";
+import { PacketType } from "../common/commonTypes";
 import Packet from "../Packet";
 
 export default abstract class RequestPacket extends Packet {

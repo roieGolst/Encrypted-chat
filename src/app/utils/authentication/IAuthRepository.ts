@@ -1,5 +1,5 @@
 import { IResult } from "../../../common/IResult";
-import { AuthAttributs } from "../../encryptedChatProtocol/commonTypes";
+import { AuthAttributs } from "../../encryptedChatProtocol/common/commonTypes";
 import { LoginResultModel } from "./AuthRepository";
 
 export interface IAuthRepository {

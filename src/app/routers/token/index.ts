@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import env from "../../config/env.json";
 import { IResult } from "../../../common/IResult";
-import { Status } from "../../encryptedChatProtocol/commonTypes";
+import { Status } from "../../encryptedChatProtocol/common/commonTypes";
 import * as RequestPackets from "../../encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import { TcpServer } from "../../../server/types";

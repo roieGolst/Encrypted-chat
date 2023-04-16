@@ -1,5 +1,5 @@
 import { IBuilder } from "../../common/IBuilder";
-import { PacketType } from "../commonTypes";
+import { PacketType } from "../common/commonTypes";
 import Packet from "../Packet";
 
 export default class JoinChatRequestPacket extends Packet {

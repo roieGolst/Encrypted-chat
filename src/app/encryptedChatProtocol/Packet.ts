@@ -1,4 +1,4 @@
-import { PacketType } from "./commonTypes";
+import { PacketType } from "./common/commonTypes";
 import { v4 } from 'uuid';
 
 export default abstract class Packet {

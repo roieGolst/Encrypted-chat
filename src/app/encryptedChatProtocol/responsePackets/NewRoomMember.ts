@@ -1,4 +1,4 @@
-import { PacketType, Status } from "../commonTypes";
+import { PacketType, Status } from "../common/commonTypes";
 import { IBuilder } from "../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
