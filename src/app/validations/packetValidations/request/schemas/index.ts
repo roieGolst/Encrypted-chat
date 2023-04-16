@@ -4,4 +4,5 @@ export { default as createChatRequestPacketSchema } from "./createChatSchema";
 export { default as joinChatRequestPacketSchema } from "./joinChatSchema";
 export { default as loginRequestPacketSchema } from "./loginSchema";
 export { default as newRoomMemberRequestPacketSchema } from "./newRoomMemberSchema";
-export { default as newTokenRequestPacketSchema } from "../../response/schemas/newTokenSchema";
+export { default as newTokenRequestPacketSchema } from "../schemas/newTokenSchema";
+export { default as pollingSchema } from "../schemas/pollingSchema"

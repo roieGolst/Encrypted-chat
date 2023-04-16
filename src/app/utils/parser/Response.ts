@@ -23,6 +23,10 @@ export default class ResponseParser {
                 return this.parseJoinChatResponse(packetId, status, payload);
             }
 
+            case PacketType.Polling : {
+                return this.parseroomPollingResponse(packetId, status, payload);
+            }
+
             case PacketType.NewToken : {
                 return this.parseNewTokenResponse(packetId, status, payload);
             }
@@ -133,6 +137,26 @@ export default class ResponseParser {
             .setPacketId(packetId)
             .setStatus(status)
             .setMembers(members)
+            .build()
+    }
+
+    private static parseroomPollingResponse(packetId: string, status: Status, payload: any): ResponsePacket {
+        const validationResult = validations.packetValidation.response.pollingPacket.validate(payload);
+
+        if(!validationResult.isSuccess) {
+            return this.generalPacketGenerator(new ParserErrorResult({
+                packetId,
+                type: PacketType.Polling,
+                status: Status.VlidationError
+            }));
+        }
+
+        const body = validationResult.value.body;
+
+        return new ResponsePackets.Polling.Builder()
+            .setPacketId(packetId)
+            .setStatus(status)
+            .setBody(body)
             .build()
     }
 

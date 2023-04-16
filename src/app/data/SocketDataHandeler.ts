@@ -135,5 +135,6 @@ app.setHandler(PacketType.CreateChat, routers.Room.createRoom);
 app.setHandler(PacketType.JoinChat, routers.Room.joinChat);
 app.setHandler(PacketType.ChatMessage, routers.Room.sendMessage);
 app.setHandler(PacketType.NewToken, routers.Token.sendNewToken);
+app.setHandler(PacketType.Polling, routers.Room.roomPolling);
 
 export default app;

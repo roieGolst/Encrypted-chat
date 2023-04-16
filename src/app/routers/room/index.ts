@@ -9,6 +9,7 @@ import JoinChatRequestPacket from "../../encryptedChatProtocol/requestPackets/Jo
 import { RoomUser } from "../../data/rooms/common/RoomUser";
 import notificationsRepository from "../../data/rooms/data/DefaultNotificationsRepository";
 import roomsRepository from "../../data/rooms/data/DefaultRoomsRepository";
+import { RoomNotify } from "../../data/rooms/common/RoomNotify";
 
 export default class RoomsUseCase {
 
@@ -142,5 +143,49 @@ export default class RoomsUseCase {
         ;
 
         return await res.send(responsePacket);
+    }
+
+    static roomPolling(req: RequestPackets.PollingPacket, res: TcpServer.IResponse): void {
+        const timeout = new Date();
+        timeout.setMinutes(timeout.getMinutes() + 2);
+
+        return this.polling(req, res, timeout);
+    }
+
+    private static polling(req: RequestPackets.PollingPacket, res: TcpServer.IResponse, timeout: Date): void {
+        let message: RoomNotify[] | undefined = undefined;
+
+        const authResult = useCases.Token.authValidate(req.token);
+
+        if(!authResult.isSuccess) {
+           const responsePacket = new ResponsePackets.ChatMessage.Builder()
+                .setPacketId(req.packetId)
+                .setStatus(Status.AuthenticationError)
+                .build()
+                .toString()
+            ;
+
+            res.send(responsePacket);
+            return;
+        }
+            
+        setTimeout(() => {
+            const nowTime = new Date();
+            message = this.notificationsRepository.fetchDataByUserId(authResult.value.id);
+
+            if((message.length > 0) && res.isWritable()) {
+                const packet = new ResponsePackets.Polling.Builder()
+                    .setPacketId(req.packetId)
+                    .setStatus(Status.Succeeded)
+                    .setBody(message)
+                    .build()
+    
+                return res.send(packet.toString());
+            }
+
+            if(nowTime < timeout) {
+                return this.polling(req, res, timeout);
+            }
+        }, 500);
     }
 }
