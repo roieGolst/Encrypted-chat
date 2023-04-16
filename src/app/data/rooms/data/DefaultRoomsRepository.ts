@@ -1,27 +1,43 @@
-import { ChatRoom } from "../ChatRoom";
+ import { ChatRoom } from "../ChatRoom";
 import { RoomUser } from "../common/RoomUser";
 import { IRoomsRepository } from "../domain/IRoomsRepository";
+import RoomObserver from "./RoomObserver";
 
 class DefaultRoomsRepository implements IRoomsRepository {
     private rooms: Map<string, ChatRoom> = new Map();
 
-    createRoom(roomUser: RoomUser): void {
-        throw new Error("Method not implemented.");
+    createRoom(roomObserver: RoomObserver, roomUser: RoomUser): ChatRoom {
+        const room = new ChatRoom(roomObserver);
+
+        this.rooms.set(room.id, room);
+        this.addUserToRoom(room.id, roomUser);
+
+        return room;
     }
-    addUserToRoom(roomId: string, roomUser: RoomUser): boolean {
+
+    getRoom(roomId: string): ChatRoom | undefined {
+        return this.rooms.get(roomId);
+    }
+
+    addUserToRoom(roomId: string, roomUser: RoomUser): void {
      const room = this.rooms.get(roomId);
 
      if(!room) {
-        return false;
+        return;
      }
 
      room.addUser(roomUser.userId, roomUser.publicKey);
     }
+
     deleteUserFromRoom(roomId: string, roomUser: RoomUser): boolean {
-        throw new Error("Method not implemented.");
+        const room = this.rooms.get(roomId);
+
+        if(!room) {
+            return false;
+        }
+
+        return room.deleteUser(roomUser.userId);
     }
-    fetchDataByUserId(userId: string): string[] {
-        throw new Error("Method not implemented.");
-    }
-    
 }
+
+export default new DefaultRoomsRepository();

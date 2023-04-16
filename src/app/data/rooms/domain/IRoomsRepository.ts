@@ -1,8 +1,10 @@
+import { ChatRoom } from "../ChatRoom";
 import { RoomUser } from "../common/RoomUser";
+import RoomObserver from "../data/RoomObserver";
 
 export interface IRoomsRepository {
-    createRoom(roomUser: RoomUser): void;
+    createRoom(roomObserver: RoomObserver, roomUser: RoomUser): void;
     addUserToRoom(roomId: string, roomUser: RoomUser): void;
     deleteUserFromRoom(roomId: string, roomUser: RoomUser): boolean;
-    fetchDataByUserId(userId: string): string[];
+    getRoom(roomId: string): ChatRoom | undefined;
 }
