@@ -7,6 +7,7 @@ type SendNonce = {
     readonly type: PacketType.SendNonce;
     readonly token: string;
     readonly roomId: string;
+    readonly toUserId: string;
     readonly oa: string
     readonly nonce: string
 }
@@ -29,6 +30,7 @@ export default {
                 type: PacketType.SendNonce,
                 token: data.token,
                 roomId: data.roomId,
+                toUserId: data.toUserId,
                 oa: data.oa,
                 nonce: data.nonce
             }

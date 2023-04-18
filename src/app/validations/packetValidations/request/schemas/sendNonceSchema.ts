@@ -21,6 +21,11 @@ export default Joi.object({
         .max(userConfigs.UUID_LENGTH)
         .required(),
 
+    toUserId: Joi.string()
+        .min(userConfigs.UUID_LENGTH)
+        .max(userConfigs.UUID_LENGTH)
+        .required(),
+
     oa: Joi.string()
         .required(),
 

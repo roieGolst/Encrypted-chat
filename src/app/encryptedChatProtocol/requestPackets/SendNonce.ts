@@ -5,12 +5,14 @@ import Packet from "../Packet";
 export default class SendNonceRequest extends Packet {
     readonly token: string;
     readonly roomId: string;
+    readonly toUserId: string;
     readonly oa: string;
     readonly nonce: string;
 
     constructor(
         token: string, 
-        roomId: string, 
+        roomId: string,
+        toUserId: string,
         oa: string, 
         nonce:  string, 
         packetId?: string
@@ -18,6 +20,7 @@ export default class SendNonceRequest extends Packet {
         super(PacketType.SendNonce, packetId);
         this.token = token;
         this.roomId = roomId;
+        this.toUserId = toUserId;
         this.oa = oa;
         this.nonce = nonce;
     }
@@ -26,6 +29,7 @@ export default class SendNonceRequest extends Packet {
         private packetId?: string;
         private token: string;
         private roomId: string;
+        private toUserId: string;
         private oa: string;
         private nonce: string;
 
@@ -42,6 +46,12 @@ export default class SendNonceRequest extends Packet {
 
         setRoomId(roomId: string): this {
             this.roomId = roomId;
+
+            return this;
+        }
+
+        setToUserId(userId: string): this {
+            this.toUserId = userId;
 
             return this;
         }
@@ -65,6 +75,10 @@ export default class SendNonceRequest extends Packet {
                 throw new Error("'Room id' is required");
             }
 
+            else if(!this.toUserId) {
+                throw new Error("'To user id' is required");
+            }
+
             else if(!this.oa) {
                 throw new Error("'Once AES key' is required");
             }
@@ -75,7 +89,8 @@ export default class SendNonceRequest extends Packet {
 
             return new SendNonceRequest(
                 this.token, 
-                this.roomId, 
+                this.roomId,
+                this.toUserId, 
                 this.oa,
                 this.nonce, 
                 this.packetId

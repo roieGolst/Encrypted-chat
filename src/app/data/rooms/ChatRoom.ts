@@ -2,37 +2,83 @@ import { v4 } from 'uuid';
 import { IRoomObserver } from './domain/IRoomObserver';
 import { RoomUser } from './common/RoomUser';
 
+type UserId = string;
+
 export class ChatRoom {
     readonly id: string = v4();
-    private readonly onlineUsers: Map<string, string> = new Map();//TODO: Object {userId: string, publicKey: string};
+    private readonly adminIdReferens: RoomUser;
+    private readonly onlineUsers: UserId[] = new Array();
+    private readonly usersWaitingForApproval: Map<UserId, RoomUser> = new Map();
 
     private listener: IRoomObserver;
 
-    constructor(listener: IRoomObserver) {
+    constructor(listener: IRoomObserver, roomAdmin: RoomUser) {
         this.listener = listener;
+
+        this.adminIdReferens = roomAdmin;
+        this.addUser(roomAdmin);
     }
 
-    addUser(userId: string, publicKey: string): void {
-        this.onlineUsers.set(userId, publicKey);
+    getAdminDetails(): RoomUser {
+        return this.adminIdReferens;
+    }
 
-        this.listener.onUserAdded(this, {userId, publicKey});
+    requestForJoining(user: RoomUser) {
+        this.usersWaitingForApproval.set(user.userId, user);
+        
+        this.listener.onRequestForJoining(this, user);
+    }
+
+    sendOa(userId: UserId, oa: string) {
+        this.listener.OnSentOa(this, userId, oa);
+    }
+
+    sendNonce(toUserId: UserId, oa: string, nonce: string): void {
+        this.listener.OnSentNonce(this, toUserId, oa, nonce)
+    }
+
+    sendAs(userId: UserId, as: string, nonce: string): void {
+        this.listener.OnSentAs(this, userId, as, nonce);
+    }
+
+    ApproveJoiningRequest(userApprovedId: UserId, members: string): void {
+        this.listener.ApprovedJoiningRequest(this, userApprovedId, members);
+
+        const user = this.usersWaitingForApproval.get(userApprovedId);
+
+        if(!user) {
+            return;
+        }
+
+        this.usersWaitingForApproval.delete(userApprovedId);
+
+        return this.addUser(user);
+    }
+
+    private addUser(roomUser: RoomUser): void {
+        this.onlineUsers.push(roomUser.userId);
+
+        this.listener.onUserAdded(this, roomUser); 
     }
 
     deleteUser(userId: string): boolean {
-        return this.onlineUsers.delete(userId);
+        const index = this.onlineUsers.indexOf(userId);
+
+        if(index < 0) {
+            return false;
+        }
+
+        this.onlineUsers.splice(index, 1);
+        this.listener.onUserRemoved(this, userId);
+
+        return true;
     }
 
     sendMessage(userId: string,  message: string): void {
         this.listener.onMessageSent(this, userId, message);
     }
 
-    getUsers(): RoomUser[] {
-        const users: RoomUser[] = new Array<RoomUser>(this.onlineUsers.size);
-
-        this.onlineUsers.forEach((value: string, key: string) => {
-            users.push({userId: key, publicKey: value});
-        });
-
-        return users;
+    getUsers(): UserId[] {
+        return this.onlineUsers;
     }
 };
