@@ -1,13 +1,17 @@
 export enum PacketType {
-    Polling = "polling",
     Register = "register",
     Login = "login",
     CreateChat = "createChat",
     JoinChat = "joinChat",
-    NewToken = "newToken",
-    NewRoomMember = "newRoomMember",
     ChatMessage = "chatMessage",
-    GeneralFailure = "generalFailure"
+    Polling = "polling",
+    NewToken = "newToken",
+    GeneralFailure = "generalFailure",
+    NewRoomMember = "newRoomMember",
+    SendOa = "sendOa",
+    SendNonce = "sendNonce",
+    SendAs = "sendAs",
+    AuthorizationApproved = "authorizationApproved"
 };
 
 export enum Status {

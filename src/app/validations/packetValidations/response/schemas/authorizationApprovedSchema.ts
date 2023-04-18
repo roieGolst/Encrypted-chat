@@ -1,6 +1,5 @@
 import Joi from "joi";
 import userConfigs from "../../../../config/userConfigs.json";
-import tokenConfigs from "../../../../config/tokenConfigs.json";
 
 export default Joi.object({
     packetId: Joi.string()
@@ -9,12 +8,9 @@ export default Joi.object({
         .required(),
 
     type: Joi.string()
-        .valid("joinChat")
+        .valid("authorizationApproved")
         .required(),
         
     status: Joi.number()
-        .required(),
-
-    adminPublicKey: Joi.string()
-        .optional()
+        .required()
 });

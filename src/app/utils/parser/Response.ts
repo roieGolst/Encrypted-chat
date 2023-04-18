@@ -27,6 +27,22 @@ export default class ResponseParser {
                 return this.parseroomPollingResponse(packetId, status, payload);
             }
 
+            case PacketType.SendOa : {
+                return this.parseSendOaResponse(packetId, status);
+            }
+
+            case PacketType.SendNonce : {
+                return this.parseSendNonceResponse(packetId, status);
+            }
+
+            case PacketType.SendAs : {
+                return this.parseSendAsResponse(packetId, status);
+            }
+
+            case PacketType.AuthorizationApproved : {
+                return this.parseAuthorizationApprovedResponse(packetId, status);
+            }
+
             case PacketType.NewToken : {
                 return this.parseNewTokenResponse(packetId, status, payload);
             }
@@ -50,7 +66,7 @@ export default class ResponseParser {
     }
 
     private static parseRegisterResponse(packetId: string, status: Status): ResponsePacket {
-        return new ResponsePackets.RegisterResponse.Builder()
+        return new ResponsePackets.Register.Builder()
             .setPacketId(packetId)
             .setStatus(status)
             .build()
@@ -71,13 +87,13 @@ export default class ResponseParser {
 
         //TODO: Make all response packet fileds to be required! 
         if(!userDetails) {
-            return new ResponsePackets.LoginResponse.Builder()
+            return new ResponsePackets.Login.Builder()
             .setPacketId(packetId)
             .setStatus(status)
             .build()
         }
 
-        return new ResponsePackets.LoginResponse.Builder()
+        return new ResponsePackets.Login.Builder()
             .setPacketId(packetId)
             .setStatus(status)
             .setUserDetails(userDetails)
@@ -99,13 +115,13 @@ export default class ResponseParser {
 
         //TODO: Make all response packet fileds to be required! 
         if(!roomId) {
-            return new ResponsePackets.CreateChatResponse.Builder()
+            return new ResponsePackets.CreateChat.Builder()
             .setPacketId(packetId)
             .setStatus(status)
             .build();
         }
 
-        return new ResponsePackets.CreateChatResponse.Builder()
+        return new ResponsePackets.CreateChat.Builder()
             .setPacketId(packetId)
             .setStatus(status)
             .setRoomId(payload["roomId"])
@@ -123,20 +139,48 @@ export default class ResponseParser {
             }));
         }
 
-        const members = validationResult.value.members;
+        const adminPublicKey = validationResult.value.adminPublicKey;
 
         //TODO: Make all response packet fileds to be required! 
-        if(!members) {
-            return new ResponsePackets.JoinChatResponse.Builder()
+        if(!adminPublicKey) {
+            return new ResponsePackets.JoinChat.Builder()
             .setPacketId(packetId)
             .setStatus(status)
             .build();
         }
 
-        return new ResponsePackets.JoinChatResponse.Builder()
+        return new ResponsePackets.JoinChat.Builder()
             .setPacketId(packetId)
             .setStatus(status)
-            .setMembers(members)
+            .setAdminPublicKey(adminPublicKey)
+            .build()
+    }
+
+    private static parseSendOaResponse(packetId: string, status: Status): ResponsePacket {
+        return new ResponsePackets.SendOa.Builder()
+            .setPacketId(packetId)
+            .setStatus(status)
+            .build()
+    }
+
+    private static parseSendNonceResponse(packetId: string, status: Status): ResponsePacket {
+        return new ResponsePackets.SendNonce.Builder()
+            .setPacketId(packetId)
+            .setStatus(status)
+            .build()
+    }
+
+    private static parseSendAsResponse(packetId: string, status: Status): ResponsePacket {
+        return new ResponsePackets.SendAs.Builder()
+            .setPacketId(packetId)
+            .setStatus(status)
+            .build()
+    }
+
+    private static parseAuthorizationApprovedResponse(packetId: string, status: Status): ResponsePacket {
+        return new ResponsePackets.AuthorizationApproved.Builder()
+            .setPacketId(packetId)
+            .setStatus(status)
             .build()
     }
 

@@ -1,17 +1,16 @@
 import { IResult } from "../../../../common/IResult";
 import { PacketType, Status } from "../../../encryptedChatProtocol/common/commonTypes";
-import { joinChatResponsePacketSchema } from "./schemas";
+import { sendOaSchema } from "./schemas";
 
-type JoinChatResponsePacket = {
+type SendOaResponsePacket = {
     readonly packetId: string;
-    readonly type: PacketType.JoinChat;
+    readonly type: PacketType.SendOa;
     readonly status: Status;
-    readonly adminPublicKey?: string;
 }
 
 export default {
-    validate: (data: any): IResult<JoinChatResponsePacket> => {
-        const result = joinChatResponsePacketSchema.validate(data);
+    validate: (data: any): IResult<SendOaResponsePacket> => {
+        const result = sendOaSchema.validate(data);
 
         if(result.error) {
             return {
@@ -24,9 +23,8 @@ export default {
             isSuccess: true,
             value: {
                 packetId: data.packetId,
-                type: PacketType.JoinChat,
-                status: data.status,
-                adminPublicKey: data.adminPublicKey
+                type: PacketType.SendOa,
+                status: data.status
             }
         };
     }

@@ -2,18 +2,15 @@ import { PacketType, Status } from "../common/commonTypes";
 import { IBuilder } from "../../common/IBuilder";
 import ResponsePacket from "./ResponsePacket";
 
-export default class JoinChatPacket extends ResponsePacket {
-    readonly adminPublicKey: string;
-
-    constructor(packetId: string, status: Status, adminPublicKey: string) {
-        super(PacketType.JoinChat, status, packetId);
-        this.adminPublicKey = adminPublicKey;
+export default class SendOaResponse extends ResponsePacket {
+    
+    constructor(packetId: string, status: Status) {
+        super(PacketType.SendOa, status, packetId);
     }
 
-    static Builder = class implements IBuilder<JoinChatPacket> {
+    static Builder = class implements IBuilder<SendOaResponse> {
         packetId: string;
         status: Status;
-        adminPublicKey: string;
 
         setPacketId(packetId: string): this {
             this.packetId = packetId;
@@ -25,12 +22,7 @@ export default class JoinChatPacket extends ResponsePacket {
             return this;
         }
 
-        setAdminPublicKey(adminPublicKey: string): this {
-            this.adminPublicKey = adminPublicKey;
-            return this;
-        }
-
-        build(): JoinChatPacket {
+        build(): SendOaResponse {
             if(this.status != Status.Succeeded) {
                 if(!this.packetId) {
                     throw new Error("'PacketId' is required");
@@ -47,14 +39,10 @@ export default class JoinChatPacket extends ResponsePacket {
                 else if(!this.status) {
                     throw new Error("'Status' is required");
                 }
-
-                else if(!this.adminPublicKey) {
-                    throw new Error("'Admin Public Key' is required");
-                }
             }
             
 
-            return new JoinChatPacket(this.packetId, this.status, this.adminPublicKey);
+            return new SendOaResponse(this.packetId, this.status);
         }
     }
 }

@@ -10,7 +10,7 @@ export default class RegisterUseCase {
         const registerResult = await AuthRepository.register(req.userAttributs);
         
         if(!registerResult.isSuccess) {
-            const responsePacket = new ResponsePackets.RegisterResponse.Builder()
+            const responsePacket = new ResponsePackets.Register.Builder()
                 .setPacketId(req.packetId)
                 .setStatus(Status.GeneralFailure)
                 .build()
@@ -20,7 +20,7 @@ export default class RegisterUseCase {
             return await res.send(responsePacket);
         }
 
-        const responsePacket = new ResponsePackets.RegisterResponse.Builder()
+        const responsePacket = new ResponsePackets.Register.Builder()
             .setPacketId(req.packetId)
             .setStatus(Status.Succeeded)
             .build()

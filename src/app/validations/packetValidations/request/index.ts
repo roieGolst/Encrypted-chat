@@ -5,3 +5,7 @@ export { default as loginPacket } from "./login";
 export { default as registerPacket } from "./register";
 export { default as newTokenPacket } from "./newToken";
 export { default as pollingPacket } from "./Polling";
+export { default as sendOa } from "./SendOa";
+export { default as sendNonce } from "./SendNonce";
+export { default as sendAs } from "./SendAs";
+export { default as authorizationApproved } from "./AuthorizationApproved";
