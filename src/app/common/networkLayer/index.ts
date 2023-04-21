@@ -21,13 +21,4 @@ export default class NetworkLayer implements INetworkLayer {
     async startPromisify(args: ServerArgs): Promise<void> {
         return await this.tcpServer.startPromisify(args);
     }
-
-    // async sendMessageTo(socketId: string, conntent: string): Promise<boolean> {
-    //     try{
-    //         return await this.tcpServer.sendMessageTo(socketId, conntent);
-    //     }
-    //     catch(err) {
-    //         return false;
-    //     }
-    // }
 }
