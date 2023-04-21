@@ -6,6 +6,7 @@ type CreateChatRequestPacket = {
     readonly packetId: string;
     readonly type: PacketType.CreateChat;
     readonly token: string;
+    readonly publicKey: string
 }
 
 export default {
@@ -24,7 +25,8 @@ export default {
             value: {
                 packetId: data.packetId,
                 type: PacketType.CreateChat,
-                token: data.token
+                token: data.token,
+                publicKey: data.publicKey
             }
         };
     }

@@ -8,7 +8,6 @@ import notificationsRepository from "../../data/rooms/data/DefaultNotificationsR
 import roomsRepository from "../../data/rooms/data/DefaultRoomsRepository";
 import { RoomNotify } from "../../data/rooms/common/RoomNotify";
 import { IResponse } from "../../common/IResponse";
-import { date } from "joi";
 
 export default class RoomsUseCase {
 
@@ -30,7 +29,7 @@ export default class RoomsUseCase {
             return await res.send(responsePacket);
         }
 
-        const room = this.roomsRepository.createRoom(
+        const room = RoomsUseCase.roomsRepository.createRoom(
             new RoomObserver(
                 notificationsRepository),
                 {
@@ -79,7 +78,7 @@ export default class RoomsUseCase {
         //     return await res.send(responsePacket);
         // }
 
-        const room = this.roomsRepository.getRoom(roomId);
+        const room = RoomsUseCase.roomsRepository.getRoom(roomId);
 
         if(!room) {
             const responsePacket = new ResponsePackets.JoinChat.Builder()
@@ -125,7 +124,7 @@ export default class RoomsUseCase {
             return await res.send(responsePacket);
          }
 
-        const room = this.roomsRepository.getRoom(req.roomId);
+        const room = RoomsUseCase.roomsRepository.getRoom(req.roomId);
 
         if(!room) {
             const responsePacket = new ResponsePackets.SendOa.Builder()
@@ -164,7 +163,7 @@ export default class RoomsUseCase {
              return await res.send(responsePacket);
         }
 
-        const room = this.roomsRepository.getRoom(req.roomId);
+        const room = RoomsUseCase.roomsRepository.getRoom(req.roomId);
 
         if(!room) {
             const responsePacket = new ResponsePackets.SendNonce.Builder()
@@ -216,7 +215,7 @@ export default class RoomsUseCase {
              return await res.send(responsePacket);
         }
 
-        const room = this.roomsRepository.getRoom(req.roomId);
+        const room = RoomsUseCase.roomsRepository.getRoom(req.roomId);
 
         if(!room) {
             const responsePacket = new ResponsePackets.SendAs.Builder()
@@ -255,7 +254,7 @@ export default class RoomsUseCase {
              return await res.send(responsePacket);
         }
 
-        const room = this.roomsRepository.getRoom(req.roomId);
+        const room = RoomsUseCase.roomsRepository.getRoom(req.roomId);
 
         if(!room) {
             const responsePacket = new ResponsePackets.AuthorizationApproved.Builder()
@@ -311,7 +310,7 @@ export default class RoomsUseCase {
             return await res.send(responsePacket);
         }
 
-        const room = this.roomsRepository.getRoom(roomId);
+        const room = RoomsUseCase.roomsRepository.getRoom(roomId);
 
         if(!room) {
             const responsePacket = new ResponsePackets.ChatMessage.Builder()
@@ -340,7 +339,7 @@ export default class RoomsUseCase {
         const timeout = new Date();
         timeout.setMinutes(timeout.getMinutes() + 2);
 
-        return this.polling(req, res, timeout);
+        return RoomsUseCase.polling(req, res, timeout);
     }
 
     private static polling(req: RequestPackets.PollingPacket, res: IResponse, timeout: Date): void {
@@ -362,7 +361,7 @@ export default class RoomsUseCase {
             
         setTimeout(() => {
             const nowTime = new Date();
-            message = this.notificationsRepository.fetchDataByUserId(authResult.value.id);
+            message = RoomsUseCase.notificationsRepository.fetchDataByUserId(authResult.value.id);
 
             if((message.length > 0) && res.isWritable()) {
                 const packet = new ResponsePackets.Polling.Builder()

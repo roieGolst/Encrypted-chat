@@ -7,6 +7,7 @@ type JoinChatRequestPacket = {
     readonly type: PacketType.JoinChat;
     readonly token: string;
     readonly roomId: string;
+    readonly publicKey: string;
 }
 
 export default {
@@ -26,7 +27,8 @@ export default {
                 packetId: data.packetId,
                 type: PacketType.JoinChat,
                 token: data.token,
-                roomId: data.roomId
+                roomId: data.roomId,
+                publicKey: data.publicKey
             }
         };
     }

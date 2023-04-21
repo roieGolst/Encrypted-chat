@@ -8,7 +8,7 @@ export default Joi.object({
         .required(),
 
     type: Joi.string()
-        .valid("Polling")
+        .valid("polling")
         .required(),
         
     token: Joi.string()

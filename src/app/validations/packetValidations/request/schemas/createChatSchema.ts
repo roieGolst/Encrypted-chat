@@ -14,5 +14,8 @@ export default Joi.object({
         
     token: Joi.string()
         .min(tokenConfigs.MIN_TOKEN_LENGTH)
+        .required(),
+
+    publicKey: Joi.string()
         .required()
 });

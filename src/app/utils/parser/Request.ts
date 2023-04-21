@@ -117,6 +117,7 @@ export default class RequestParser {
         return new RequestPackets.CreateChatRequest.Builder()
             .setPacketId(packetId)
             .setToken(token)
+            .setPublicKey(validationResult.value.publicKey)
             .build()
     }
 
@@ -138,6 +139,7 @@ export default class RequestParser {
             .setPacketId(packetId)
             .setRoomId(roomId)
             .setToken(token)
+            .setPublicKey(validationResult.value.publicKey)
             .build()
     }
 
@@ -181,6 +183,7 @@ export default class RequestParser {
             .setPacketId(packetId)
             .setRoomId(roomId)
             .setToken(token)
+            .setToUserId(validationResult.value.toUserId)
             .setOa(validationResult.value.oa)
             .setNonce(validationResult.value.nonce)
             .build()

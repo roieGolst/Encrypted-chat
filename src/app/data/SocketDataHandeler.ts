@@ -129,12 +129,21 @@ class SocketDataHandeler implements TcpServer.IDataHandler {
 
 const app = new SocketDataHandeler();
 
+//Login && Register routes
 app.setHandler(PacketType.Login, routers.Login.login);
 app.setHandler(PacketType.Register, routers.Register.register);
+
+//Room routes
 app.setHandler(PacketType.CreateChat, routers.Room.createRoom);
 app.setHandler(PacketType.JoinChat, routers.Room.joinChat);
 app.setHandler(PacketType.ChatMessage, routers.Room.sendMessage);
-app.setHandler(PacketType.NewToken, routers.Token.sendNewToken);
 app.setHandler(PacketType.Polling, routers.Room.roomPolling);
+app.setHandler(PacketType.SendOa, routers.Room.sendOa);
+app.setHandler(PacketType.SendNonce, routers.Room.sendNonce);
+app.setHandler(PacketType.SendAs, routers.Room.sendAs);
+app.setHandler(PacketType.AuthorizationApproved, routers.Room.approvedJoinRequest);
+
+//Token routes
+app.setHandler(PacketType.NewToken, routers.Token.sendNewToken);
 
 export default app;
