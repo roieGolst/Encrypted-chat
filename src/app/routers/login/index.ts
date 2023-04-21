@@ -26,18 +26,6 @@ export default class LoginUseCase {
         const user = loginResult.value;
 
         //TODO: find solution for connected users.
-        // if(res.isConnected(user.id)) {
-        //     const responsePacket = new ResponsePackets.LoginResponse.Builder()
-        //         .setPacketId(data.packetId)
-        //         .setStatus(Status.AuthenticationError)
-        //         .build()
-        //         .toString()
-        //     ;
-
-        //     return await res.sendMessageBySocketId(socketId, responsePacket);
-        // }
-        
-        // res.add(user.id, socketId);
         
         const tokens = useCases.Token.getTokens({
             userName: loginResult.value.username,

@@ -63,16 +63,7 @@ export default class RoomsUseCase {
             return await res.send(responsePacket);
         }
 
-        // if(!connectedUserMap.isConnected(authResult.value.id)) {
-        //     const responsePacket = new ResponsePackets.JoinChatResponse.Builder()
-        //         .setPacketId(req.packetId)
-        //         .setStatus(Status.AuthenticationError)
-        //         .build()
-        //         .toString()
-        //     ;
-
-        //     return await res.send(responsePacket);
-        // }
+        //TODO: looking for a way to get connected users;
 
         const room = this.roomsRepository.getRoom(roomId);
 
