@@ -1,12 +1,13 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType } from "../../../encryptedChatProtocol/common/commonTypes";
 import { joinChatRequestPacketSchema } from "./schemas";
 
 type JoinChatRequestPacket = {
-    packetId: string;
-    type: PacketType.JoinChat;
-    token: string;
-    roomId: string;
+    readonly packetId: string;
+    readonly type: PacketType.JoinChat;
+    readonly token: string;
+    readonly roomId: string;
+    readonly publicKey: string;
 }
 
 export default {
@@ -26,7 +27,8 @@ export default {
                 packetId: data.packetId,
                 type: PacketType.JoinChat,
                 token: data.token,
-                roomId: data.roomId
+                roomId: data.roomId,
+                publicKey: data.publicKey
             }
         };
     }

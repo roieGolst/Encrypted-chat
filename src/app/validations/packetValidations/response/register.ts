@@ -1,11 +1,11 @@
-import { AuthAttributs, PacketType, Status } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { AuthAttributs, PacketType, Status } from "../../../encryptedChatProtocol/common/commonTypes";
 import { IResult } from "../../../../common/IResult";
 import { registerResponsePacketSchema } from "./schemas";
 
 type RegisterResponsePacket = {
-    packetId: string
-    type: PacketType.Register;
-    status: Status;
+    readonly packetId: string
+    readonly type: PacketType.Register;
+    readonly status: Status;
 }
 
 export default {

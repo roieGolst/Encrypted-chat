@@ -1,9 +1,13 @@
+import { Response } from "../common/IDataHandler";
+
 export declare module TcpServer {
+
+    type IResponse = Response;
     
     interface IServer {
         setListener(listener: ISocketsManagerObserver): void;
         start(args: ServerArgs): void
-        sendMessageTo(fromId: string, socketId: string, content:string): boolean;
+        sendMessageTo(socketId: string, content:string): boolean;
     }
 
     interface ISocketsManagerObserver {
@@ -14,12 +18,12 @@ export declare module TcpServer {
     type ServerArgs = {
         readonly port: number;
         readonly inactiveTimeout: number;
-        readonly OnServerInitialized: () => void;
+        readonly onServerInitialized: () => void;
         readonly dataHandlerFactory: DataHandlerFactory;
     };
     
     interface IDataHandler {
-        handleOnData(data: Buffer): void;
+        handleOnData(data: Buffer, res: Response): void;
     }
 
     type DataHandlerFactory = (socketId: string) => IDataHandler;

@@ -1,21 +1,28 @@
-import { TcpServer } from "../server/types"
+import NetworkLayer from "./common/networkLayer";
+import SocketDataHandeler from "./data/SocketDataHandeler";
+
+type BootstrapServerArgs = {
+    readonly port: number;
+    readonly inactiveTimeout: number;
+};
 
 export type BootstrapArgs = {
-    database: {
+    readonly database: {
         driverInitializer: () => Promise<boolean>
     },
 
-    server : {
-        instance: TcpServer.IServer,
-        serverArgs: TcpServer.ServerArgs,
-        socketMenegerObserver: TcpServer.ISocketsManagerObserver
-    }
+    readonly server: BootstrapServerArgs
 }
 
-export async function bootstrap(args: BootstrapArgs, cb?: () => void) {
+export async function bootstrap(args: BootstrapArgs) {
     await args.database.driverInitializer();
     console.log("database is ready");
 
-    args.server.instance.setListener(args.server.socketMenegerObserver);
-    args.server.instance.start(args.server.serverArgs);
+    const networkLayer = new NetworkLayer();
+
+    await networkLayer.startPromisify({
+        port: args.server.port,
+        inactiveTimeout: args.server.inactiveTimeout,
+        dataHandlerFactory: SocketDataHandeler
+    });
 }

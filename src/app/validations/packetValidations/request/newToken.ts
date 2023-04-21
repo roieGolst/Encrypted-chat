@@ -1,12 +1,12 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType } from "../../../encryptedChatProtocol/common/commonTypes";
 import { newTokenRequestPacketSchema } from "./schemas";
 
 
 type newTokenRequestPacket = {
-    packetId: string;
-    type: PacketType.NewToken;
-    refreshToken: string;
+    readonly packetId: string;
+    readonly type: PacketType.NewToken;
+    readonly refreshToken: string;
 }
 
 export default {

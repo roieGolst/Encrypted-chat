@@ -1,11 +1,11 @@
-import { AuthAttributs, PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { AuthAttributs, PacketType } from "../../../encryptedChatProtocol/common/commonTypes";
 import { IResult } from "../../../../common/IResult";
 import { registerRequestPacketSchema } from "./schemas";
 
 type RegisterRequestPacket = {
-    packetId: string
-    type: PacketType.Register;
-    userAttributs: AuthAttributs;
+    readonly packetId: string
+    readonly type: PacketType.Register;
+    readonly userAttributs: AuthAttributs;
 }
 
 export default {

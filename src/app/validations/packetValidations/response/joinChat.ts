@@ -1,12 +1,12 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType, Status } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType, Status } from "../../../encryptedChatProtocol/common/commonTypes";
 import { joinChatResponsePacketSchema } from "./schemas";
 
 type JoinChatResponsePacket = {
-    packetId: string;
-    type: PacketType.JoinChat;
-    status: Status;
-    members?: any;
+    readonly packetId: string;
+    readonly type: PacketType.JoinChat;
+    readonly status: Status;
+    readonly adminPublicKey?: string;
 }
 
 export default {
@@ -26,7 +26,7 @@ export default {
                 packetId: data.packetId,
                 type: PacketType.JoinChat,
                 status: data.status,
-                members: data.members
+                adminPublicKey: data.adminPublicKey
             }
         };
     }

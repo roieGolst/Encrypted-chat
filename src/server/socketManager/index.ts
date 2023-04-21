@@ -33,17 +33,4 @@ export default class LiveSockets implements ISocketsManager {
     isAlive(socketId: string): boolean {
         return this.socketsMap.has(socketId);
     }
-
-
-    // sendMessage(fromId: string, socketId: string, message: string): boolean {
-    //     const socket = this.socketsMap.get(socketId);
-
-    //     if(!socket) {
-    //         return false;
-    //     }
-
-    //     socket.send(`${fromId}: ${message}`);
-
-    //     return true;
-    // }
 };

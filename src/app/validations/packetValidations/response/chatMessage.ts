@@ -1,11 +1,11 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType, Status } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType, Status } from "../../../encryptedChatProtocol/common/commonTypes";
 import { chatMessaegResponsePacketSchema } from "./schemas";
 
 type ChatMessageResponsePacket = {
-    packetId: string;
-    type: PacketType.ChatMessage;
-    status: Status;
+    readonly packetId: string;
+    readonly type: PacketType.ChatMessage;
+    readonly status: Status;
 }
 
 export default {

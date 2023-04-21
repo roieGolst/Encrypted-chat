@@ -1,13 +1,12 @@
 import { IResult } from "../../../../common/IResult";
-import { AuthAttributs, PacketType, Status, Tokens, UserDetails } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType, Status, UserDetails } from "../../../encryptedChatProtocol/common/commonTypes";
 import { loginResponsePacketSchema } from "./schemas";
 
 type LoginResponsePacket = {
-    packetId: string;
-    type: PacketType.Login;
-    status: Status,
-    userAttributs?: UserDetails;
-    tokens?: Tokens
+    readonly packetId: string;
+    readonly type: PacketType.Login;
+    readonly status: Status,
+    readonly userDetails?: UserDetails;
 };
 
 export default {
@@ -27,8 +26,7 @@ export default {
                 packetId: data.packetId,
                 type: PacketType.Login,
                 status: data.status,
-                userAttributs: data.userAttributs,
-                tokens: data.tokens
+                userDetails: data.userDetails,
             }
         };
     }

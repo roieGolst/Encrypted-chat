@@ -1,11 +1,12 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType } from "../../../encryptedChatProtocol/common/commonTypes";
 import { chatMessaegRequestPacketSchema, createChatRequestPacketSchema } from "./schemas";
 
 type CreateChatRequestPacket = {
-    packetId: string;
-    type: PacketType.CreateChat;
-    token: string;
+    readonly packetId: string;
+    readonly type: PacketType.CreateChat;
+    readonly token: string;
+    readonly publicKey: string
 }
 
 export default {
@@ -24,7 +25,8 @@ export default {
             value: {
                 packetId: data.packetId,
                 type: PacketType.CreateChat,
-                token: data.token
+                token: data.token,
+                publicKey: data.publicKey
             }
         };
     }

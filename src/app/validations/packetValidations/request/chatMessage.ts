@@ -1,13 +1,13 @@
 import { IResult } from "../../../../common/IResult";
-import { PacketType } from "../../../utils/encryptedChatProtocol/commonTypes";
+import { PacketType } from "../../../encryptedChatProtocol/common/commonTypes";
 import { chatMessaegRequestPacketSchema } from "./schemas";
 
 type ChatMessageRequestPacket = {
-    packetId: string;
-    type: PacketType.ChatMessage;
-    token: string;
-    roomId: string;
-    message: string;
+    readonly packetId: string;
+    readonly type: PacketType.ChatMessage;
+    readonly token: string;
+    readonly roomId: string;
+    readonly message: string;
 }
 
 export default {

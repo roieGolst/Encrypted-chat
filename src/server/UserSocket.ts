@@ -1,27 +1,29 @@
 import { Socket } from "net";
-import { IResult } from "../common/IResult";
 import { v4 } from 'uuid';
-import { TcpServer } from "./types";
+import { DataHandlerFactory, IDataHandler } from "./common/IDataHandler";
+import { Response } from "./common/IDataHandler"
 
-export class UserSocket {
+export class UserSocket implements Response {
+    private readonly socket: Socket;
+    private readonly dataHandler: IDataHandler;
+    readonly socketId: string = v4();
 
-    private  socket: Socket;
-    public readonly socketId: string = v4();
 
-    constructor(socket: Socket) {
+    constructor(socket: Socket, dataHandler: IDataHandler) {
         this.socket = socket;
+        this.dataHandler = dataHandler;
+
+        this.init();
     }
     
-
-    init(handler: TcpServer.IDataHandler) {
-
+    private init() {
         this.socket.on("error", (err) => {
-
+            //TODO: Read about Node.net lifecycle (events flow);
             this.destroy();
         });
 
-        this.socket.on("data", async (data) => {
-            handler.handleOnData(data);
+        this.socket.on("data", (data) => {
+            this.dataHandler.handleOnData(data, this);
         });
     }
 
@@ -40,11 +42,35 @@ export class UserSocket {
         });
     }
 
-    send(message: string) {
-        this.socket.write(message);
+    send(message: string, destroy: boolean = true): Promise<boolean> {
+        return new Promise((resolve) => {
+            if(!this.isWritable()) {
+              resolve(false);  
+            }
+
+            this.socket.write(message, (err?: Error | undefined) => {
+                if(err) {
+                    resolve(false);
+
+                    if(destroy) {
+                        return this.destroy();
+                    }
+                }
+
+                resolve(true);
+
+                if(destroy) {
+                    return this.destroy();
+                }
+            });
+        });
     }
 
-    private destroy() {
+    isWritable(): boolean {
+        return this.socket.writable;
+    }
+
+    private destroy(): void {
         this.socket.destroy();
     }
 }

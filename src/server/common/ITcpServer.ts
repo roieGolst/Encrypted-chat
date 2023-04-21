@@ -1,8 +1,10 @@
 import { ServerArgs } from "..";
 import ISocketsManagerObserver from "../socketManager/ISocketsManagerObserver";
 
-export interface ITcpServer {
+export type TcpInitializedCb = () => void;
+
+export default interface ITcpServer {
     setListener(listener: ISocketsManagerObserver): void;
-    start(args: ServerArgs): void;
-    sendMessageTo(fromId: string, socketId: string, content:string): boolean;
+    startPromisify(args: ServerArgs): Promise<void>;
+    start(args: ServerArgs, initializedCb: TcpInitializedCb ): void;
 }
