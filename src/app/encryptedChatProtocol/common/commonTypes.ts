@@ -3,7 +3,6 @@ export enum PacketType {
     Login = "login",
     CreateChat = "createChat",
     JoinChat = "joinChat",
-    ChatMessage = "chatMessage",
     Polling = "polling",
     NewToken = "newToken",
     ChatMessage = "chatMessage",

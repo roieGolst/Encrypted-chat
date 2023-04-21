@@ -260,7 +260,7 @@ export default class RequestParser {
         if(!validationResult.isSuccess) {
             throw new ParserErrorResult({
                 packetId,
-                type: PacketType.NewRoomMember,
+                type: PacketType.NewToken,
                 status: Status.VlidationError
             });
         }

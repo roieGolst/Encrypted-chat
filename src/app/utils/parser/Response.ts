@@ -208,7 +208,7 @@ export default class ResponseParser {
         if(!validationResult.isSuccess) {
             return this.generalPacketGenerator(new ParserErrorResult({
                 packetId,
-                type: PacketType.NewRoomMember,
+                type: PacketType.NewToken,
                 status: Status.VlidationError
             }));
         }
