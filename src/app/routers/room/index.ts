@@ -11,7 +11,7 @@ import { IResponse } from "../../common/IResponse";
 
 export default class RoomsUseCase {
 
-    //TODO: find solution for this now testability state. Very important !!!!
+    //TODO: looking for a way to make this code testable. Very important !!!!
     private static readonly notificationsRepository = notificationsRepository;
     private static readonly roomsRepository = roomsRepository;
 

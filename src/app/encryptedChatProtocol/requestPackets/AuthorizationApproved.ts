@@ -1,13 +1,12 @@
 import { PacketType } from "../common/commonTypes";
 import { IBuilder } from "../../common/IBuilder";
 import Packet from "../Packet";
-import { RoomUser } from "../../data/rooms/common/RoomUser";
 
 export default class AuthorizationApproved extends Packet {
     readonly token: string;
     readonly roomId: string;
     readonly approvedUserId: string
-    readonly members: string; // TODO: Object {userId: string, publicKey: string};
+    readonly members: string; // NOTE: Object {userId: string, publicKey: string};
 
     constructor(
         token: string, 

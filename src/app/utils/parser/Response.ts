@@ -85,7 +85,6 @@ export default class ResponseParser {
 
         const userDetails= validationResult.value.userDetails;
 
-        //TODO: Make all response packet fileds to be required! 
         if(!userDetails) {
             return new ResponsePackets.Login.Builder()
             .setPacketId(packetId)
@@ -140,8 +139,7 @@ export default class ResponseParser {
         }
 
         const adminPublicKey = validationResult.value.adminPublicKey;
-
-        //TODO: Make all response packet fileds to be required! 
+ 
         if(!adminPublicKey) {
             return new ResponsePackets.JoinChat.Builder()
             .setPacketId(packetId)
