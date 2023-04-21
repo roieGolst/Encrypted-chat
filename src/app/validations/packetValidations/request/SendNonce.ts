@@ -1,18 +1,20 @@
 import { IResult } from "../../../../common/IResult";
 import { PacketType } from "../../../encryptedChatProtocol/common/commonTypes";
-import { joinChatRequestPacketSchema } from "./schemas";
+import { sendNonceSchema } from "./schemas";
 
-type JoinChatRequestPacket = {
+type SendNonce = {
     readonly packetId: string;
-    readonly type: PacketType.JoinChat;
+    readonly type: PacketType.SendNonce;
     readonly token: string;
     readonly roomId: string;
-    readonly publicKey: string;
+    readonly toUserId: string;
+    readonly oa: string
+    readonly nonce: string
 }
 
 export default {
-    validate: (data: any): IResult<JoinChatRequestPacket> => {
-        const result = joinChatRequestPacketSchema.validate(data);
+    validate: (data: any): IResult<SendNonce> => {
+        const result = sendNonceSchema.validate(data);
 
         if(result.error) {
             return {
@@ -25,10 +27,12 @@ export default {
             isSuccess: true,
             value: {
                 packetId: data.packetId,
-                type: PacketType.JoinChat,
+                type: PacketType.SendNonce,
                 token: data.token,
                 roomId: data.roomId,
-                publicKey: data.publicKey
+                toUserId: data.toUserId,
+                oa: data.oa,
+                nonce: data.nonce
             }
         };
     }

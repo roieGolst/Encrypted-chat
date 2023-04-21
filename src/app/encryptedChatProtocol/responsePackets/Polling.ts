@@ -4,7 +4,7 @@ import { PacketType, Status } from "../common/commonTypes";
 import ResponsePacket from "./ResponsePacket";
 
 export default class PollingResponsePacket extends ResponsePacket {
-    private body: RoomNotify[];
+    readonly body: RoomNotify[];
 
     constructor(body: RoomNotify[], status: Status, packetId?: string) {
         super(PacketType.Polling, status, packetId);

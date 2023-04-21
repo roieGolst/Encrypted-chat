@@ -9,13 +9,21 @@ export default Joi.object({
         .required(),
 
     type: Joi.string()
-        .valid("createChat")
+        .valid("sendAs")
         .required(),
         
     token: Joi.string()
         .min(tokenConfigs.MIN_TOKEN_LENGTH)
         .required(),
+    
+    roomId: Joi.string()
+        .min(userConfigs.UUID_LENGTH)
+        .max(userConfigs.UUID_LENGTH)
+        .required(),
 
-    publicKey: Joi.string()
+    nonce: Joi.string()
+        .required(),
+
+    as: Joi.string()
         .required()
 });

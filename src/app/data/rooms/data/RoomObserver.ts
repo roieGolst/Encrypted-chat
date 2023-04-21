@@ -11,11 +11,73 @@ export default class RoomObserver implements IRoomObserver {
         this.notifier = notifier;
     }
 
+    onRequestForJoining(room: ChatRoom, user: RoomUser): void {
+        const notify: RoomNotify = {
+            roomId: room.id,
+            type: NotifyTypes.JoinRequest,
+            userId: user.userId,
+            publicKey: user.publicKey
+        }
+
+        const admin = room.getAdminDetails()
+
+        this.notifier.registerNotification(admin.userId, notify);
+    }
+
+    OnSentOa(room: ChatRoom, senderUserId: string, oa: string): void {
+        const notify: RoomNotify = {
+            roomId: room.id,
+            type: NotifyTypes.SendOa,
+            fromUserId: senderUserId,
+            oa
+        };
+
+        const admin = room.getAdminDetails();
+
+        this.notifier.registerNotification(admin.userId, notify);
+    }
+
+    OnSentNonce(room: ChatRoom, toUser: string, oa: string, nonce: string): void {
+        const notify: RoomNotify = {
+            roomId: room.id,
+            type: NotifyTypes.SendNonce,
+            oa,
+            nonce
+        };
+
+        this.notifier.registerNotification(toUser, notify);
+    }
+
+    OnSentAs(room: ChatRoom, senderUserId: string, as: string, nonce: string): void {
+        const notify: RoomNotify = {
+            roomId: room.id,
+            type: NotifyTypes.SendAs,
+            fromUserId: senderUserId,
+            as,
+            nonce
+        };
+
+        const admin = room.getAdminDetails();
+
+        this.notifier.registerNotification(admin.userId, notify);
+    }
+
+    ApprovedJoiningRequest(room: ChatRoom, userApprovedId: string, members: string): void {
+        const notify: RoomNotify = {
+            roomId: room.id,
+            type: NotifyTypes.AuthorizationApproved,
+            roomMembers: members
+        }
+
+        this.notifier.registerNotification(userApprovedId, notify);
+    }
+
     onUserAdded(room: ChatRoom, roomUser: RoomUser): void {
         const notify: RoomNotify = {
             roomId: room.id,
             type: NotifyTypes.UserAdded,
             userId: roomUser.userId,
+            userName: roomUser.userName,
             content: roomUser.publicKey
         };
 
@@ -44,12 +106,12 @@ export default class RoomObserver implements IRoomObserver {
     }
 
     private sendRoomNotify(room: ChatRoom, notify: RoomNotify): void {
-        room.getUsers().forEach((roomUser: RoomUser) => {
-            if(notify.fromUserId == roomUser.userId) {
+        room.getUsers().forEach((roomUser: string) => {
+            if(notify.fromUserId == roomUser) {
                 return;
             }
 
-            this.notifier.registerNotification(roomUser.userId, notify);
+            this.notifier.registerNotification(roomUser, notify);
         })
     }
 }

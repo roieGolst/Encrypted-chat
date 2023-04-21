@@ -22,7 +22,27 @@ class NotificationsRepository implements INotificationsRepository {
     }
     
     fetchDataByUserId(userId: string): RoomNotify[] {
-        return this.getUserQueue(userId);
+        const userOueue = this.getUserQueue(userId);
+
+        return this.iterateOueue(userOueue);
+        
+    }
+
+    private iterateOueue<T>(queue: T[]): T[] {
+        let returndeQueue: T[] = new Array();
+    
+        while(queue.length >= 0) {
+            console.log(queue.length)
+            const item = queue.shift();
+    
+            if(!item) {
+                return returndeQueue;
+            }
+    
+            returndeQueue.push(item);
+        }
+    
+        return returndeQueue;
     }
 }
 

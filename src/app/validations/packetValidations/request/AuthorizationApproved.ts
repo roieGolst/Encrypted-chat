@@ -1,18 +1,19 @@
 import { IResult } from "../../../../common/IResult";
 import { PacketType } from "../../../encryptedChatProtocol/common/commonTypes";
-import { joinChatRequestPacketSchema } from "./schemas";
+import { authorizationApprovedSchema } from "./schemas";
 
-type JoinChatRequestPacket = {
+type AuthorizationApproved = {
     readonly packetId: string;
-    readonly type: PacketType.JoinChat;
+    readonly type: PacketType.AuthorizationApproved;
     readonly token: string;
     readonly roomId: string;
-    readonly publicKey: string;
+    readonly approvedUserId: string;
+    readonly members: string;
 }
 
 export default {
-    validate: (data: any): IResult<JoinChatRequestPacket> => {
-        const result = joinChatRequestPacketSchema.validate(data);
+    validate: (data: any): IResult<AuthorizationApproved> => {
+        const result = authorizationApprovedSchema.validate(data);
 
         if(result.error) {
             return {
@@ -25,10 +26,11 @@ export default {
             isSuccess: true,
             value: {
                 packetId: data.packetId,
-                type: PacketType.JoinChat,
+                type: PacketType.AuthorizationApproved,
                 token: data.token,
                 roomId: data.roomId,
-                publicKey: data.publicKey
+                approvedUserId: data.approvedUserId,
+                members: data.members
             }
         };
     }

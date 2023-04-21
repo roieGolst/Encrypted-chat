@@ -13,7 +13,7 @@ export default class LoginUseCase {
         const loginResult = await AuthRepository.login(req.userAttributs);
 
         if(!loginResult.isSuccess) {
-            const responsePacket = new ResponsePackets.LoginResponse.Builder()
+            const responsePacket = new ResponsePackets.Login.Builder()
                 .setPacketId(req.packetId)
                 .setStatus(Status.AuthenticationError)
                 .build()
@@ -32,7 +32,7 @@ export default class LoginUseCase {
             id: loginResult.value.id
         });
 
-        const responseData = new ResponsePackets.LoginResponse.Builder()
+        const responseData = new ResponsePackets.Login.Builder()
             .setPacketId(req.packetId)
             .setStatus(Status.Succeeded)
             .setUserDetails({userId: user.id, username: user.username, tokens})

@@ -23,6 +23,22 @@ export default class RequestParser {
                 return this.parseJoinChatRequest(packetId, payload);
             }
 
+            case PacketType.SendOa : {
+                return this.parseSendOaRequest(packetId, payload);
+            }
+
+            case PacketType.SendNonce : {
+                return this.parseSendNonceRequest(packetId, payload);
+            }
+
+            case PacketType.SendAs : {
+                return this.parseSendAsRequest(packetId, payload);
+            }
+
+            case PacketType.AuthorizationApproved : {
+                return this.parseAuthorizationApprovedRequest(packetId, payload);
+            }
+
             case PacketType.Polling : {
                 return this.parsePollingRequest(packetId, payload);
             }
@@ -101,6 +117,7 @@ export default class RequestParser {
         return new RequestPackets.CreateChatRequest.Builder()
             .setPacketId(packetId)
             .setToken(token)
+            .setPublicKey(validationResult.value.publicKey)
             .build()
     }
 
@@ -122,6 +139,99 @@ export default class RequestParser {
             .setPacketId(packetId)
             .setRoomId(roomId)
             .setToken(token)
+            .setPublicKey(validationResult.value.publicKey)
+            .build()
+    }
+
+    private static parseSendOaRequest(packetId: string, payload: any): RequestPacket {
+        const validationResult = validations.packetValidation.request.sendOa.validate(payload);
+
+        if(!validationResult.isSuccess) {
+            throw new ParserErrorResult({
+                packetId,
+                type: PacketType.JoinChat,
+                status: Status.VlidationError
+            });
+        }
+
+        const roomId = validationResult.value.roomId;
+        const token = validationResult.value.token;
+
+        return new RequestPackets.SendOa.Builder()
+            .setPacketId(packetId)
+            .setRoomId(roomId)
+            .setToken(token)
+            .setOa(validationResult.value.oa)
+            .build()
+    }
+
+    private static parseSendNonceRequest(packetId: string, payload: any): RequestPacket {
+        const validationResult = validations.packetValidation.request.sendNonce.validate(payload);
+
+        if(!validationResult.isSuccess) {
+            throw new ParserErrorResult({
+                packetId,
+                type: PacketType.JoinChat,
+                status: Status.VlidationError
+            });
+        }
+
+        const roomId = validationResult.value.roomId;
+        const token = validationResult.value.token;
+
+        return new RequestPackets.SendNonce.Builder()
+            .setPacketId(packetId)
+            .setRoomId(roomId)
+            .setToken(token)
+            .setToUserId(validationResult.value.toUserId)
+            .setOa(validationResult.value.oa)
+            .setNonce(validationResult.value.nonce)
+            .build()
+    }
+
+    private static parseSendAsRequest(packetId: string, payload: any): RequestPacket {
+        const validationResult = validations.packetValidation.request.sendAs.validate(payload);
+
+        if(!validationResult.isSuccess) {
+            throw new ParserErrorResult({
+                packetId,
+                type: PacketType.JoinChat,
+                status: Status.VlidationError
+            });
+        }
+
+        const roomId = validationResult.value.roomId;
+        const token = validationResult.value.token;
+
+        return new RequestPackets.SendAs.Builder()
+            .setPacketId(packetId)
+            .setRoomId(roomId)
+            .setToken(token)
+            .setNonce(validationResult.value.nonce)
+            .setAs(validationResult.value.as)
+            .build()
+    }
+
+    private static parseAuthorizationApprovedRequest(packetId: string, payload: any): RequestPacket {
+        const validationResult = validations.packetValidation.request.authorizationApproved.validate(payload);
+
+        if(!validationResult.isSuccess) {
+            throw new ParserErrorResult({
+                packetId,
+                type: PacketType.JoinChat,
+                status: Status.VlidationError
+            });
+        }
+
+        const roomId = validationResult.value.roomId;
+        const token = validationResult.value.token;
+
+        return new RequestPackets.AuthorizationApproved.Builder()
+            .setPacketId(packetId)
+            .setRoomId(roomId)
+            .setToken(token)
+            .setApprovedUserId(validationResult.value.approvedUserId)
+            .setMembers(validationResult.value.members)
             .build()
     }
 

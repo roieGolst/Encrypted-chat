@@ -1,6 +1,5 @@
 import Joi from "joi";
 import userConfigs from "../../../../config/userConfigs.json";
-import tokenConfigs from "../../../../config/tokenConfigs.json";
 
 export default Joi.object({
     packetId: Joi.string()
@@ -9,13 +8,9 @@ export default Joi.object({
         .required(),
 
     type: Joi.string()
-        .valid("createChat")
+        .valid("sendNonce")
         .required(),
         
-    token: Joi.string()
-        .min(tokenConfigs.MIN_TOKEN_LENGTH)
-        .required(),
-
-    publicKey: Joi.string()
+    status: Joi.number()
         .required()
 });

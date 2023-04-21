@@ -19,5 +19,8 @@ export default Joi.object({
     roomId: Joi.string()
         .min(userConfigs.UUID_LENGTH)
         .max(userConfigs.UUID_LENGTH)
+        .required(),
+
+    publicKey: Joi.string()
         .required()
 });

@@ -15,6 +15,6 @@ export default Joi.object({
     status: Joi.number()
         .required(),
 
-    members: Joi.any()
+    adminPublicKey: Joi.string()
         .optional()
 });
