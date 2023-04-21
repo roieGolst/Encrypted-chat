@@ -32,7 +32,6 @@ class NotificationsRepository implements INotificationsRepository {
         let returndeQueue: T[] = new Array();
     
         while(queue.length >= 0) {
-            console.log(queue.length)
             const item = queue.shift();
     
             if(!item) {
