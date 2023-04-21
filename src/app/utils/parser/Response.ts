@@ -27,10 +27,6 @@ export default class ResponseParser {
                 return this.parseroomPollingResponse(packetId, status, payload);
             }
 
-            case PacketType.NewToken : {
-                return this.parseNewTokenResponse(packetId, status, payload);
-            }
-
             case PacketType.ChatMessage : {
                 return this.parseChatMessageResponse(packetId, status);
             }
@@ -157,34 +153,6 @@ export default class ResponseParser {
             .setPacketId(packetId)
             .setStatus(status)
             .setBody(body)
-            .build()
-    }
-
-    private static parseNewTokenResponse(packetId: string, status: Status, payload: any): ResponsePacket {
-        const validationResult = validations.packetValidation.response.newTokenPacket.validate(payload);
-
-        if(!validationResult.isSuccess) {
-            return this.generalPacketGenerator(new ParserErrorResult({
-                packetId,
-                type: PacketType.NewRoomMember,
-                status: Status.VlidationError
-            }));
-        }
-
-        const token = validationResult.value.token;
-
-        //TODO: Make all response packet fileds to be required! 
-        if(!token) {
-            return new ResponsePackets.NewToken.Builder()
-            .setPacketId(packetId)
-            .setStatus(status)
-            .build();
-        }
-
-        return new ResponsePackets.NewToken.Builder()
-            .setPacketId(packetId)
-            .setStatus(status)
-            .setToken(token)
             .build()
     }
 

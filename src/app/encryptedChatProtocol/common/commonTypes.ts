@@ -5,7 +5,6 @@ export enum PacketType {
     CreateChat = "createChat",
     JoinChat = "joinChat",
     NewToken = "newToken",
-    NewRoomMember = "newRoomMember",
     ChatMessage = "chatMessage",
     GeneralFailure = "generalFailure"
 };
