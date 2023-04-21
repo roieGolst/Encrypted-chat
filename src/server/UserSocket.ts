@@ -42,7 +42,7 @@ export class UserSocket implements Response {
         });
     }
 
-    send(message: string, destroy: boolean = false): Promise<boolean> {
+    send(message: string, destroy: boolean = true): Promise<boolean> {
         return new Promise((resolve) => {
             if(!this.isWritable()) {
               resolve(false);  
