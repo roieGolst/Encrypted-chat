@@ -1,65 +1,27 @@
 import { IResult } from "../../../common/IResult";
-import UserRepository from "../../data/db/utils/UserRepository";
 import { AuthAttributs } from "../../encryptedChatProtocol/common/commonTypes";
-import { IAuthRepository } from "./IAuthRepository";
-import bcrypt from "bcrypt";
-import userAttributsSchema from "../../validations/packetValidations/schemas/userAttributsSchema";
-
-const SALT_ROUNDS = 10;
-
-export type LoginResultModel = {
-    readonly id: string;
-    readonly username: string;
-    readonly password: string;
-}
+import { IAuthRepository } from "./domain/IAuthRepository";
+import IAuthDataSource from "./domain/IAuthDataSource";
+import { LoginResultModel } from "./common/LoginResultModel";
+import DefaultAuthDataSource from "./data/DefaultAuthDataSource";
 
 class AuthRepository implements IAuthRepository {
 
+    private authDataSource: IAuthDataSource;
+
+    constructor(dataSource: IAuthDataSource) {
+        this.authDataSource = dataSource;
+    }
+
     async register(item: AuthAttributs): Promise<IResult<boolean>> {
-        const isValidData = userAttributsSchema.validate(item);
-
-        if(isValidData.error) {
-            return {
-                isSuccess: false,
-                error: isValidData?.error?.details[0].message || "Vlidation error"
-            }
-        }
-
-        const hashPassword = await bcrypt.hash(item.password, SALT_ROUNDS);
-
-        const result = await UserRepository.insert({
-            username: item.username,
-            hashPassword
-        });
-
-        return result;
+        return this.authDataSource.register(item);
     }
 
     async login(user: AuthAttributs): Promise<IResult<LoginResultModel>> {
-        const requiredUser = await UserRepository.getUserByUsername(user.username);
-
-        if(!requiredUser.isSuccess) {
-            return requiredUser;
-        }
-    
-        const isValidPassword = await bcrypt.compare(user.password, requiredUser.value.password);
-    
-        if(!isValidPassword) {
-            return {
-                isSuccess: false,
-                error: "Invalid Password"
-            };
-        }
-    
-        return {
-            isSuccess: true,
-            value: {
-                id: requiredUser.value.id,
-                username: requiredUser.value.username,
-                password: requiredUser.value.password
-            }
-        };
+        return await this.authDataSource.login(user);
     }
 }
 
-export default new AuthRepository();
+const dataSource = new DefaultAuthDataSource();
+
+export default new AuthRepository(dataSource);
