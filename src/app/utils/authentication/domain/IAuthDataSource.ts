@@ -1,6 +1,6 @@
 import { IResult } from "../../../../common/IResult";
 import { AuthAttributs } from "../../../encryptedChatProtocol/common/commonTypes";
-import { LoginResultModel } from "../AuthRepository";
+import { LoginResultModel } from "../common/LoginResultModel";
 
 export default interface IAuthDataSource {
     register(item: AuthAttributs): Promise<IResult<boolean>>

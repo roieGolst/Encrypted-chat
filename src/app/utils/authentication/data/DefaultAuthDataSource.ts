@@ -2,10 +2,10 @@ import { IResult } from "../../../../common/IResult";
 import UserRepository from "../../../data/db/utils/UserRepository";
 import { AuthAttributs } from "../../../encryptedChatProtocol/common/commonTypes";
 import userAttributsSchema from "../../../validations/packetValidations/schemas/userAttributsSchema";
-import { LoginResultModel } from "../AuthRepository";
 import IAuthDataSource from "../domain/IAuthDataSource";
 import env from "../../../config/env.json";
 import bcrypt from "bcrypt";
+import { LoginResultModel } from "../common/LoginResultModel";
 
 export default class DefaultAuthDataSource implements IAuthDataSource {
     async register(item: AuthAttributs): Promise<IResult<boolean>> {
