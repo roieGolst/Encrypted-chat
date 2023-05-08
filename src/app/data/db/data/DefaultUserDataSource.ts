@@ -1,12 +1,10 @@
-
 import { UniqueConstraintError } from "sequelize";
-import User from "../models/User";
 import { IResult } from "../../../../common/IResult";
-import { IUserRepository, UserModel } from "../models/IUserRepository";
+import { UserModel } from "../common/UserNodel";
+import { IUserDataSource } from "../domian/IUserDataSource";
+import User from "../models/User";
 
-const SALT_ROUNDS = 10;
-
-class UserRepository implements IUserRepository {
+export class DefaultUserDataSource implements IUserDataSource {
     
     async insert(item: UserModel): Promise<IResult<boolean>> {
         try {
@@ -87,21 +85,3 @@ class UserRepository implements IUserRepository {
     }
     
 }
-
-export default new UserRepository();
-
-// export async function checkUser(obj: AuthAttributs): Promise<User | undefined> {
-//     const user = await getUserByPk(obj.username);
-    
-//     if(!user) {
-//         return undefined;
-//     }
-
-//     const isValidPassword = await bcrypt.compare(obj.password, user.password);
-
-//     if(!isValidPassword) {
-//         return undefined;
-//     }
-
-//     return user;
-// };

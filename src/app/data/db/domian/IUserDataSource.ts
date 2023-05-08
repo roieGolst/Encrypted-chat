@@ -1,12 +1,8 @@
 import { IResult } from "../../../../common/IResult";
-import User from "./User";
+import { UserModel } from "../common/UserNodel";
+import User from "../models/User";
 
-export type UserModel = {
-    readonly username: string;
-    readonly hashPassword: string;
-}
-
-export interface IUserRepository {
+export interface IUserDataSource {
     insert(item: UserModel): Promise<IResult<boolean>>;
     getUserByUsername(username: string): Promise<IResult<User>>;
     getUserById(id: string): Promise<IResult<User>>;

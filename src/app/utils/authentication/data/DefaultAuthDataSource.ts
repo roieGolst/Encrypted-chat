@@ -1,5 +1,5 @@
 import { IResult } from "../../../../common/IResult";
-import UserRepository from "../../../data/db/utils/UserRepository";
+import UserRepository from "../../../data/db/data/UserRepository";
 import { AuthAttributs } from "../../../encryptedChatProtocol/common/commonTypes";
 import userAttributsSchema from "../../../validations/packetValidations/schemas/userAttributsSchema";
 import IAuthDataSource from "../domain/IAuthDataSource";
