@@ -12,7 +12,7 @@ class NotificationsRepository implements INotificationsRepository {
     }
 
     registerNotification(toUser: string, notify: RoomNotify): void {
-        return this.registerNotification(toUser, notify);
+        return this.notificationsDataSource.registerNotification(toUser, notify);
     }
     fetchDataByUserId(userId: string): RoomNotify[] {
         return this.notificationsDataSource.fetchDataByUserId(userId);
