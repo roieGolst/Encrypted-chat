@@ -1,9 +1,9 @@
- import { ChatRoom } from "../ChatRoom";
-import { RoomUser } from "../common/RoomUser";
-import { IRoomsRepository } from "../domain/IRoomsRepository";
-import RoomObserver from "./RoomObserver";
+import { ChatRoom } from "../../ChatRoom";
+import { RoomUser } from "../../common/RoomUser";
+import { IRoomsDataSource } from "../../domain/Rooms/IRoomsDataSource";
+import RoomObserver from "../RoomObserver";
 
-class DefaultRoomsRepository implements IRoomsRepository {
+export class DefaultRoomsDataSource implements IRoomsDataSource {
     private rooms: Map<string, ChatRoom> = new Map();
 
     createRoom(roomObserver: RoomObserver, roomUser: RoomUser): ChatRoom {
@@ -28,5 +28,3 @@ class DefaultRoomsRepository implements IRoomsRepository {
         return room.deleteUser(roomUser.userId);
     }
 }
-
-export default new DefaultRoomsRepository();

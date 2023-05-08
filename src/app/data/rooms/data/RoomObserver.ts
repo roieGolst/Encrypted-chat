@@ -1,8 +1,8 @@
 import { ChatRoom } from "../ChatRoom";
 import { NotifyTypes, RoomNotify } from "../common/RoomNotify";
 import { RoomUser } from "../common/RoomUser";
-import { INotificationsRepository } from "../domain/INotificationsRepository";
-import { IRoomObserver } from "../domain/IRoomObserver";
+import { INotificationsRepository } from "../domain/notifications/INotificationsRepository";
+import { IRoomObserver } from "../domain/Rooms/IRoomObserver";
 
 export default class RoomObserver implements IRoomObserver {
     private notifier: INotificationsRepository;

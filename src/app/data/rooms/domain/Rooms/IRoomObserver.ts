@@ -1,5 +1,5 @@
-import { ChatRoom } from "../ChatRoom";
-import { RoomUser } from "../common/RoomUser";
+import { ChatRoom } from "../../ChatRoom";
+import { RoomUser } from "../../common/RoomUser";
 
 export interface IRoomObserver {
     onRequestForJoining(room: ChatRoom, userId: RoomUser): void;

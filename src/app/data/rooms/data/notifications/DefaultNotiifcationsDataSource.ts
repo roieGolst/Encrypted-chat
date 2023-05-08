@@ -1,7 +1,7 @@
-import { RoomNotify } from "../common/RoomNotify";
-import { INotificationsRepository } from "../domain/INotificationsRepository";
+import { RoomNotify } from "../../common/RoomNotify";
+import { INotificationsDataSource } from "../../domain/notifications/INotificationsDataSource";
 
-class NotificationsRepository implements INotificationsRepository {
+export class DefaultNotificationsDataSource implements INotificationsDataSource {
     private notifications: Map<string, RoomNotify[]> = new Map();
 
     registerNotification(toUser: string, notify: RoomNotify): void {
@@ -44,5 +44,3 @@ class NotificationsRepository implements INotificationsRepository {
         return returndeQueue;
     }
 }
-
-export default new NotificationsRepository();
