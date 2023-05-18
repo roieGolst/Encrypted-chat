@@ -1,11 +1,17 @@
-import { UniqueConstraintError } from "sequelize";
-import { IResult } from "../../../../common/IResult";
-import { UserModel } from "../common/UserNodel";
-import { IUserDataSource } from "../domian/IUserDataSource";
-import User from "../models/User";
+import { Sequelize, UniqueConstraintError } from "sequelize";
+import { IResult } from "../../../../../../../common/IResult";
+import { UserModel } from "../../../../common/UserNodel";
+import { UserEntity } from "../../IUserEntity";
+import User from "./model/UserModel";
 
-export class DefaultUserDataSource implements IUserDataSource {
-    
+export default class UserSequelizeEntity extends UserEntity<Sequelize> {
+
+    constructor(driver: Sequelize) {
+        super(driver);
+
+        User.initUser(this.executer);
+    }
+
     async insert(item: UserModel): Promise<IResult<boolean>> {
         try {
             await User.create(
@@ -83,5 +89,4 @@ export class DefaultUserDataSource implements IUserDataSource {
             };
         }
     }
-    
-}
+} 
