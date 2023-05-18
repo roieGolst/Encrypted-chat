@@ -1,8 +1,8 @@
 import { Sequelize, UniqueConstraintError } from "sequelize";
 import { IResult } from "../../../../../../../common/IResult";
-import { UserModel } from "../../../../common/UserNodel";
-import { UserEntity } from "../../IUserEntity";
+import { UserEntity } from "../../UserEntityAbstract";
 import User from "./model/UserModel";
+import { UserAttributs } from "./common/UserAttributs";
 
 export default class UserSequelizeEntity extends UserEntity<Sequelize> {
 
@@ -12,7 +12,7 @@ export default class UserSequelizeEntity extends UserEntity<Sequelize> {
         User.initUser(this.executer);
     }
 
-    async insert(item: UserModel): Promise<IResult<boolean>> {
+    async insert(item: UserAttributs): Promise<IResult<boolean>> {
         try {
             await User.create(
                 {

@@ -1,4 +1,4 @@
-export type UserModel = {
+export type UserAttributs = {
     readonly username: string;
     readonly hashPassword: string;
-}
+} 

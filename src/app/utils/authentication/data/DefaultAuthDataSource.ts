@@ -1,11 +1,11 @@
 import { IResult } from "../../../../common/IResult";
-import UserRepository from "../../../data/db/data/UserRepository";
 import { AuthAttributs } from "../../../encryptedChatProtocol/common/commonTypes";
 import userAttributsSchema from "../../../validations/packetValidations/schemas/userAttributsSchema";
 import IAuthDataSource from "../domain/IAuthDataSource";
 import env from "../../../config/env.json";
 import bcrypt from "bcrypt";
 import { LoginResultModel } from "../common/LoginResultModel";
+
 
 export default class DefaultAuthDataSource implements IAuthDataSource {
     async register(item: AuthAttributs): Promise<IResult<boolean>> {
@@ -20,7 +20,7 @@ export default class DefaultAuthDataSource implements IAuthDataSource {
 
         const hashPassword = await bcrypt.hash(item.password, env.SALT_ROUNDS);
 
-        const result = await UserRepository.insert({
+        const result = db.users.insert({
             username: item.username,
             hashPassword
         });
@@ -29,7 +29,7 @@ export default class DefaultAuthDataSource implements IAuthDataSource {
     }
 
     async login(user: AuthAttributs): Promise<IResult<LoginResultModel>> {
-        const requiredUser = await UserRepository.getUserByUsername(user.username);
+        const requiredUser = users.getUserByUsername(user.username);
 
         if(!requiredUser.isSuccess) {
             return requiredUser;
