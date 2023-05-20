@@ -1,0 +1,1 @@
+export { default as userSequelize } from "./User/dataSource/userSequelize/User";

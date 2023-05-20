@@ -1,11 +1,13 @@
 import { bootstrap } from "./bootstrap";
 import networkConfigs from "./config/networkConfigs.json";
-import driverInitializer from "./data/db";
+import DependenciesInjection from "./di";
 
 bootstrap(
     {
         database: {
-            driverInitializer
+            driverInitializer: async () => {
+                await DependenciesInjection.getDatabase();
+            }
         },
 
         server: {

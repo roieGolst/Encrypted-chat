@@ -1,7 +1,28 @@
-import dbInstance from "./dbInstance";
+import { Environments } from "./common/Environments";
+import { IDatabase } from "./common/IDb";
+import { createEnvironment } from "./environments/developments";
 
-export default async function sync(): Promise<boolean> {
-    await dbInstance.sync();
 
-    return true;
-};
+export default class DBInitializer {
+
+    private static instance: IDatabase;
+
+    public static async init(env: Environments) {
+        switch(env) {
+            case Environments.Devlopments : {
+                DBInitializer.instance = await createEnvironment()
+                break;
+            }
+
+            default : throw new Error("Unknow environment");
+        }
+    }
+
+    public static getInstance(): IDatabase {
+        if(!DBInitializer.instance) {
+            throw new Error("Can't accsess to 'Instance' before init function");
+        }
+        return DBInitializer.instance;
+    }
+
+}

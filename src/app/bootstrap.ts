@@ -8,13 +8,17 @@ type BootstrapServerArgs = {
 
 export type BootstrapArgs = {
     readonly database: {
-        driverInitializer: () => Promise<boolean>
+        driverInitializer: () => Promise<void>
     },
 
     readonly server: BootstrapServerArgs
 }
 
-export async function bootstrap(args: BootstrapArgs) {
+export type BootstrapResult = {
+//    db: IDatabase
+}
+
+export async function bootstrap(args: BootstrapArgs): Promise<BootstrapResult> {
     await args.database.driverInitializer();
     console.log("database is ready");
 
@@ -25,4 +29,7 @@ export async function bootstrap(args: BootstrapArgs) {
         inactiveTimeout: args.server.inactiveTimeout,
         dataHandlerFactory: SocketDataHandeler
     });
+
+    return {
+    };
 }

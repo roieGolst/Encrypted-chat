@@ -1,12 +1,19 @@
-import { UniqueConstraintError } from "sequelize";
-import { IResult } from "../../../../common/IResult";
-import { UserModel } from "../common/UserNodel";
-import { IUserDataSource } from "../domian/IUserDataSource";
-import User from "../models/User";
+import { Sequelize, UniqueConstraintError } from "sequelize";
+import { IResult } from "../../../../../../../common/IResult";
+import { UserEntity } from "../../UserEntityAbstract";
+import User from "./model/UserModel";
+import { UserAttributes } from "../../common/UserAttributs";
+import { UserModel } from "../../common/UserModel";
 
-export class DefaultUserDataSource implements IUserDataSource {
-    
-    async insert(item: UserModel): Promise<IResult<boolean>> {
+export default class UserSequelizeEntity extends UserEntity<Sequelize> {
+
+    constructor(driver: Sequelize) {
+        super(driver);
+
+        User.initUser(this.executer);
+    }
+
+    async insert(item: UserAttributes): Promise<IResult<boolean>> {
         try {
             await User.create(
                 {
@@ -34,7 +41,7 @@ export class DefaultUserDataSource implements IUserDataSource {
         }
     }
 
-    async getUserByUsername(username: string): Promise<IResult<User>> {
+    async getUserByUsername(username: string): Promise<IResult<UserModel>> {
         try {
             const user = await User.findByPk(username);
 
@@ -58,7 +65,7 @@ export class DefaultUserDataSource implements IUserDataSource {
         }
     }
 
-    async getUserById(id: string): Promise<IResult<User>> {
+    async getUserById(id: string): Promise<IResult<UserModel>> {
         try {
             const user = await User.findOne({
                 where: {id: id}
@@ -83,5 +90,4 @@ export class DefaultUserDataSource implements IUserDataSource {
             };
         }
     }
-    
-}
+} 
