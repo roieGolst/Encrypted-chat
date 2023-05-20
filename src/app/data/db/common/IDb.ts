@@ -1,5 +1,5 @@
 import { IUserEntity } from "../entitys/User/IUserEntity"
 
-export interface IDb {
+export interface IDatabase {
     users: IUserEntity
 };

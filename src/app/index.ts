@@ -1,13 +1,13 @@
 import { bootstrap } from "./bootstrap";
 import networkConfigs from "./config/networkConfigs.json";
-import driverInitializer from "./data/db/index";
+import DBInitializer from "./data/db/index";
 import { Environments } from "./data/db/common/Environments";
 
 bootstrap(
     {
         database: {
             env: Environments.Devlopments,
-            driverInitializer
+            driverInitializer: DBInitializer.init
         },
 
         server: {

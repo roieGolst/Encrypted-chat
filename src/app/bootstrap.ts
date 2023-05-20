@@ -1,7 +1,6 @@
 import NetworkLayer from "./common/networkLayer";
 import SocketDataHandeler from "./data/SocketDataHandeler";
 import { Environments } from "./data/db/common/Environments";
-import { IDb } from "./data/db/common/IDb";
 
 type BootstrapServerArgs = {
     readonly port: number;
@@ -11,18 +10,18 @@ type BootstrapServerArgs = {
 export type BootstrapArgs = {
     readonly database: {
         env: Environments,
-        driverInitializer: (enc: Environments) => Promise<IDb>
+        driverInitializer: (enc: Environments) => Promise<void>
     },
 
     readonly server: BootstrapServerArgs
 }
 
-export type BootstrapValues = {
-    db: IDb
+export type BootstrapResult = {
+//    db: IDatabase
 }
 
-export async function bootstrap(args: BootstrapArgs): Promise<BootstrapValues> {
-    const db: IDb = await args.database.driverInitializer(args.database.env);
+export async function bootstrap(args: BootstrapArgs): Promise<BootstrapResult> {
+    await args.database.driverInitializer(args.database.env);
     console.log("database is ready");
 
     const networkLayer = new NetworkLayer();
@@ -34,6 +33,5 @@ export async function bootstrap(args: BootstrapArgs): Promise<BootstrapValues> {
     });
 
     return {
-        db
     };
 }

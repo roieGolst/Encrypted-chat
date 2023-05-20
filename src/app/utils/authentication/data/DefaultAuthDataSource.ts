@@ -5,9 +5,16 @@ import IAuthDataSource from "../domain/IAuthDataSource";
 import env from "../../../config/env.json";
 import bcrypt from "bcrypt";
 import { LoginResultModel } from "../common/LoginResultModel";
-
+import { IUserEntity } from "../../../data/db/entitys/User/IUserEntity";
 
 export default class DefaultAuthDataSource implements IAuthDataSource {
+
+    private userEntity: IUserEntity;
+
+    constructor(userEntity: IUserEntity) {
+        this.userEntity = userEntity;
+    }
+
     async register(item: AuthAttributs): Promise<IResult<boolean>> {
         const isValidData = userAttributsSchema.validate(item);
 
@@ -20,7 +27,7 @@ export default class DefaultAuthDataSource implements IAuthDataSource {
 
         const hashPassword = await bcrypt.hash(item.password, env.SALT_ROUNDS);
 
-        const result = db.users.insert({
+        const result = this.userEntity.insert({
             username: item.username,
             hashPassword
         });
@@ -29,7 +36,7 @@ export default class DefaultAuthDataSource implements IAuthDataSource {
     }
 
     async login(user: AuthAttributs): Promise<IResult<LoginResultModel>> {
-        const requiredUser = users.getUserByUsername(user.username);
+        const requiredUser = await this.userEntity.getUserByUsername(user.username);
 
         if(!requiredUser.isSuccess) {
             return requiredUser;

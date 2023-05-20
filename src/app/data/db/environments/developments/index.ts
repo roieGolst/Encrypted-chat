@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import { IDb } from "../../common/IDb";
+import { IDatabase } from "../../common/IDb";
 import UserSequelizeEntity from "../../entitys/User/dataSource/userSequelize/User";
 
 const sequelizeInstance = new Sequelize({
@@ -7,10 +7,8 @@ const sequelizeInstance = new Sequelize({
     "storage": ".database/myDB.db"
 })
 
-export function createEnvironment(): IDb {
-    const users = new UserSequelizeEntity(sequelizeInstance);
-
+export async function createEnvironment(): Promise<IDatabase> {
     return {
-        users
+        users: new UserSequelizeEntity(sequelizeInstance)
     };
 }

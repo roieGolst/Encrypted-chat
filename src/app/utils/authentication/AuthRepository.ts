@@ -4,6 +4,7 @@ import { IAuthRepository } from "./domain/IAuthRepository";
 import IAuthDataSource from "./domain/IAuthDataSource";
 import { LoginResultModel } from "./common/LoginResultModel";
 import DefaultAuthDataSource from "./data/DefaultAuthDataSource";
+import DBInitializer from "../../data/db";
 
 class AuthRepository implements IAuthRepository {
 
@@ -22,6 +23,6 @@ class AuthRepository implements IAuthRepository {
     }
 }
 
-const dataSource = new DefaultAuthDataSource();
+const dataSource = new DefaultAuthDataSource(DBInitializer.getInstance().users);
 
 export default new AuthRepository(dataSource);
