@@ -2,15 +2,15 @@
 import { Status } from "../../encryptedChatProtocol/common/commonTypes";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import * as useCases from "../index";
-import AuthRepository from "../../utils/authentication/AuthRepository";
 import { TcpServer } from "../../../server/types";
 import LoginRequestPacket from "../../encryptedChatProtocol/requestPackets/Login";
+import DependenciesInjection from "../../di";
 
 
 export default class LoginUseCase {
 
     static async login(req: LoginRequestPacket, res: TcpServer.IResponse): Promise<boolean> {
-        const loginResult = await AuthRepository.login(req.userAttributs);
+        const loginResult = await (await DependenciesInjection.getAuthRepository()).login(req.userAttributs)
 
         if(!loginResult.isSuccess) {
             const responsePacket = new ResponsePackets.Login.Builder()
