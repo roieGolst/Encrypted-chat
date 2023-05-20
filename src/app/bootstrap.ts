@@ -1,6 +1,5 @@
 import NetworkLayer from "./common/networkLayer";
 import SocketDataHandeler from "./data/SocketDataHandeler";
-import { Environments } from "./data/db/common/Environments";
 
 type BootstrapServerArgs = {
     readonly port: number;
@@ -9,8 +8,7 @@ type BootstrapServerArgs = {
 
 export type BootstrapArgs = {
     readonly database: {
-        env: Environments,
-        driverInitializer: (enc: Environments) => Promise<void>
+        driverInitializer: () => Promise<void>
     },
 
     readonly server: BootstrapServerArgs
@@ -21,7 +19,7 @@ export type BootstrapResult = {
 }
 
 export async function bootstrap(args: BootstrapArgs): Promise<BootstrapResult> {
-    await args.database.driverInitializer(args.database.env);
+    await args.database.driverInitializer();
     console.log("database is ready");
 
     const networkLayer = new NetworkLayer();

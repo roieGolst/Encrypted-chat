@@ -3,10 +3,8 @@ import { AuthAttributs } from "../../encryptedChatProtocol/common/commonTypes";
 import { IAuthRepository } from "./domain/IAuthRepository";
 import IAuthDataSource from "./domain/IAuthDataSource";
 import { LoginResultModel } from "./common/LoginResultModel";
-import DefaultAuthDataSource from "./data/DefaultAuthDataSource";
-import DBInitializer from "../../data/db";
 
-class AuthRepository implements IAuthRepository {
+export default class AuthRepository implements IAuthRepository {
 
     private authDataSource: IAuthDataSource;
 
@@ -22,7 +20,3 @@ class AuthRepository implements IAuthRepository {
         return await this.authDataSource.login(user);
     }
 }
-
-const dataSource = new DefaultAuthDataSource(DBInitializer.getInstance().users);
-
-export default new AuthRepository(dataSource);

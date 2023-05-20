@@ -1,13 +1,13 @@
 import { bootstrap } from "./bootstrap";
 import networkConfigs from "./config/networkConfigs.json";
-import DBInitializer from "./data/db/index";
-import { Environments } from "./data/db/common/Environments";
+import DependenciesInjection from "./di";
 
 bootstrap(
     {
         database: {
-            env: Environments.Devlopments,
-            driverInitializer: DBInitializer.init
+            driverInitializer: async () => {
+                await DependenciesInjection.getDatabase();
+            }
         },
 
         server: {

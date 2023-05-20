@@ -4,7 +4,7 @@ import UserSequelizeEntity from "../../entitys/User/dataSource/userSequelize/Use
 
 const sequelizeInstance = new Sequelize({
     dialect: "sqlite",
-    "storage": ".database/myDB.db"
+    "storage": "database/myDB.db"
 })
 
 export async function createEnvironment(): Promise<IDatabase> {
