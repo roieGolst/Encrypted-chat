@@ -1,8 +1,8 @@
 import { Status } from "../../encryptedChatProtocol/common/commonTypes";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
-import { TcpServer } from "../../../server/types";
 import RegisterRequstPacket from "../../encryptedChatProtocol/requestPackets/Register";
 import DependenciesInjection from "../../di";
+import { TcpServer } from "../../../modules/server/types";
 
 export default class RegisterUseCase {
 

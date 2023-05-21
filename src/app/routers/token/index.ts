@@ -4,7 +4,7 @@ import { IResult } from "../../../common/IResult";
 import { Status } from "../../encryptedChatProtocol/common/commonTypes";
 import * as RequestPackets from "../../encryptedChatProtocol/requestPackets";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
-import { TcpServer } from "../../../server/types";
+import { TcpServer } from "../../../modules/server/types";
 
 type UserSign = {
     readonly userName: string
