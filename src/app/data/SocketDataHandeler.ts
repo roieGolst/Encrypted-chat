@@ -1,6 +1,6 @@
 import { PacketType, Status } from "../encryptedChatProtocol/common/commonTypes";
 import parser, { ParserErrorResult } from "../utils/parser";
-import { TcpServer } from "../../server/types";
+import { TcpServer } from "../../modules/server/types";
 import * as ResponsePackets from "../encryptedChatProtocol/responsePackets";
 import { HandlerCb } from "./IHandler";
 import Packet from "../encryptedChatProtocol/Packet";

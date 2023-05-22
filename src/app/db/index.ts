@@ -3,14 +3,14 @@ import { IDatabase } from "./common/IDb";
 import { createEnvironment } from "./environments/developments";
 
 
-export default class DBInitializer {
+export default class DBInstance {
 
     private static instance: IDatabase;
 
     public static async init(env: Environments) {
         switch(env) {
             case Environments.Devlopments : {
-                DBInitializer.instance = await createEnvironment()
+                DBInstance.instance = await createEnvironment()
                 break;
             }
 
@@ -19,10 +19,10 @@ export default class DBInitializer {
     }
 
     public static getInstance(): IDatabase {
-        if(!DBInitializer.instance) {
+        if(!DBInstance.instance) {
             throw new Error("Can't accsess to 'Instance' before init function");
         }
-        return DBInitializer.instance;
+        return DBInstance.instance;
     }
 
 }

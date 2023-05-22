@@ -1,5 +1,5 @@
 import { IResult } from "../../../../common/IResult";
-import { RoomNotify } from "../../../data/rooms/common/RoomNotify";
+import { RoomNotify } from "../../../data/notifications/common/RoomNotify";
 import { PacketType, Status } from "../../../encryptedChatProtocol/common/commonTypes";
 import { pollingSchema } from "./schemas";
 

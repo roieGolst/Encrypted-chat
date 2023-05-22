@@ -4,10 +4,10 @@ import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import * as useCases from "../index";
 import RoomObserver from "../../data/rooms/data/RoomObserver";
 import { RoomUser } from "../../data/rooms/common/RoomUser";
-import notificationsRepository from "../../data/rooms/data/notifications/NotificationsRepository";
-import roomsRepository from "../../data/rooms/data/rooms/RoomsRepository";
-import { RoomNotify } from "../../data/rooms/common/RoomNotify";
+import { RoomNotify } from "../../data/notifications/common/RoomNotify";
 import { IResponse } from "../../common/IResponse";
+import notificationsRepository from "../../data/notifications/data/NotificationsRepository";
+import roomsRepository from "../../data/rooms/data/RoomsRepository";
 
 export default class RoomsUseCase {
 

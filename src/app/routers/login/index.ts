@@ -2,9 +2,9 @@
 import { Status } from "../../encryptedChatProtocol/common/commonTypes";
 import * as ResponsePackets from "../../encryptedChatProtocol/responsePackets";
 import * as useCases from "../index";
-import { TcpServer } from "../../../server/types";
 import LoginRequestPacket from "../../encryptedChatProtocol/requestPackets/Login";
 import DependenciesInjection from "../../di";
+import { TcpServer } from "../../../modules/server/types";
 
 
 export default class LoginUseCase {

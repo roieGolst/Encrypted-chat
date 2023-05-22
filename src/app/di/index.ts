@@ -1,7 +1,7 @@
-import DBInitializer from "../data/db";
-import { Environments } from "../data/db/common/Environments";
-import { IDatabase } from "../data/db/common/IDb";
-import { IUserEntity } from "../data/db/entitys/User/IUserEntity";
+import DBInstance from "../db";
+import { Environments } from "../db/common/Environments";
+import { IDatabase } from "../db/common/IDb";
+import { IUserEntity } from "../db/entitys/User/IUserEntity";
 import AuthRepository from "../utils/authentication/AuthRepository";
 import DefaultAuthDataSource from "../utils/authentication/data/DefaultAuthDataSource";
 import IAuthDataSource from "../utils/authentication/domain/IAuthDataSource";
@@ -24,9 +24,7 @@ export default class DependenciesInjection {
 
     static async getDatabase(): Promise<IDatabase> {
         if(!DependenciesInjection.databaseInstance) {
-            await DBInitializer.init(DependenciesInjection.getEnvironment());
-
-            DependenciesInjection.databaseInstance = DBInitializer.getInstance();
+            DependenciesInjection.databaseInstance = DBInstance.getInstance();
         }
 
         return DependenciesInjection.databaseInstance;

@@ -1,3 +1,3 @@
-import { TcpServer } from "../../server/types";
+import { TcpServer } from "../../modules/server/types";
 
 export type IResponse = TcpServer.IResponse;
