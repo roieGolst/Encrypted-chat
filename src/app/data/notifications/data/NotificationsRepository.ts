@@ -1,6 +1,6 @@
-import { RoomNotify } from "../../common/RoomNotify";
-import { INotificationsDataSource } from "../../domain/notifications/INotificationsDataSource";
-import { INotificationsRepository } from "../../domain/notifications/INotificationsRepository";
+import { RoomNotify } from "../common/RoomNotify";
+import { INotificationsDataSource } from "../domain/INotificationsDataSource";
+import { INotificationsRepository } from "../domain/INotificationsRepository";
 import { DefaultNotificationsDataSource } from "./DefaultNotiifcationsDataSource";
 
 class NotificationsRepository implements INotificationsRepository {

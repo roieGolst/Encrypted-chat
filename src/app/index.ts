@@ -1,10 +1,10 @@
 import { Initializer } from "../modules/initializer/Initializer";
 import { bootstrap } from "./bootstrap";
-import NetworklayerInitializer from "./common/networkLayer/initializer";
+import NetworklayerInitializer from "./networkLayer/initializer";
 import networkConfigs from "./config/networkConfigs.json";
-import { Environments } from "./data/db/common/Environments";
-import DatabaseInitializer from "./data/db/initializer";
+import DatabaseInitializer from "./db/initializer";
 import SocketDataHandeler from "./data/SocketDataHandeler";
+import { Environments } from "./db/common/Environments";
 
 const dependencies = new Array<Initializer>();
 

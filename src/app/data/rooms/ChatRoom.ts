@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { IRoomObserver } from './domain/Rooms/IRoomObserver';
+import { IRoomObserver } from './domain/IRoomObserver';
 import { RoomUser } from './common/RoomUser';
 
 type UserId = string;

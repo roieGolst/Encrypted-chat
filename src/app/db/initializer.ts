@@ -1,5 +1,5 @@
 import DBInstance from ".";
-import { Initializer } from "../../../modules/initializer/Initializer";
+import { Initializer } from "../../modules/initializer/Initializer";
 import { Environments } from "./common/Environments";
  
 export default function factory(env: Environments): Initializer {

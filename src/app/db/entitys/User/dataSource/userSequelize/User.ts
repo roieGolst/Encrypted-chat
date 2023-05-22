@@ -1,9 +1,9 @@
 import { Sequelize, UniqueConstraintError } from "sequelize";
-import { IResult } from "../../../../../../../common/IResult";
 import { UserEntity } from "../../UserEntityAbstract";
 import User from "./model/UserModel";
 import { UserAttributes } from "../../common/UserAttributs";
 import { UserModel } from "../../common/UserModel";
+import { IResult } from "../../../../../../common/IResult";
 
 export default class UserSequelizeEntity extends UserEntity<Sequelize> {
 

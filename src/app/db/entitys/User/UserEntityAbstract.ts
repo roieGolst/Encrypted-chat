@@ -1,4 +1,4 @@
-import { IResult } from "../../../../../common/IResult";
+import { IResult } from "../../../../common/IResult";
 import { IUserEntity } from "./IUserEntity";
 import { UserAttributes } from "./common/UserAttributs";
 import { UserModel } from "./common/UserModel";

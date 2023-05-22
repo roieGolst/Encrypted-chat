@@ -1,6 +1,6 @@
 import Initializator from "../modules/initializer";
 import { Initializer } from "../modules/initializer/Initializer";
-import NetworkLayer from "./common/networkLayer";
+import NetworkLayer from "./networkLayer";
 import SocketDataHandeler from "./data/SocketDataHandeler";
 
 type BootstrapServerArgs = {

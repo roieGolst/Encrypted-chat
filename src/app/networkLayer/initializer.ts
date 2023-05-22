@@ -1,8 +1,8 @@
-import { Initializer } from "../../../modules/initializer/Initializer";
-import { ServerArgs } from "../../../modules/server";
-import DatabaseInitializer from "../../data/db/initializer";
-import DependenciesInjection from "../../di";
+import { Initializer } from "../../modules/initializer/Initializer";
+import { ServerArgs } from "../../modules/server";
+import DependenciesInjection from "../di";
 import NetworkLayer from "./index";
+import DatabaseInitializer from "../db/initializer";
 
 export default function factory(serverArgs: ServerArgs): Initializer {
     return {
@@ -15,6 +15,7 @@ export default function factory(serverArgs: ServerArgs): Initializer {
         },
 
         dependencies: (): Array<Initializer> => {
+            //TODO: look for a way to re design the initializer facyory method;
             return [DatabaseInitializer(DependenciesInjection.getEnvironment())];
         }
     }

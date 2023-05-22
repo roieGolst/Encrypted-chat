@@ -1,5 +1,5 @@
-import { RoomNotify } from "../../common/RoomNotify";
-import { INotificationsDataSource } from "../../domain/notifications/INotificationsDataSource";
+import { RoomNotify } from "../common/RoomNotify";
+import { INotificationsDataSource } from "../domain/INotificationsDataSource";
 
 export class DefaultNotificationsDataSource implements INotificationsDataSource {
     private notifications: Map<string, RoomNotify[]> = new Map();

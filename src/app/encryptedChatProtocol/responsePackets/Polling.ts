@@ -1,5 +1,5 @@
 import { IBuilder } from "../../common/IBuilder";
-import { RoomNotify } from "../../data/rooms/common/RoomNotify";
+import { RoomNotify } from "../../data/notifications/common/RoomNotify";
 import { PacketType, Status } from "../common/commonTypes";
 import ResponsePacket from "./ResponsePacket";
 
