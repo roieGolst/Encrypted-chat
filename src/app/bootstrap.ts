@@ -1,3 +1,5 @@
+import Initializator from "../modules/initializer";
+import { Initializer } from "../modules/initializer/Initializer";
 import NetworkLayer from "./common/networkLayer";
 import SocketDataHandeler from "./data/SocketDataHandeler";
 
@@ -18,18 +20,20 @@ export type BootstrapResult = {
 //    db: IDatabase
 }
 
-export async function bootstrap(args: BootstrapArgs): Promise<BootstrapResult> {
-    await args.database.driverInitializer();
-    console.log("database is ready");
+export async function bootstrap(args: Array<Initializer>): Promise<void> {
 
-    const networkLayer = new NetworkLayer();
+    await Initializator.run(args);
+    // await args.database.driverInitializer();
+    // console.log("database is ready");
 
-    await networkLayer.startPromisify({
-        port: args.server.port,
-        inactiveTimeout: args.server.inactiveTimeout,
-        dataHandlerFactory: SocketDataHandeler
-    });
+    // const networkLayer = new NetworkLayer();
 
-    return {
-    };
+    // await networkLayer.startPromisify({
+    //     port: args.server.port,
+    //     inactiveTimeout: args.server.inactiveTimeout,
+    //     dataHandlerFactory: SocketDataHandeler
+    // });
+
+    // return {
+    // };
 }

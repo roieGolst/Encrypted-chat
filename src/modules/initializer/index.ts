@@ -1,6 +1,8 @@
 import { Initializer } from "./Initializer";
 
 export default class Initializator {
+
+    private static alreadyBuild: Set<string> = new Set<string>();
     
     static async run(initializers: Array<Initializer>) {
         const tasksQueue: Array<Initializer> = Initializator.buildTasksQueue(initializers);
@@ -20,7 +22,10 @@ export default class Initializator {
                 continue;
             }
             
-            queue.push(initializer);
+            if(!Initializator.alreadyBuild.has(initializer.name)) {
+                Initializator.alreadyBuild.add(initializer.name);
+                queue.push(initializer);
+            }
             
             const requiredDependencies = initializer.dependencies().filter((item) => {
                 return !queue.includes(item);
