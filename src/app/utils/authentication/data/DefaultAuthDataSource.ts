@@ -5,7 +5,7 @@ import IAuthDataSource from "../domain/IAuthDataSource";
 import env from "../../../config/env.json";
 import bcrypt from "bcrypt";
 import { LoginResultModel } from "../common/LoginResultModel";
-import { IUserEntity } from "../../../data/db/entitys/User/IUserEntity";
+import { IUserEntity } from "../../../db/entitys/User/IUserEntity";
 
 export default class DefaultAuthDataSource implements IAuthDataSource {
 

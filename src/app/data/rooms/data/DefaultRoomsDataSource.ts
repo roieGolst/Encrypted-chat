@@ -1,7 +1,7 @@
-import { ChatRoom } from "../../ChatRoom";
-import { RoomUser } from "../../common/RoomUser";
-import { IRoomsDataSource } from "../../domain/Rooms/IRoomsDataSource";
-import RoomObserver from "../RoomObserver";
+import { ChatRoom } from "../ChatRoom";
+import { RoomUser } from "../common/RoomUser";
+import { IRoomsDataSource } from "../domain/IRoomsDataSource";
+import RoomObserver from "./RoomObserver";
 
 export class DefaultRoomsDataSource implements IRoomsDataSource {
     private rooms: Map<string, ChatRoom> = new Map();

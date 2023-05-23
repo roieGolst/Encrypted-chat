@@ -1,4 +1,4 @@
-import { RoomNotify } from "../../common/RoomNotify";
+import { RoomNotify } from "../common/RoomNotify";
 
 export interface INotificationsDataSource {
     registerNotification(toUser: string, notify: RoomNotify): void;

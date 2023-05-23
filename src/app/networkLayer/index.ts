@@ -1,6 +1,5 @@
-import TcpServer, { ISocketsManagerObserver, ServerArgs } from "../../../server";
-import { ITcpServer } from "../../../server";
-import { TcpInitializedCb } from "../../../server/common/ITcpServer";
+import TcpServer, { ISocketsManagerObserver, ITcpServer, ServerArgs } from "../../modules/server";
+import { TcpInitializedCb } from "../../modules/server/common/ITcpServer";
 import { INetworkLayer } from "./INetworkLayerMessageSender";
 
 export default class NetworkLayer implements INetworkLayer {

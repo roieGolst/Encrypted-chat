@@ -1,9 +1,10 @@
- import { ChatRoom } from "../../ChatRoom";
-import { RoomUser } from "../../common/RoomUser";
-import { IRoomsDataSource } from "../../domain/Rooms/IRoomsDataSource";
-import { IRoomsRepository } from "../../domain/Rooms/IRoomsRepository";
-import RoomObserver from "../RoomObserver";
+
+import { ChatRoom } from "../ChatRoom";
+import { RoomUser } from "../common/RoomUser";
+import { IRoomsDataSource } from "../domain/IRoomsDataSource";
+import { IRoomsRepository } from "../domain/IRoomsRepository";
 import { DefaultRoomsDataSource } from "./DefaultRoomsDataSource";
+import RoomObserver from "./RoomObserver";
 
 class DefaultRoomsRepository implements IRoomsRepository {
 
