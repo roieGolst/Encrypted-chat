@@ -8,30 +8,30 @@ export default class User extends Model<InferAttributes<User>, InferCreationAttr
 
     static initUser(driver: Sequelize): void {
         User.init(
-                {
-                    id:{
-                        type: DataTypes.UUID,
-                        defaultValue: DataTypes.UUIDV4,
-                        unique: true,
-                        allowNull: false
-                    },
-                    
-                    username: {
-                        type: DataTypes.STRING(userConfigs.MAX_USER_NAME_LENGTH),
-                        primaryKey: true,
-                        allowNull: false,
-                    },
-            
-                    password: {
-                        type: DataTypes.STRING(userConfigs.MAX_PASSWORD_LENGTH)
-                    }
-                }, 
-            
-                {
-                    sequelize: driver,
-                    tableName: "Users",
-                    timestamps: false   
+            {
+                id:{
+                    type: DataTypes.UUID,
+                    defaultValue: DataTypes.UUIDV4,
+                    unique: true,
+                    allowNull: false
+                },
+                
+                username: {
+                    type: DataTypes.STRING(userConfigs.MAX_USER_NAME_LENGTH),
+                    primaryKey: true,
+                    allowNull: false,
+                },
+        
+                password: {
+                    type: DataTypes.STRING(userConfigs.MAX_PASSWORD_LENGTH)
                 }
-            )
+            }, 
+        
+            {
+                sequelize: driver,
+                tableName: "Users",
+                timestamps: false   
+            }
+        )
     }
 };
