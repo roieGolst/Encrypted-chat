@@ -7,8 +7,6 @@ const sequelizeInstance = new Sequelize({
     storage: "./database/myDB.db",
 });
 
-export default sequelizeInstance
-
 export async function createEnvironment(): Promise<IDatabase> {
     const users = new UserSequelizeEntity(sequelizeInstance);
     sequelizeInstance.sync();
